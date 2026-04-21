@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ProductTradeTimeSettingMapper">
+    
+    <resultMap type="ProductTradeTimeSetting" id="ProductTradeTimeSettingResult">
+        <result property="id"    column="id"    />
+        <result property="day"    column="day"    />
+        <result property="transAmBegin"    column="trans_am_begin"    />
+        <result property="transAmEnd"    column="trans_am_end"    />
+        <result property="transPmBegin"    column="trans_pm_begin"    />
+        <result property="transPmEnd"    column="trans_pm_end"    />
+        <result property="productType"    column="product_type"    />
+    </resultMap>
+
+    <sql id="selectProductTradeTimeSettingVo">
+        select id, day, trans_am_begin, trans_am_end, trans_pm_begin, trans_pm_end, product_type from product_trade_time_setting
+    </sql>
+
+    <select id="selectProductTradeTimeSettingList" parameterType="ProductTradeTimeSetting" resultMap="ProductTradeTimeSettingResult">
+        <include refid="selectProductTradeTimeSettingVo"/>
+        <where>  
+            <if test="day != null "> and day = #{day}</if>
+            <if test="transAmBegin != null  and transAmBegin != ''"> and trans_am_begin = #{transAmBegin}</if>
+            <if test="transAmEnd != null  and transAmEnd != ''"> and trans_am_end = #{transAmEnd}</if>
+            <if test="transPmBegin != null  and transPmBegin != ''"> and trans_pm_begin = #{transPmBegin}</if>
+            <if test="transPmEnd != null  and transPmEnd != ''"> and trans_pm_end = #{transPmEnd}</if>
+            <if test="productType != null "> and product_type = #{productType}</if>
+        </where>
+    </select>
+    
+    <select id="selectProductTradeTimeSettingById" parameterType="Long" resultMap="ProductTradeTimeSettingResult">
+        <include refid="selectProductTradeTimeSettingVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectProductTradeTimeSettingByDayAndProductType" resultMap="ProductTradeTimeSettingResult">
+        <include refid="selectProductTradeTimeSettingVo"/>
+        where `day` = #{day} and product_type = #{productType}
+    </select>
+
+    <insert id="insertProductTradeTimeSetting" parameterType="ProductTradeTimeSetting" useGeneratedKeys="true" keyProperty="id">
+        insert into product_trade_time_setting
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="day != null">day,</if>
+            <if test="transAmBegin != null and transAmBegin != ''">trans_am_begin,</if>
+            <if test="transAmEnd != null and transAmEnd != ''">trans_am_end,</if>
+            <if test="transPmBegin != null and transPmBegin != ''">trans_pm_begin,</if>
+            <if test="transPmEnd != null and transPmEnd != ''">trans_pm_end,</if>
+            <if test="productType != null">product_type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="day != null">#{day},</if>
+            <if test="transAmBegin != null and transAmBegin != ''">#{transAmBegin},</if>
+            <if test="transAmEnd != null and transAmEnd != ''">#{transAmEnd},</if>
+            <if test="transPmBegin != null and transPmBegin != ''">#{transPmBegin},</if>
+            <if test="transPmEnd != null and transPmEnd != ''">#{transPmEnd},</if>
+            <if test="productType != null">#{productType},</if>
+         </trim>
+    </insert>
+
+    <update id="updateProductTradeTimeSetting" parameterType="ProductTradeTimeSetting">
+        update product_trade_time_setting
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="day != null">day = #{day},</if>
+            <if test="transAmBegin != null">trans_am_begin = #{transAmBegin},</if>
+            <if test="transAmEnd != null">trans_am_end = #{transAmEnd},</if>
+            <if test="transPmBegin != null">trans_pm_begin = #{transPmBegin},</if>
+            <if test="transPmEnd != null">trans_pm_end = #{transPmEnd},</if>
+            <if test="productType != null">product_type = #{productType},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteProductTradeTimeSettingById" parameterType="Long">
+        delete from product_trade_time_setting where id = #{id}
+    </delete>
+
+    <delete id="deleteProductTradeTimeSettingByIds" parameterType="String">
+        delete from product_trade_time_setting where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

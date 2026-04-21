@@ -1,0 +1,9 @@
+insert into `stock`.`switch_set` (id,switch_name,status,`type`,sort) select 78,'app端充值记录是否展示彩金赠送记录',1,1,78 from switch_set where not exists (select id from switch_set where id = 78)limit 1;
+insert into `stock`.`switch_set` (id,switch_name,status,`type`,sort) select 79,'是否要求用户充值上传凭证',0,1,79 from switch_set where not exists (select id from switch_set where id = 79)limit 1;
+insert into `stock`.`switch_set` (id,switch_name,status,`type`,sort) select 80,'是否允许用户自行修改用户信息',1,1,80 from switch_set where not exists (select id from switch_set where id = 80)limit 1;
+
+insert into `stock`.`other_value` (other_key,`name`,other_value,remark,visible_flag) select 'app_reg_captcha_type','app注册验证码类型（0：数学计算 1：字符验证）','0',null,0 from other_value where not exists (select other_key from other_value where other_key = 'app_reg_captcha_type')limit 1;
+insert into `stock`.`other_value` (other_key,`name`,other_value,remark,visible_flag) select 'user_max_wallet_address_count_all_currency','单用户钱包地址允许绑定个数（0：不限制 N:限制最大N个钱包）','0',null,0 from other_value where not exists (select other_key from other_value where other_key = 'user_max_wallet_address_count')limit 1;
+insert into `stock`.`other_value` (other_key,`name`,other_value,remark,visible_flag) select 'user_max_wallet_address_count_every_currency','单用户单币种钱包地址允许绑定个数（0：不限制 N:限制最大N个钱包）','0',null,0 from other_value where not exists (select other_key from other_value where other_key = 'user_max_wallet_address_count')limit 1;
+
+insert into `stock`.`lang_mgr` (lang_key,zh) select 'hint_72','绑定数量已达上限' from lang_mgr where not exists (select lang_key from lang_mgr where lang_key = 'hint_72') limit 1;

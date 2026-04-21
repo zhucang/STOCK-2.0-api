@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserInfoMapper">
+    
+    <resultMap type="UserInfo" id="UserInfoResult">
+        <result property="id"    column="id"    />
+        <result property="userAccount"    column="user_account"    />
+        <result property="phone"    column="phone"    />
+        <result property="email"    column="email"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="realName"    column="real_name"    />
+        <result property="dappId"    column="dapp_id"    />
+        <result property="agentId"    column="agent_id"    />
+        <result property="agentName"    column="agent_name"    />
+        <result property="userRemark"    column="user_remark"    />
+        <result property="agentNickName"    column="agent_nick_name"    />
+        <result property="inviteCode"    column="invite_code"    />
+        <result property="accountType"    column="account_type"    />
+        <result property="avatar"    column="avatar"    />
+        <result property="isLock"    column="is_lock"    />
+        <result property="regTime"    column="reg_time"    />
+        <result property="regIp"    column="reg_ip"    />
+        <result property="regAddress"    column="reg_address"    />
+        <result property="lastLoginIp"    column="last_login_ip"    />
+        <result property="lastLoginTime"    column="last_login_time"    />
+        <result property="idCard"    column="id_card"    />
+        <result property="img1Key"    column="img1_key"    />
+        <result property="img2Key"    column="img2_key"    />
+        <result property="img3Key"    column="img3_key"    />
+        <result property="isActive"    column="is_active"    />
+        <result property="authStatusJunior"    column="auth_status_junior"    />
+        <result property="authStatusSenior"    column="auth_status_senior"    />
+        <result property="authMethod"    column="auth_method"    />
+        <result property="authMsg"    column="auth_msg"    />
+        <result property="isControl"    column="is_control"    />
+        <result property="allowFallIntoNegative"    column="allow_fall_into_negative"    />
+        <result property="startDelayTime"    column="start_delay_time"    />
+        <result property="overflowAmount"    column="overflow_amount"    />
+        <result property="supUserId"    column="sup_user_id"    />
+        <result property="noLoginInfo"    column="no_login_info"    />
+        <result property="status"    column="status"    />
+        <result property="needOrderAmount"    column="need_order_amount"    />
+        <result property="vipLevel"    column="vip_level"    />
+        <result property="creditScore"    column="credit_score"    />
+        <result property="isCanWithdraw"    column="is_can_withdraw"    />
+        <result property="fastTradeWinProfitRatio"    column="fast_trade_win_profit_ratio"    />
+        <result property="fastTradeLoseProfitRatio"    column="fast_trade_lose_profit_ratio"    />
+        <result property="isAgent"    column="is_agent"    />
+        <result property="relateUserId"    column="relate_user_id"    />
+        <result property="isDel"    column="is_del"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectUserInfoVo">
+        select id, user_account, phone, email, nick_name, real_name, dapp_id, agent_id, agent_name,agent_nick_name, invite_code, account_type, avatar, is_lock, reg_time, reg_ip, reg_address, last_login_ip, last_login_time, id_card, img1_key, img2_key, img3_key, is_active,auth_status_junior,auth_status_senior,auth_method, auth_msg, is_control, allow_fall_into_negative, start_delay_time, overflow_amount, sup_user_id, no_login_info, status, need_order_amount, vip_level, credit_score, is_can_withdraw, fast_trade_win_profit_ratio, fast_trade_lose_profit_ratio, is_agent, relate_user_id,remark,is_del from user_info
+    </sql>
+
+    <select id="selectUserInfoList" parameterType="UserInfo" resultMap="UserInfoResult">
+        <include refid="selectUserInfoVo"/>
+        <where>
+            <if test="id != null"> and id = #{id}</if>
+            <if test="userAccount != null  and userAccount != ''"> and user_account like concat('%', #{userAccount}, '%')</if>
+            <if test="phone != null  and phone != ''"> and phone like concat('%', #{phone}, '%')</if>
+            <if test="email != null  and email != ''"> and email like concat('%', #{email}, '%')</if>
+            <if test="nickName != null  and nickName != ''"> and nick_name like concat('%', #{nickName}, '%')</if>
+            <if test="realName != null  and realName != ''"> and real_name like concat('%', #{realName}, '%')</if>
+            <if test="dappId != null"> and dapp_id = #{dappId}</if>
+            <if test="userPwd != null  and userPwd != ''"> and user_pwd = #{userPwd}</if>
+            <if test="withPwd != null  and withPwd != ''"> and with_pwd = #{withPwd}</if>
+            <if test="agentId != null and params.isAllAgentData != null and params.isAllAgentData == 0">
+                and agent_id in (select user_id from agent_team_level_line where sup_user_id = #{agentId} union select #{agentId})
+            </if>
+            <if test="agentId != null and params.isAllAgentData == null">
+                and agent_id = #{agentId}
+            </if>
+            <if test="agentName != null  and agentName != ''"> and agent_name like concat('%', #{agentName}, '%')</if>
+            <if test="inviteCode != null  and inviteCode != ''"> and invite_code = #{inviteCode}</if>
+            <if test="accountType != null "> and account_type = #{accountType}</if>
+            <if test="avatar != null  and avatar != ''"> and avatar = #{avatar}</if>
+            <if test="isLock != null "> and is_lock = #{isLock}</if>
+            <if test="regTime != null "> and reg_time = #{regTime}</if>
+            <if test="regIp != null  and regIp != ''"> and reg_ip = #{regIp}</if>
+            <if test="params.ipSearch != null"> and (reg_ip like concat('%', #{params.ipSearch}, '%') or last_login_ip like concat('%', #{params.ipSearch}, '%'))</if>
+            <if test="regAddress != null  and regAddress != ''"> and reg_address = #{regAddress}</if>
+            <if test="lastLoginIp != null  and lastLoginIp != ''"> and last_login_ip = #{lastLoginIp}</if>
+            <if test="lastLoginTime != null "> and last_login_time = #{lastLoginTime}</if>
+            <if test="idCard != null  and idCard != ''"> and id_card = #{idCard}</if>
+            <if test="img1Key != null  and img1Key != ''"> and img1_key = #{img1Key}</if>
+            <if test="img2Key != null  and img2Key != ''"> and img2_key = #{img2Key}</if>
+            <if test="img3Key != null  and img3Key != ''"> and img3_key = #{img3Key}</if>
+            <if test="isActive != null "> and is_active = #{isActive}</if>
+            <if test="authStatusJunior != null "> and auth_status_junior = #{authStatusJunior}</if>
+            <if test="authStatusSenior != null "> and auth_status_senior = #{authStatusSenior}</if>
+            <if test="authMsg != null  and authMsg != ''"> and auth_msg = #{authMsg}</if>
+            <if test="isControl != null "> and is_control = #{isControl}</if>
+            <if test="allowFallIntoNegative != null "> and allow_fall_into_negative = #{allowFallIntoNegative}</if>
+            <if test="startDelayTime != null "> and start_delay_time = #{startDelayTime}</if>
+            <if test="overflowAmount != null "> and overflow_amount = #{overflowAmount}</if>
+            <if test="supUserId != null "> and sup_user_id = #{supUserId}</if>
+            <if test="noLoginInfo != null  and noLoginInfo != ''"> and no_login_info = #{noLoginInfo}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="needOrderAmount != null "> and need_order_amount = #{needOrderAmount}</if>
+            <if test="vipLevel != null "> and vip_level = #{vipLevel}</if>
+            <if test="creditScore != null "> and credit_score = #{creditScore}</if>
+            <if test="isCanWithdraw != null "> and is_can_withdraw = #{isCanWithdraw}</if>
+            <if test="relateUserId != null "> and relate_user_id = #{relateUserId}</if>
+            <if test="fastTradeWinProfitRatio != null "> and fast_trade_win_profit_ratio = #{fastTradeWinProfitRatio}</if>
+            <if test="fastTradeLoseProfitRatio != null "> and fast_trade_lose_profit_ratio = #{fastTradeLoseProfitRatio}</if>
+            <if test="isAgent != null "> and is_agent = #{isAgent}</if>
+            <if test="params.controlType != null and params.controlType != 0"> and id in (select user_id from user_fast_trade_control where control_type = #{params.controlType}) </if>
+            <if test="params.controlType != null and params.controlType == 0"> and id not in (select user_id from user_fast_trade_control where control_type != #{params.controlType}) </if>
+            <if test="params.userIds != null and params.userIds.size > 0">
+                and id in
+                <foreach collection="params.userIds" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.userIds != null and params.userIds.size == 0">
+                and id = 0
+            </if>
+             and is_del = 0
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+    
+    <select id="selectUserInfoById" parameterType="Long" resultMap="UserInfoResult">
+        <include refid="selectUserInfoVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectUserInfoByUserAccount" resultMap="UserInfoResult">
+        <include refid="selectUserInfoVo"/>
+        where user_account = #{userAccount} and is_del = 0
+    </select>
+
+    <resultMap id="userLoginMap" type="UserInfo">
+        <result property="id" column="id"></result>
+        <result property="userPwd" column="user_pwd"></result>
+        <result property="isLock" column="is_lock"></result>
+        <result property="status" column="status"></result>
+    </resultMap>
+    <select id="userLogin" resultMap="userLoginMap">
+        select id,user_pwd,is_lock,status from user_info
+        WHERE (user_account = #{userAccount} or phone = #{userAccount} or email = #{userAccount}) and is_del = 0
+    </select>
+
+    <select id="selectUserInfoByEmail" resultMap="UserInfoResult">
+        <include refid="selectUserInfoVo"/>
+        where email = #{email} and is_del = 0
+    </select>
+
+    <select id="selectUserInfoByInviteCode" resultMap="UserInfoResult">
+        <include refid="selectUserInfoVo"/>
+        where invite_code = #{inviteCode} and is_del = 0
+    </select>
+
+    <select id="selectUserInfoByPhone" resultMap="UserInfoResult">
+        <include refid="selectUserInfoVo"/>
+        where phone = #{phone} and is_del = 0
+    </select>
+
+    <select id="getRealNameAuthPendingReviewNum" resultType="java.lang.Long">
+        select id from user_info
+        <where>
+            <if test="params.authLevel != null and params.authLevel == 0">
+                and auth_status_junior = 1
+            </if>
+            <if test="params.authLevel != null and params.authLevel == 1">
+                and auth_status_senior = 1
+            </if>
+            <if test="params.authLevel == null">
+                and id = 0
+            </if>
+            <if test="params.tourists != null and params.tourists != 0">
+                and account_type = 0
+            </if>
+            <if test="params.dataScope != null and params.dataScope != ''">
+                ${params.dataScope}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectUserPwdByUserId" resultType="java.lang.String">
+        select user_pwd from user_info where id = #{userId}
+    </select>
+
+    <select id="selectUserWithPwdByUserId" resultType="java.lang.String">
+        select with_pwd from user_info where id = #{userId}
+    </select>
+
+    <insert id="insertUserInfo" parameterType="UserInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into user_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userAccount != null and userAccount != ''">user_account,</if>
+            <if test="phone != null">phone,</if>
+            <if test="email != null">email,</if>
+            <if test="nickName != null and nickName != ''">nick_name,</if>
+            <if test="realName != null">real_name,</if>
+            <if test="dappId != null">dapp_id,</if>
+            <if test="userPwd != null and userPwd != ''">user_pwd,</if>
+            <if test="withPwd != null">with_pwd,</if>
+            <if test="agentId != null">agent_id,</if>
+            <if test="agentName != null">agent_name,</if>
+            <if test="agentNickName != null">agent_nick_name,</if>
+            <if test="inviteCode != null and inviteCode != ''">invite_code,</if>
+            <if test="accountType != null">account_type,</if>
+            <if test="avatar != null">avatar,</if>
+            <if test="isLock != null">is_lock,</if>
+            <if test="regTime != null">reg_time,</if>
+            <if test="regIp != null">reg_ip,</if>
+            <if test="regAddress != null">reg_address,</if>
+            <if test="lastLoginIp != null">last_login_ip,</if>
+            <if test="lastLoginTime != null">last_login_time,</if>
+            <if test="idCard != null">id_card,</if>
+            <if test="img1Key != null">img1_key,</if>
+            <if test="img2Key != null">img2_key,</if>
+            <if test="img3Key != null">img3_key,</if>
+            <if test="isActive != null">is_active,</if>
+            <if test="authStatusJunior != null">auth_status_junior,</if>
+            <if test="authStatusSenior != null">auth_status_senior,</if>
+            <if test="authMsg != null">auth_msg,</if>
+            <if test="isControl != null">is_control,</if>
+            <if test="allowFallIntoNegative != null">allow_fall_into_negative,</if>
+            <if test="startDelayTime != null">start_delay_time,</if>
+            <if test="overflowAmount != null">overflow_amount,</if>
+            <if test="supUserId != null">sup_user_id,</if>
+            <if test="noLoginInfo != null">no_login_info,</if>
+            <if test="status != null">status,</if>
+            <if test="needOrderAmount != null">need_order_amount,</if>
+            <if test="vipLevel != null">vip_level,</if>
+            <if test="creditScore != null">credit_score,</if>
+            <if test="isCanWithdraw != null">is_can_withdraw,</if>
+            <if test="fastTradeWinProfitRatio != null">fast_trade_win_profit_ratio,</if>
+            <if test="fastTradeLoseProfitRatio != null">fast_trade_lose_profit_ratio,</if>
+            <if test="isAgent != null">is_agent,</if>
+            <if test="relateUserId != null">relate_user_Id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userAccount != null and userAccount != ''">#{userAccount},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="email != null">#{email},</if>
+            <if test="nickName != null and nickName != ''">#{nickName},</if>
+            <if test="realName != null">#{realName},</if>
+            <if test="dappId != null">#{dappId},</if>
+            <if test="userPwd != null and userPwd != ''">#{userPwd},</if>
+            <if test="withPwd != null">#{withPwd},</if>
+            <if test="agentId != null">#{agentId},</if>
+            <if test="agentName != null">#{agentName},</if>
+            <if test="agentNickName != null">#{agentNickName},</if>
+            <if test="inviteCode != null and inviteCode != ''">#{inviteCode},</if>
+            <if test="accountType != null">#{accountType},</if>
+            <if test="avatar != null">#{avatar},</if>
+            <if test="isLock != null">#{isLock},</if>
+            <if test="regTime != null">#{regTime},</if>
+            <if test="regIp != null">#{regIp},</if>
+            <if test="regAddress != null">#{regAddress},</if>
+            <if test="lastLoginIp != null">#{lastLoginIp},</if>
+            <if test="lastLoginTime != null">#{lastLoginTime},</if>
+            <if test="idCard != null">#{idCard},</if>
+            <if test="img1Key != null">#{img1Key},</if>
+            <if test="img2Key != null">#{img2Key},</if>
+            <if test="img3Key != null">#{img3Key},</if>
+            <if test="isActive != null">#{isActive},</if>
+            <if test="authStatusJunior != null">#{authStatusJunior},</if>
+            <if test="authStatusSenior != null">#{authStatusSenior},</if>
+            <if test="authMsg != null">#{authMsg},</if>
+            <if test="isControl != null">#{isControl},</if>
+            <if test="allowFallIntoNegative != null">#{allowFallIntoNegative},</if>
+            <if test="startDelayTime != null">#{startDelayTime},</if>
+            <if test="overflowAmount != null">#{overflowAmount},</if>
+            <if test="supUserId != null">#{supUserId},</if>
+            <if test="noLoginInfo != null">#{noLoginInfo},</if>
+            <if test="status != null">#{status},</if>
+            <if test="needOrderAmount != null">#{needOrderAmount},</if>
+            <if test="vipLevel != null">#{vipLevel},</if>
+            <if test="creditScore != null">#{creditScore},</if>
+            <if test="isCanWithdraw != null">#{isCanWithdraw},</if>
+            <if test="fastTradeWinProfitRatio != null">#{fastTradeWinProfitRatio},</if>
+            <if test="fastTradeLoseProfitRatio != null">#{fastTradeLoseProfitRatio},</if>
+            <if test="isAgent != null">#{isAgent},</if>
+            <if test="relateUserId != null">#{relateUserId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserInfo" parameterType="UserInfo">
+        update user_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userAccount != null and userAccount != ''">user_account = #{userAccount},</if>
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="params.phoneNull != null">phone = null,</if>
+            <if test="email != null and email != ''">email = #{email},</if>
+            <if test="params.emailNull != null">email = null,</if>
+            <if test="nickName != null and nickName != ''">nick_name = #{nickName},</if>
+            <if test="realName != null">real_name = #{realName},</if>
+            <if test="dappId != null">dapp_id = #{dappId},</if>
+            <if test="userPwd != null and userPwd != ''">user_pwd = #{userPwd},</if>
+            <if test="withPwd != null">with_pwd = #{withPwd},</if>
+            <if test="agentId != null">agent_id = #{agentId},</if>
+            <if test="agentName != null">agent_name = #{agentName},</if>
+            <if test="agentNickName != null">agent_nick_name = #{agentNickName},</if>
+            <if test="inviteCode != null and inviteCode != ''">invite_code = #{inviteCode},</if>
+            <if test="accountType != null">account_type = #{accountType},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
+            <if test="isLock != null">is_lock = #{isLock},</if>
+            <if test="regTime != null">reg_time = #{regTime},</if>
+            <if test="regIp != null">reg_ip = #{regIp},</if>
+            <if test="regAddress != null">reg_address = #{regAddress},</if>
+            <if test="lastLoginIp != null">last_login_ip = #{lastLoginIp},</if>
+            <if test="lastLoginTime != null">last_login_time = #{lastLoginTime},</if>
+            <if test="idCard != null">id_card = #{idCard},</if>
+            <if test="img1Key != null">img1_key = #{img1Key},</if>
+            <if test="img2Key != null">img2_key = #{img2Key},</if>
+            <if test="img3Key != null">img3_key = #{img3Key},</if>
+            <if test="isActive != null">is_active = #{isActive},</if>
+            <if test="authStatusJunior != null">auth_status_junior = #{authStatusJunior},</if>
+            <if test="authStatusSenior != null">auth_status_senior = #{authStatusSenior},</if>
+            <if test="authMethod != null">auth_method = #{authMethod},</if>
+            <if test="authMsg != null">auth_msg = #{authMsg},</if>
+            <if test="isControl != null">is_control = #{isControl},</if>
+            <if test="allowFallIntoNegative != null">allow_fall_into_negative = #{allowFallIntoNegative},</if>
+            <if test="startDelayTime != null">start_delay_time = #{startDelayTime},</if>
+            <if test="overflowAmount != null">overflow_amount = #{overflowAmount},</if>
+            <if test="supUserId != null">sup_user_id = #{supUserId},</if>
+            <if test="params.cleanSupUserId != null">sup_user_id = null,</if>
+            <if test="noLoginInfo != null">no_login_info = #{noLoginInfo},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="needOrderAmount != null">need_order_amount = #{needOrderAmount},</if>
+            <if test="vipLevel != null">vip_level = #{vipLevel},</if>
+            <if test="creditScore != null">credit_score = #{creditScore},</if>
+            <if test="isCanWithdraw != null">is_can_withdraw = #{isCanWithdraw},</if>
+            <if test="fastTradeWinProfitRatio != null">fast_trade_win_profit_ratio = #{fastTradeWinProfitRatio},</if>
+            <if test="fastTradeLoseProfitRatio != null">fast_trade_lose_profit_ratio = #{fastTradeLoseProfitRatio},</if>
+            <if test="isAgent != null">is_agent = #{isAgent},</if>
+            <if test="relateUserId != null">relate_user_id = #{relateUserId},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="replaceSupUserId">
+        update user_info set sup_user_id = #{supUserIdAfter} where sup_user_id = #{supUserIdBefore}
+    </update>
+
+    <update id="replaceAgentIdAndAgentName">
+        update user_info set agent_id = #{agentIdAfter},agent_name = #{agentName},agent_nick_name = #{agentNickName}
+        <where>
+            <if test="agentIdBefore != null">
+                agent_id = #{agentIdBefore}
+            </if>
+            <if test="agentIdBefore == null">
+                agent_id is null
+            </if>
+            <if test="userIds != null and userIds.size > 0">
+                and id in
+                <foreach collection="userIds" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="userIds != null and userIds.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </update>
+
+    <update id="updateUserAuthStatus">
+        update user_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="authLevel != null and authLevel == 0">auth_status_junior = #{authStatus},</if>
+            <if test="authLevel != null and authLevel == 1">auth_status_senior = #{authStatus},</if>
+        </trim>
+        where id in
+        <foreach collection="params.userIds" index="index" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </update>
+
+    <delete id="deleteUserInfoById" parameterType="Long">
+        update user_info set is_del = 1,delete_version = id where id = #{id}
+    </delete>
+
+    <delete id="deleteUserInfoByIds" parameterType="String">
+        update user_info set is_del = 1,delete_version = id where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SelfSellProductRealTimeMapper">
+    
+    <resultMap type="SelfSellProductRealTime" id="SelfSellProductRealTimeResult">
+        <result property="id"    column="id"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="referencePrice"    column="reference_price"    />
+        <result property="referenceChangeRate"    column="reference_change_rate"    />
+        <result property="openPrice"    column="open_price"    />
+        <result property="closePrice"    column="close_price"    />
+        <result property="highPrice"    column="high_price"    />
+        <result property="lowPrice"    column="low_price"    />
+        <result property="averagePrice"    column="average_price"    />
+        <result property="volumes"    column="volumes"    />
+        <result property="amount"    column="amount"    />
+        <result property="productType"    column="product_type"    />
+        <result property="specificTime"    column="specific_time"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectSelfSellProductRealTimeVo">
+        select id, product_code, reference_price, reference_change_rate, open_price, close_price, high_price, low_price, average_price, volumes, amount, product_type, specific_time, create_time from self_sell_product_real_time
+    </sql>
+
+    <select id="selectSelfSellProductRealTimeList" parameterType="SelfSellProductRealTime" resultMap="SelfSellProductRealTimeResult">
+        <include refid="selectSelfSellProductRealTimeVo"/>
+        <where>  
+            <if test="productCode != null  and productCode != ''"> and product_code = #{productCode}</if>
+            <if test="referencePrice != null "> and reference_price = #{referencePrice}</if>
+            <if test="referenceChangeRate != null "> and reference_change_rate = #{referenceChangeRate}</if>
+            <if test="openPrice != null "> and open_price = #{openPrice}</if>
+            <if test="closePrice != null "> and close_price = #{closePrice}</if>
+            <if test="highPrice != null "> and high_price = #{highPrice}</if>
+            <if test="lowPrice != null "> and low_price = #{lowPrice}</if>
+            <if test="averagePrice != null "> and average_price = #{averagePrice}</if>
+            <if test="volumes != null "> and volumes = #{volumes}</if>
+            <if test="amount != null "> and amount = #{amount}</if>
+            <if test="productType != null "> and product_type = #{productType}</if>
+            <if test="specificTime != null "> and specific_time = #{specificTime}</if>
+            <if test="params.KlineTime !=null">
+                <![CDATA[ and specific_time <= #{params.KlineTime} ]]>
+            </if>
+            <if test="params.timeInterval != null ">
+                <![CDATA[ and DATE_FORMAT(specific_time,'%i') % #{params.timeInterval} = 0]]>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectKLine" parameterType="SelfSellProductRealTime" resultMap="SelfSellProductRealTimeResult">
+        select a.product_code,a.product_type,b.open_price,c.close_price,a.high_price,a.low_price,a.average_price,a.volumes,a.amount,start_time,start_time specific_time
+        from
+        (select product_code, product_type, min(id) first_id, max(id) last_id, max(high_price) high_price, min(low_price) low_price, avg(average_price) average_price, sum(volumes) volumes, sum(amount) amount, start_time, end_time
+        from
+        (select product_code, product_type, id, high_price, low_price, average_price, volumes, amount, FROM_UNIXTIME(UNIX_TIMESTAMP(specific_time) - UNIX_TIMESTAMP(specific_time) % #{params.timeInterval}) start_time, FROM_UNIXTIME(UNIX_TIMESTAMP(specific_time) - UNIX_TIMESTAMP(specific_time) % #{params.timeInterval} + #{params.timeInterval}) end_time
+        from self_sell_product_real_time
+        where product_code = #{productCode} and product_type = #{productType}
+        <if test="params.KlineTime !=null">
+            <![CDATA[ and date_format(specific_time,'%Y-%m-%d %H:%i:%s') <= date_format(#{params.KlineTime},'%Y-%m-%d %H:%i:%s') ]]>
+        </if>
+        order by specific_time desc
+        limit #{params.limit}
+        ) as a
+        GROUP BY start_time, end_time) as a
+        INNER JOIN self_sell_product_real_time b
+        on a.first_id = b.id
+        INNER JOIN self_sell_product_real_time c
+        on a.last_id = c.id
+    </select>
+    
+    <select id="selectSelfSellProductRealTimeById" parameterType="Long" resultMap="SelfSellProductRealTimeResult">
+        <include refid="selectSelfSellProductRealTimeVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="getTimeTemp" parameterType="Integer" resultType="java.lang.String">
+        select `time` from realtime_temp where product_type = #{productType};
+    </select>
+
+    <select id="selectRealTimeTradeDetail" resultType="java.util.Map">
+        select sum(volumes) volumes,max(high_price) highPrice,min(low_price) lowPrice,sum(amount) amount,product_code productCode,
+        (select open_price from self_sell_product_real_time where product_code = #{productCode} and product_type = #{productType}
+        <if test="isToday != null and isToday == 1">
+            and date_format(specific_time,'%y%m%d') <![CDATA[ >= ]]> date_format(#{date},'%y%m%d')
+        </if>
+        <if test="isToday != null and isToday == 0">
+            and date_format(specific_time,'%y%m%d') = date_format(#{date},'%y%m%d')
+            and date_format(specific_time,'%Y-%m-%d %H:%i:%s') <![CDATA[ <= ]]> date_format(#{date},'%Y-%m-%d %H:%i:%s')
+        </if> order by specific_time limit 1) openPrice,
+        (select close_price from self_sell_product_real_time where product_code = #{productCode} and product_type = #{productType}
+        <if test="isToday != null and isToday == 1">
+            and date_format(specific_time,'%y%m%d') <![CDATA[ <= ]]> date_format(#{date},'%y%m%d')
+        </if>
+        <if test="isToday != null and isToday == 0">
+            and date_format(specific_time,'%y%m%d') = date_format(#{date},'%y%m%d')
+            and date_format(specific_time,'%Y-%m-%d %H:%i:%s') <![CDATA[ <= ]]> date_format(#{date},'%Y-%m-%d %H:%i:%s')
+        </if> order by specific_time desc limit 1) closePrice,
+        (select close_price from self_sell_product_real_time where product_code = #{productCode} and product_type = #{productType}
+        and date_format(specific_time,'%y%m%d') <![CDATA[ < ]]> date_format(#{date},'%y%m%d')
+        order by specific_time desc limit 1) closePricePrevDay
+        from self_sell_product_real_time
+        where product_code = #{productCode} and product_type = #{productType}
+        <if test="isToday != null and isToday == 1">
+            and date_format(specific_time,'%y%m%d') <![CDATA[ >= ]]> date_format(#{date},'%y%m%d')
+        </if>
+        <if test="isToday != null and isToday == 0">
+            and date_format(specific_time,'%y%m%d') = date_format(#{date},'%y%m%d')
+            and date_format(specific_time,'%Y-%m-%d %H:%i:%s') <![CDATA[ <= ]]> date_format(#{date},'%Y-%m-%d %H:%i:%s')
+        </if>
+    </select>
+
+    <select id="selectRealTimeTradeFinalDetail" resultType="java.util.Map">
+        select max(high_price) highPrice, min(low_price) lowPrice, product_code productCode,
+        (select open_price from self_sell_product_real_time where product_code = #{productCode} and product_type = #{productType} and date_format(specific_time,'%y%m%d') = date_format(#{date},'%y%m%d') order by specific_time limit 1) openPrice,
+        (select close_price from self_sell_product_real_time where product_code = #{productCode} and product_type = #{productType} and date_format(specific_time,'%y%m%d') = date_format(#{date},'%y%m%d') order by specific_time desc limit 1) closePrice
+        from self_sell_product_real_time
+        where product_code = #{productCode} and product_type = #{productType} and date_format(specific_time,'%y%m%d') = date_format(#{date},'%y%m%d')
+    </select>
+
+    <insert id="insertSelfSellProductRealTime" parameterType="SelfSellProductRealTime" useGeneratedKeys="true" keyProperty="id">
+        insert into self_sell_product_real_time
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productCode != null and productCode != ''">product_code,</if>
+            <if test="referencePrice != null">reference_price,</if>
+            <if test="referenceChangeRate != null">reference_change_rate,</if>
+            <if test="openPrice != null">open_price,</if>
+            <if test="closePrice != null">close_price,</if>
+            <if test="highPrice != null">high_price,</if>
+            <if test="lowPrice != null">low_price,</if>
+            <if test="averagePrice != null">average_price,</if>
+            <if test="volumes != null">volumes,</if>
+            <if test="amount != null">amount,</if>
+            <if test="productType != null">product_type,</if>
+            <if test="specificTime != null">specific_time,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productCode != null and productCode != ''">#{productCode},</if>
+            <if test="referencePrice != null">#{referencePrice},</if>
+            <if test="referenceChangeRate != null">#{referenceChangeRate},</if>
+            <if test="openPrice != null">#{openPrice},</if>
+            <if test="closePrice != null">#{closePrice},</if>
+            <if test="highPrice != null">#{highPrice},</if>
+            <if test="lowPrice != null">#{lowPrice},</if>
+            <if test="averagePrice != null">#{averagePrice},</if>
+            <if test="volumes != null">#{volumes},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="productType != null">#{productType},</if>
+            <if test="specificTime != null">#{specificTime},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertSelfSellProductRealTimes">
+        insert into self_sell_product_real_time (product_code, product_type, reference_price, reference_change_rate, open_price, close_price, high_price, low_price, average_price, volumes, amount, specific_time, create_time)
+        <foreach collection="selfSellProductRealTimes" index="index" item="item" open="values (" separator="),(" close=")">
+            #{item.productCode},#{item.productType},#{item.referencePrice},#{item.referenceChangeRate},#{item.openPrice},#{item.closePrice},#{item.highPrice},#{item.lowPrice},#{item.averagePrice},#{item.volumes},#{item.amount},#{item.specificTime},#{item.createTime}
+        </foreach>
+    </insert>
+
+    <update id="updateSelfSellProductRealTime" parameterType="SelfSellProductRealTime">
+        update self_sell_product_real_time
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productCode != null and productCode != ''">product_code = #{productCode},</if>
+            <if test="referencePrice != null">reference_price = #{referencePrice},</if>
+            <if test="referenceChangeRate != null">reference_change_rate = #{referenceChangeRate},</if>
+            <if test="openPrice != null">open_price = #{openPrice},</if>
+            <if test="closePrice != null">close_price = #{closePrice},</if>
+            <if test="highPrice != null">high_price = #{highPrice},</if>
+            <if test="lowPrice != null">low_price = #{lowPrice},</if>
+            <if test="averagePrice != null">average_price = #{averagePrice},</if>
+            <if test="volumes != null">volumes = #{volumes},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="productType != null">product_type = #{productType},</if>
+            <if test="specificTime != null">specific_time = #{specificTime},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSelfSellProductRealTimeById" parameterType="Long">
+        delete from self_sell_product_real_time where id = #{id}
+    </delete>
+
+    <delete id="deleteSelfSellProductRealTimeByIds" parameterType="String">
+        delete from self_sell_product_real_time where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="cleanProductRealTimeData">
+        delete from self_sell_product_real_time
+        <where>
+            <if test="productType != null">
+                and product_type = #{productType}
+            </if>
+            <if test="specificTime !=null ">
+                <![CDATA[  and DATE_FORMAT(specific_time, '%Y-%m-%d') = DATE_FORMAT(#{specificTime}, '%Y-%m-%d') ]]></if>
+            <if test="productCodes != null and productCodes.size > 0">
+                and product_code in
+                <foreach collection="productCodes" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="productCodes != null and productCodes.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </delete>
+</mapper>

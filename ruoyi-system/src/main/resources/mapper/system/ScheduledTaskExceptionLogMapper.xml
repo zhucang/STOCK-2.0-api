@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ScheduledTaskExceptionLogMapper">
+    
+    <resultMap type="ScheduledTaskExceptionLog" id="ScheduledTaskExceptionLogResult">
+        <result property="id"    column="id"    />
+        <result property="jobName"    column="job_name"    />
+        <result property="exceptionInfo"    column="exception_info"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="isFixed"    column="is_fixed"    />
+        <result property="exceptionInfoDetail"    column="exception_info_detail"    />
+        <result property="type"    column="type"    />
+        <result property="executeCount"    column="execute_count"    />
+        <result property="relateInfo"    column="relate_info"    />
+    </resultMap>
+
+    <sql id="selectScheduledTaskExceptionLogVo">
+        select id, job_name, exception_info, create_time, update_time, is_fixed, exception_info_detail, type, execute_count, relate_info from scheduled_task_exception_log
+    </sql>
+
+    <select id="selectScheduledTaskExceptionLogList" parameterType="ScheduledTaskExceptionLog" resultMap="ScheduledTaskExceptionLogResult">
+        <include refid="selectScheduledTaskExceptionLogVo"/>
+        <where>  
+            <if test="jobName != null  and jobName != ''"> and job_name like concat('%', #{jobName}, '%')</if>
+            <if test="exceptionInfo != null  and exceptionInfo != ''"> and exception_info = #{exceptionInfo}</if>
+            <if test="isFixed != null "> and is_fixed = #{isFixed}</if>
+            <if test="exceptionInfoDetail != null  and exceptionInfoDetail != ''"> and exception_info_detail = #{exceptionInfoDetail}</if>
+            <if test="type != null "> and type = #{type}</if>
+            <if test="executeCount != null "> and execute_count = #{executeCount}</if>
+            <if test="relateInfo != null  and relateInfo != ''"> and relate_info = #{relateInfo}</if>
+        </where>
+    </select>
+    
+    <select id="selectScheduledTaskExceptionLogById" parameterType="Long" resultMap="ScheduledTaskExceptionLogResult">
+        <include refid="selectScheduledTaskExceptionLogVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertScheduledTaskExceptionLog" parameterType="ScheduledTaskExceptionLog" useGeneratedKeys="true" keyProperty="id">
+        insert into scheduled_task_exception_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="jobName != null and jobName != ''">job_name,</if>
+            <if test="exceptionInfo != null and exceptionInfo != ''">exception_info,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="isFixed != null">is_fixed,</if>
+            <if test="exceptionInfoDetail != null">exception_info_detail,</if>
+            <if test="type != null">type,</if>
+            <if test="executeCount != null">execute_count,</if>
+            <if test="relateInfo != null and relateInfo != ''">relate_info,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="jobName != null and jobName != ''">#{jobName},</if>
+            <if test="exceptionInfo != null and exceptionInfo != ''">#{exceptionInfo},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="isFixed != null">#{isFixed},</if>
+            <if test="exceptionInfoDetail != null">#{exceptionInfoDetail},</if>
+            <if test="type != null">#{type},</if>
+            <if test="executeCount != null">#{executeCount},</if>
+            <if test="relateInfo != null and relateInfo != ''">#{relateInfo},</if>
+         </trim>
+    </insert>
+
+    <update id="updateScheduledTaskExceptionLog" parameterType="ScheduledTaskExceptionLog">
+        update scheduled_task_exception_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="jobName != null and jobName != ''">job_name = #{jobName},</if>
+            <if test="exceptionInfo != null and exceptionInfo != ''">exception_info = #{exceptionInfo},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="isFixed != null">is_fixed = #{isFixed},</if>
+            <if test="exceptionInfoDetail != null">exception_info_detail = #{exceptionInfoDetail},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="executeCount != null">execute_count = #{executeCount},</if>
+            <if test="relateInfo != null and relateInfo != ''">relate_info = #{relateInfo},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteScheduledTaskExceptionLogById" parameterType="Long">
+        delete from scheduled_task_exception_log where id = #{id}
+    </delete>
+
+    <delete id="deleteScheduledTaskExceptionLogByIds" parameterType="String">
+        delete from scheduled_task_exception_log where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

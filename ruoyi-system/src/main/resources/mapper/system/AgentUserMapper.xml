@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.AgentUserMapper">
+
+
+    <resultMap type="SysUser" id="SysUserResult">
+        <id     property="userId"       column="user_id"      />
+        <result property="deptId"       column="dept_id"      />
+        <result property="userName"     column="user_name"    />
+        <result property="nickName"     column="nick_name"    />
+        <result property="email"        column="email"        />
+        <result property="phonenumber"  column="phonenumber"  />
+        <result property="sex"          column="sex"          />
+        <result property="avatar"       column="avatar"       />
+        <result property="password"     column="password"     />
+        <result property="status"       column="status"       />
+        <result property="delFlag"      column="del_flag"     />
+        <result property="loginIp"      column="login_ip"     />
+        <result property="loginDate"    column="login_date"   />
+        <result property="createBy"     column="create_by"    />
+        <result property="createTime"   column="create_time"  />
+        <result property="updateBy"     column="update_by"    />
+        <result property="updateTime"   column="update_time"  />
+        <result property="remark"       column="remark"       />
+        <result property="inviteCode"       column="invite_code"       />
+        <result property="supUserId"       column="sup_user_id"       />
+        <result property="params.googleAuthSecurityKeySetStatus"       column="google_auth_security_key_set_status" />
+        <association property="dept"    javaType="SysDept"         resultMap="deptResult" />
+        <collection  property="roles"   javaType="java.util.List"  resultMap="RoleResult" />
+    </resultMap>
+
+    <resultMap id="deptResult" type="SysDept">
+        <id     property="deptId"    column="dept_id"     />
+        <result property="parentId"  column="parent_id"   />
+        <result property="deptName"  column="dept_name"   />
+        <result property="ancestors" column="ancestors"   />
+        <result property="orderNum"  column="order_num"   />
+        <result property="leader"    column="leader"      />
+        <result property="status"    column="dept_status" />
+    </resultMap>
+
+    <resultMap id="RoleResult" type="SysRole">
+        <id     property="roleId"       column="role_id"        />
+        <result property="roleName"     column="role_name"      />
+        <result property="roleKey"      column="role_key"       />
+        <result property="roleSort"     column="role_sort"      />
+        <result property="dataScope"    column="data_scope"     />
+        <result property="status"       column="role_status"    />
+    </resultMap>
+
+    <select id="selectUserList" parameterType="SysUser" resultMap="SysUserResult">
+        select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.invite_code,u.sup_user_id,IF(google_auth_security_key is not null and google_auth_security_key != '',1,0) as google_auth_security_key_set_status, d.dept_name, d.leader,role_name
+        from sys_user u
+        left join sys_dept d on u.dept_id = d.dept_id
+        left join (select user_id,min(role_id) role_id from sys_user_role group by user_id) ur on u.user_id = ur.user_id
+        left join sys_role r on r.role_id = ur.role_id
+        where u.del_flag = '0'
+        <if test="userId != null and userId != 0">
+            AND u.user_id = #{userId}
+        </if>
+        <if test="userName != null and userName != ''">
+            AND u.user_name like concat('%', #{userName}, '%')
+        </if>
+        <if test="status != null and status != ''">
+            AND u.status = #{status}
+        </if>
+        <if test="phonenumber != null and phonenumber != ''">
+            AND u.phonenumber like concat('%', #{phonenumber}, '%')
+        </if>
+        <if test="email != null and email != ''">
+            AND u.email like concat('%', #{email}, '%')
+        </if>
+        <if test="supUserId != null">
+            AND u.sup_user_id in (select user_id from agent_team_level_line where sup_user_id = #{supUserId} union select #{supUserId})
+        </if>
+        <if test="params.agentType != null and params.agentType == 0">
+            and ur.role_id = 100
+        </if>
+        <if test="params.agentType != null and params.agentType == 1">
+            and ur.role_id = 101
+        </if>
+        <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+            AND date_format(u.create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+        </if>
+        <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+            AND date_format(u.create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+        </if>
+        <if test="deptId != null and deptId != 0">
+            AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id frOM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+        </if>
+        <if test="deptId == null and params.agentData == null">
+            AND (u.dept_id != 3 OR u.dept_id is null or u.dept_id IN ( SELECT t.dept_id frOM sys_dept t WHERE find_in_set(3, ancestors) ))
+        </if>
+        <if test="deptId == null and params.agentData != null and params.agentData == 1">
+            AND u.dept_id != 1
+        </if>
+        <if test="params.userIds != null and params.userIds.size > 0">
+            and u.user_id in
+            <foreach collection="params.userIds" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                #{item}
+            </foreach>
+        </if>
+        <if test="params.userIds != null and params.userIds.size == 0">
+            and user_id = 0
+        </if>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+    </select>
+
+</mapper>

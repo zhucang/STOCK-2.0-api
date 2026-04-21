@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.BackendReminderConfigMapper">
+    
+    <resultMap type="BackendReminderConfig" id="BackendReminderConfigResult">
+        <result property="id"    column="id"    />
+        <result property="reminderName"    column="reminder_name"    />
+        <result property="reminderType"    column="reminder_type"    />
+        <result property="jumpType"    column="jump_type"    />
+        <result property="jumpUrl"    column="jump_url"    />
+        <result property="musicSourceNumber"    column="music_source_number"    />
+        <result property="searchStatus"    column="search_status"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
+    <sql id="selectBackendReminderConfigVo">
+        select id, reminder_name, reminder_type, jump_type,jump_url, music_source_number,search_status, status from backend_reminder_config
+    </sql>
+
+    <select id="selectBackendReminderConfigList" parameterType="BackendReminderConfig" resultMap="BackendReminderConfigResult">
+        <include refid="selectBackendReminderConfigVo"/>
+        <where>  
+            <if test="reminderName != null  and reminderName != ''"> and reminder_name like concat('%', #{reminderName}, '%')</if>
+            <if test="reminderType != null "> and reminder_type = #{reminderType}</if>
+            <if test="jumpType != null "> and jump_type = #{jumpType}</if>
+            <if test="jumpUrl != null  and jumpUrl != ''"> and jump_url like concat('%', #{jumpUrl}, '%')</if>
+            <if test="musicSourceNumber != null "> and music_source_number = #{musicSourceNumber}</if>
+            <if test="status != null "> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectBackendReminderConfigById" parameterType="Long" resultMap="BackendReminderConfigResult">
+        <include refid="selectBackendReminderConfigVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertBackendReminderConfig" parameterType="BackendReminderConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into backend_reminder_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="reminderName != null and reminderName != ''">reminder_name,</if>
+            <if test="reminderType != null">reminder_type,</if>
+            <if test="jumpType != null">jump_type,</if>
+            <if test="jumpUrl != null">jump_url,</if>
+            <if test="musicSourceNumber != null">music_source_number,</if>
+            <if test="searchStatus != null">search_status,</if>
+            <if test="status != null">status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="reminderName != null and reminderName != ''">#{reminderName},</if>
+            <if test="reminderType != null">#{reminderType},</if>
+            <if test="jumpType != null">#{jumpType},</if>
+            <if test="jumpUrl != null">#{jumpUrl},</if>
+            <if test="musicSourceNumber != null">#{musicSourceNumber},</if>
+            <if test="searchStatus != null">#{searchStatus},</if>
+            <if test="status != null">#{status},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBackendReminderConfig" parameterType="BackendReminderConfig">
+        update backend_reminder_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="reminderName != null and reminderName != ''">reminder_name = #{reminderName},</if>
+            <if test="reminderType != null">reminder_type = #{reminderType},</if>
+            <if test="jumpType != null">jump_type = #{jumpType},</if>
+            <if test="jumpUrl != null">jump_url = #{jumpUrl},</if>
+            <if test="musicSourceNumber != null">music_source_number = #{musicSourceNumber},</if>
+            <if test="searchStatus != null">search_status = #{searchStatus},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBackendReminderConfigById" parameterType="Long">
+        delete from backend_reminder_config where id = #{id}
+    </delete>
+
+    <delete id="deleteBackendReminderConfigByIds" parameterType="String">
+        delete from backend_reminder_config where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

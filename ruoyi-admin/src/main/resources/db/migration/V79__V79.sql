@@ -1,0 +1,1 @@
+insert into `stock`.`switch_set` (id,switch_name,status,`type`,sort) select 96,'是否显示币币资产',1,1,96 from switch_set where not exists (select id from switch_set where id = 96)limit 1;

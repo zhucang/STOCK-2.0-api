@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.WebMenuConfigMapper">
+    
+    <resultMap type="WebMenuConfig" id="WebMenuConfigResult">
+        <result property="id"    column="id"    />
+        <result property="langKey"    column="lang_key"    />
+        <result property="routingPath"    column="routing_path"    />
+        <result property="isVisible"    column="is_visible"    />
+        <result property="sort"    column="sort"    />
+        <result property="desc"    column="desc"    />
+        <result property="isJump"    column="is_jump"    />
+        <result property="jumpUrl"    column="jump_url"    />
+        <result property="websiteVersion"    column="website_version"    />
+    </resultMap>
+
+    <sql id="selectWebMenuConfigVo">
+        select id, lang_key, routing_path, is_visible, sort, `desc`, is_jump, jump_url , website_version from web_menu_config
+    </sql>
+
+    <select id="selectWebMenuConfigList" parameterType="WebMenuConfig" resultMap="WebMenuConfigResult">
+        <include refid="selectWebMenuConfigVo"/>
+        <where>  
+            <if test="langKey != null  and langKey != ''"> and lang_key = #{langKey}</if>
+            <if test="routingPath != null  and routingPath != ''"> and routing_path = #{routingPath}</if>
+            <if test="isVisible != null "> and is_visible = #{isVisible}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="desc != null  and desc != ''"> and `desc` = #{desc}</if>
+            <if test="isJump != null "> and is_jump = #{isJump}</if>
+            <if test="jumpUrl != null  and jumpUrl != ''"> and jump_url = #{jumpUrl}</if>
+            <if test="websiteVersion != null"> and website_version = #{websiteVersion}</if>
+        </where>
+    </select>
+    
+    <select id="selectWebMenuConfigById" parameterType="Long" resultMap="WebMenuConfigResult">
+        <include refid="selectWebMenuConfigVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWebMenuConfig" parameterType="WebMenuConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into web_menu_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="langKey != null and langKey != ''">lang_key,</if>
+            <if test="routingPath != null and routingPath != ''">routing_path,</if>
+            <if test="isVisible != null">is_visible,</if>
+            <if test="sort != null">sort,</if>
+            <if test="desc != null">`desc`,</if>
+            <if test="isJump != null">is_jump,</if>
+            <if test="jumpUrl != null">jump_url,</if>
+            <if test="websiteVersion != null">website_version,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="langKey != null and langKey != ''">#{langKey},</if>
+            <if test="routingPath != null and routingPath != ''">#{routingPath},</if>
+            <if test="isVisible != null">#{isVisible},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="desc != null">#{desc},</if>
+            <if test="isJump != null">#{isJump},</if>
+            <if test="jumpUrl != null">#{jumpUrl},</if>
+            <if test="websiteVersion != null">#{websiteVersion},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWebMenuConfig" parameterType="WebMenuConfig">
+        update web_menu_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="langKey != null and langKey != ''">lang_key = #{langKey},</if>
+            <if test="routingPath != null and routingPath != ''">routing_path = #{routingPath},</if>
+            <if test="isVisible != null">is_visible = #{isVisible},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="desc != null">`desc` = #{desc},</if>
+            <if test="isJump != null">is_jump = #{isJump},</if>
+            <if test="jumpUrl != null">jump_url = #{jumpUrl},</if>
+            <if test="websiteVersion != null">website_version = #{websiteVersion},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWebMenuConfigById" parameterType="Long">
+        delete from web_menu_config where id = #{id}
+    </delete>
+
+    <delete id="deleteWebMenuConfigByIds" parameterType="String">
+        delete from web_menu_config where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

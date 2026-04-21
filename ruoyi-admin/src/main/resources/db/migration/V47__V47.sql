@@ -1,0 +1,1 @@
+update `stock`.`user_info` set avatar = (select app_logo from site_info where id = 1) where avatar is null;

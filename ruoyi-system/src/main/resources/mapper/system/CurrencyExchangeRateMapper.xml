@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CurrencyExchangeRateMapper">
+    
+    <resultMap type="CurrencyExchangeRate" id="CurrencyExchangeRateResult">
+        <result property="id"    column="id"    />
+        <result property="currencyIdFrom"    column="currency_id_from"    />
+        <result property="currencyNameFrom"    column="currency_name_from"    />
+        <result property="currencyDescFrom"    column="currency_desc_from"    />
+        <result property="currencyIdTo"    column="currency_id_to"    />
+        <result property="currencyNameTo"    column="currency_name_to"    />
+        <result property="currencyDescTo"    column="currency_desc_to"    />
+        <result property="exchangeRate"    column="exchange_rate"    />
+        <result property="oppositeExchangeRate"    column="opposite_exchange_rate"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="feePercent"    column="fee_percent"    />
+        <result property="isFixedExchangeRate"    column="is_fixed_exchange_rate"    />
+    </resultMap>
+
+    <sql id="selectCurrencyExchangeRateVo">
+        select a.id, currency_id_from, currency_id_to, exchange_rate, opposite_exchange_rate, create_by, create_time, update_by, update_time, fee_percent, is_fixed_exchange_rate,b.currency_name currency_name_from,b.currency_desc currency_desc_from,c.currency_name currency_name_to,c.currency_desc currency_desc_to
+        from currency_exchange_rate a
+                 left join platform_currency b
+                           on a.currency_id_from = b.id
+                 left join platform_currency c
+                           on a.currency_id_to = c.id
+    </sql>
+
+    <select id="selectCurrencyExchangeRateList" parameterType="CurrencyExchangeRate" resultMap="CurrencyExchangeRateResult">
+        <include refid="selectCurrencyExchangeRateVo"/>
+        <where>  
+            <if test="currencyIdFrom != null "> and currency_id_from = #{currencyIdFrom}</if>
+            <if test="currencyIdTo != null "> and currency_id_to = #{currencyIdTo}</if>
+            <if test="exchangeRate != null "> and exchange_rate = #{exchangeRate}</if>
+            <if test="oppositeExchangeRate != null "> and opposite_exchange_rate = #{oppositeExchangeRate}</if>
+            <if test="feePercent != null "> and fee_percent = #{feePercent}</if>
+            <if test="isFixedExchangeRate != null "> and is_fixed_exchange_rate = #{isFixedExchangeRate}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and a.id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and a.id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectCurrencyExchangeRateById" parameterType="Long" resultMap="CurrencyExchangeRateResult">
+        <include refid="selectCurrencyExchangeRateVo"/>
+        where a.id = #{id}
+    </select>
+
+    <select id="selectCurrencyExchangeRate" resultMap="CurrencyExchangeRateResult">
+        <include refid="selectCurrencyExchangeRateVo"/>
+        where (currency_id_from = #{currencyIdFrom} and currency_id_to = #{currencyIdTo}) or (currency_id_from = #{currencyIdTo} and currency_id_to = #{currencyIdFrom})
+    </select>
+        
+    <insert id="insertCurrencyExchangeRate" parameterType="CurrencyExchangeRate" useGeneratedKeys="true" keyProperty="id">
+        insert into currency_exchange_rate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="currencyIdFrom != null">currency_id_from,</if>
+            <if test="currencyIdTo != null">currency_id_to,</if>
+            <if test="exchangeRate != null">exchange_rate,</if>
+            <if test="oppositeExchangeRate != null">opposite_exchange_rate,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="feePercent != null">fee_percent,</if>
+            <if test="isFixedExchangeRate != null">is_fixed_exchange_rate,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="currencyIdFrom != null">#{currencyIdFrom},</if>
+            <if test="currencyIdTo != null">#{currencyIdTo},</if>
+            <if test="exchangeRate != null">#{exchangeRate},</if>
+            <if test="oppositeExchangeRate != null">#{oppositeExchangeRate},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="feePercent != null">#{feePercent},</if>
+            <if test="isFixedExchangeRate != null">#{isFixedExchangeRate},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCurrencyExchangeRate" parameterType="CurrencyExchangeRate">
+        update currency_exchange_rate
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="currencyIdFrom != null">currency_id_from = #{currencyIdFrom},</if>
+            <if test="currencyIdTo != null">currency_id_to = #{currencyIdTo},</if>
+            <if test="exchangeRate != null">exchange_rate = #{exchangeRate},</if>
+            <if test="oppositeExchangeRate != null">opposite_exchange_rate = #{oppositeExchangeRate},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="feePercent != null">fee_percent = #{feePercent},</if>
+            <if test="isFixedExchangeRate != null">is_fixed_exchange_rate = #{isFixedExchangeRate},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCurrencyExchangeRateById" parameterType="Long">
+        delete from currency_exchange_rate where id = #{id}
+    </delete>
+
+    <delete id="deleteCurrencyExchangeRateByIds" parameterType="String">
+        delete from currency_exchange_rate where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

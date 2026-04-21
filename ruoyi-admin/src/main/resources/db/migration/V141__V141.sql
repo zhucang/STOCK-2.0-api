@@ -1,0 +1,1 @@
+insert into `stock`.`other_value` (other_key,`name`,other_value,remark,visible_flag) select 'newUser_fastTrade_default_control','新用户默认单控状态（0：全部未控 1：全部控赢 2：全部控输）','0',null,0 from other_value where not exists (select other_key from other_value where other_key = 'newUser_fastTrade_default_control')limit 1;

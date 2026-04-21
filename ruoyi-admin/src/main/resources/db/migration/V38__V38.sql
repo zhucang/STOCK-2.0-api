@@ -1,0 +1,1 @@
+insert into `stock`.`switch_set` (id,switch_name,status,`type`,sort) select 88,'后台首页是否显示推广码与推广链接',0,1,88 from switch_set where not exists (select id from switch_set where id = 88)limit 1;

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.RechargeRewardTierMapper">
+    
+    <resultMap type="RechargeRewardTier" id="RechargeRewardTierResult">
+        <result property="rechargeRewardTierId"    column="recharge_reward_tier_id"    />
+        <result property="tierAmountMin"    column="tier_amount_min"    />
+        <result property="tierAmountMax"    column="tier_amount_max"    />
+        <result property="rewardRate"    column="reward_rate"    />
+        <result property="status"    column="status"    />
+        <result property="currencyId"    column="currency_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectRechargeRewardTierVo">
+        select recharge_reward_tier_id, tier_amount_min, tier_amount_max, reward_rate, status, currency_id, create_by, create_time, update_by, update_time, del_flag from recharge_reward_tier
+    </sql>
+
+    <select id="selectRechargeRewardTierList" parameterType="RechargeRewardTier" resultMap="RechargeRewardTierResult">
+        <include refid="selectRechargeRewardTierVo"/>
+        <where>  
+            <if test="tierAmountMin != null "> and tier_amount_min = #{tierAmountMin}</if>
+            <if test="rewardRate != null "> and reward_rate = #{rewardRate}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="currencyId != null "> and currency_id = #{currencyId}</if>
+            and del_flag = 0
+        </where>
+    </select>
+    
+    <select id="selectRechargeRewardTierByRechargeRewardTierId" parameterType="Long" resultMap="RechargeRewardTierResult">
+        <include refid="selectRechargeRewardTierVo"/>
+        where recharge_reward_tier_id = #{rechargeRewardTierId}
+    </select>
+
+    <select id="selectRechargeRewardTierByRechargeAmount" resultMap="RechargeRewardTierResult">
+        SELECT t.recharge_reward_tier_id, t.reward_rate
+        FROM recharge_reward_tier t
+        WHERE t.status = 1
+          AND t.del_flag = 0
+          AND t.currency_id = #{currencyId}
+          AND #{rechargeAmount} BETWEEN t.tier_amount_min AND t.tier_amount_max
+          AND NOT EXISTS (
+                SELECT 1
+                FROM recharge_reward_record r
+                WHERE r.user_id = #{userId}
+                  AND r.reward_tier_id = t.recharge_reward_tier_id
+            )
+        limit 1
+    </select>
+
+    <insert id="insertRechargeRewardTier" parameterType="RechargeRewardTier" useGeneratedKeys="true" keyProperty="rechargeRewardTierId">
+        insert into recharge_reward_tier
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tierAmountMin != null">tier_amount_min,</if>
+            <if test="tierAmountMax != null">tier_amount_max,</if>
+            <if test="rewardRate != null">reward_rate,</if>
+            <if test="status != null">status,</if>
+            <if test="currencyId != null">currency_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tierAmountMin != null">#{tierAmountMin},</if>
+            <if test="tierAmountMax != null">#{tierAmountMax},</if>
+            <if test="rewardRate != null">#{rewardRate},</if>
+            <if test="status != null">#{status},</if>
+            <if test="currencyId != null">#{currencyId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRechargeRewardTier" parameterType="RechargeRewardTier">
+        update recharge_reward_tier
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="tierAmountMin != null">tier_amount_min = #{tierAmountMin},</if>
+            <if test="tierAmountMax != null">tier_amount_max = #{tierAmountMax},</if>
+            <if test="rewardRate != null">reward_rate = #{rewardRate},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="currencyId != null">currency_id = #{currencyId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where recharge_reward_tier_id = #{rechargeRewardTierId}
+    </update>
+
+    <delete id="deleteRechargeRewardTierByRechargeRewardTierId" parameterType="Long">
+        update recharge_reward_tier set del_flag = 1 where recharge_reward_tier_id = #{rechargeRewardTierId}
+    </delete>
+
+    <delete id="deleteRechargeRewardTierByRechargeRewardTierIds" parameterType="String">
+        update recharge_reward_tier set del_flag = 1 where recharge_reward_tier_id in
+        <foreach item="rechargeRewardTierId" collection="array" open="(" separator="," close=")">
+            #{rechargeRewardTierId}
+        </foreach>
+    </delete>
+</mapper>

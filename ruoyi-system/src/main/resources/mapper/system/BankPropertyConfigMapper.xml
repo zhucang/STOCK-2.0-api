@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.BankPropertyConfigMapper">
+    
+    <resultMap type="BankPropertyConfig" id="BankPropertyConfigResult">
+        <result property="id"    column="id"    />
+        <result property="propertyName"    column="property_name"    />
+        <result property="propertyDesc"    column="property_desc"    />
+        <result property="isVisible"    column="is_visible"    />
+        <result property="isRequire"    column="is_require"    />
+        <result property="langKey"    column="lang_key"    />
+        <result property="sort"    column="sort"    />
+        <result property="inputType"    column="input_type"    />
+        <result property="configType"    column="config_type"    />
+    </resultMap>
+
+    <sql id="selectBankPropertyConfigVo">
+        select id, property_name, property_desc,lang_key, is_visible, is_require,sort,input_type,config_type from bank_property_config
+    </sql>
+
+    <select id="selectBankPropertyConfigList" parameterType="BankPropertyConfig" resultMap="BankPropertyConfigResult">
+        <include refid="selectBankPropertyConfigVo"/>
+        <where>  
+            <if test="propertyName != null  and propertyName != ''"> and property_name like concat('%', #{propertyName}, '%')</if>
+            <if test="propertyDesc != null  and propertyDesc != ''"> and property_desc = #{propertyDesc}</if>
+            <if test="isVisible != null "> and is_visible = #{isVisible}</if>
+            <if test="isRequire != null "> and is_require = #{isRequire}</if>
+            <if test="configType != null "> and config_type = #{configType}</if>
+            <if test="inputType != null  and inputType != ''"> and input_type = #{inputType}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectBankPropertyConfigById" parameterType="Long" resultMap="BankPropertyConfigResult">
+        <include refid="selectBankPropertyConfigVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertBankPropertyConfig" parameterType="BankPropertyConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into bank_property_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="propertyName != null">property_name,</if>
+            <if test="propertyDesc != null">property_desc,</if>
+            <if test="isVisible != null">is_visible,</if>
+            <if test="isRequire != null">is_require,</if>
+            <if test="langKey != null">lang_key,</if>
+            <if test="sort != null">sort,</if>
+            <if test="inputType != null">input_type,</if>
+            <if test="configType != null">config_type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="propertyName != null">#{propertyName},</if>
+            <if test="propertyDesc != null">#{propertyDesc},</if>
+            <if test="isVisible != null">#{isVisible},</if>
+            <if test="isRequire != null">#{isRequire},</if>
+            <if test="langKey != null">#{langKey},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="inputType != null">#{inputType},</if>
+            <if test="configType != null">#{configType},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBankPropertyConfig" parameterType="BankPropertyConfig">
+        update bank_property_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="propertyName != null">property_name = #{propertyName},</if>
+            <if test="propertyDesc != null">property_desc = #{propertyDesc},</if>
+            <if test="isVisible != null">is_visible = #{isVisible},</if>
+            <if test="isRequire != null">is_require = #{isRequire},</if>
+            <if test="langKey != null">lang_key = #{langKey},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="inputType != null">input_type = #{inputType},</if>
+            <if test="configType != null">config_type = #{configType},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBankPropertyConfigById" parameterType="Long">
+        delete from bank_property_config where id = #{id}
+    </delete>
+
+    <delete id="deleteBankPropertyConfigByIds" parameterType="String">
+        delete from bank_property_config where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

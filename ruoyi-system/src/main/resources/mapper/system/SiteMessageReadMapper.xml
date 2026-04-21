@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SiteMessageReadMapper">
+    
+    <resultMap type="SiteMessageRead" id="SiteMessageReadResult">
+        <result property="id"    column="id"    />
+        <result property="siteMessageId"    column="site_message_id"    />
+        <result property="userId"    column="user_id"    />
+    </resultMap>
+
+    <sql id="selectSiteMessageReadVo">
+        select id, site_message_id, user_id from site_message_read
+    </sql>
+
+    <select id="selectSiteMessageReadList" parameterType="SiteMessageRead" resultMap="SiteMessageReadResult">
+        <include refid="selectSiteMessageReadVo"/>
+        <where>  
+            <if test="siteMessageId != null "> and site_message_id = #{siteMessageId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+        </where>
+    </select>
+    
+    <select id="selectSiteMessageReadById" parameterType="Long" resultMap="SiteMessageReadResult">
+        <include refid="selectSiteMessageReadVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSiteMessageRead" parameterType="SiteMessageRead">
+        insert into site_message_read
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="siteMessageId != null">site_message_id,</if>
+            <if test="userId != null">user_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="siteMessageId != null">#{siteMessageId},</if>
+            <if test="userId != null">#{userId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSiteMessageRead" parameterType="SiteMessageRead">
+        update site_message_read
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="siteMessageId != null">site_message_id = #{siteMessageId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSiteMessageReadById" parameterType="Long">
+        delete from site_message_read where id = #{id}
+    </delete>
+
+    <delete id="deleteSiteMessageReadByIds" parameterType="String">
+        delete from site_message_read where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

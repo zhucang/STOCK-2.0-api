@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserDmAmountChangeRecordMapper">
+    
+    <resultMap type="UserDmAmountChangeRecord" id="UserDmAmountChangeRecordResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="orderAmount"    column="order_amount"    />
+        <result property="dmMultiples"    column="dm_multiples"    />
+        <result property="dmAmount"    column="dm_amount"    />
+        <result property="dmAmountBefore"    column="dm_amount_before"    />
+        <result property="dmAmountAfter"    column="dm_amount_after"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="orderType"    column="order_type"    />
+    </resultMap>
+
+    <sql id="selectUserDmAmountChangeRecordVo">
+        select id, user_id, order_amount, dm_multiples, dm_amount, dm_amount_before, dm_amount_after, create_time, update_by, order_type from user_dm_amount_change_record
+    </sql>
+
+    <select id="selectUserDmAmountChangeRecordList" parameterType="UserDmAmountChangeRecord" resultMap="UserDmAmountChangeRecordResult">
+        <include refid="selectUserDmAmountChangeRecordVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="orderAmount != null "> and order_amount = #{orderAmount}</if>
+            <if test="dmMultiples != null "> and dm_multiples = #{dmMultiples}</if>
+            <if test="dmAmount != null "> and dm_amount = #{dmAmount}</if>
+            <if test="dmAmountBefore != null "> and dm_amount_before = #{dmAmountBefore}</if>
+            <if test="dmAmountAfter != null "> and dm_amount_after = #{dmAmountAfter}</if>
+            <if test="orderType != null "> and order_type = #{orderType}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserDmAmountChangeRecordById" parameterType="Long" resultMap="UserDmAmountChangeRecordResult">
+        <include refid="selectUserDmAmountChangeRecordVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertUserDmAmountChangeRecord" parameterType="UserDmAmountChangeRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into user_dm_amount_change_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="orderAmount != null">order_amount,</if>
+            <if test="dmMultiples != null">dm_multiples,</if>
+            <if test="dmAmount != null">dm_amount,</if>
+            <if test="dmAmountBefore != null">dm_amount_before,</if>
+            <if test="dmAmountAfter != null">dm_amount_after,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="orderType != null">order_type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="orderAmount != null">#{orderAmount},</if>
+            <if test="dmMultiples != null">#{dmMultiples},</if>
+            <if test="dmAmount != null">#{dmAmount},</if>
+            <if test="dmAmountBefore != null">#{dmAmountBefore},</if>
+            <if test="dmAmountAfter != null">#{dmAmountAfter},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="orderType != null">#{orderType},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserDmAmountChangeRecord" parameterType="UserDmAmountChangeRecord">
+        update user_dm_amount_change_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="orderAmount != null">order_amount = #{orderAmount},</if>
+            <if test="dmMultiples != null">dm_multiples = #{dmMultiples},</if>
+            <if test="dmAmount != null">dm_amount = #{dmAmount},</if>
+            <if test="dmAmountBefore != null">dm_amount_before = #{dmAmountBefore},</if>
+            <if test="dmAmountAfter != null">dm_amount_after = #{dmAmountAfter},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="orderType != null">order_type = #{orderType},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserDmAmountChangeRecordById" parameterType="Long">
+        delete from user_dm_amount_change_record where id = #{id}
+    </delete>
+
+    <delete id="deleteUserDmAmountChangeRecordByIds" parameterType="String">
+        delete from user_dm_amount_change_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

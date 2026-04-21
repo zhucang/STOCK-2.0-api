@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserTeamLevelLineMapper">
+    
+    <resultMap type="UserTeamLevelLine" id="UserTeamLevelLineResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="supUserId"    column="sup_user_id"    />
+        <result property="teamLevel"    column="team_level"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectUserTeamLevelLineVo">
+        select id, user_id, sup_user_id, team_level, create_time from user_team_level_line
+    </sql>
+
+    <select id="selectUserTeamLevelLineList" parameterType="UserTeamLevelLine" resultMap="UserTeamLevelLineResult">
+        <include refid="selectUserTeamLevelLineVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="supUserId != null "> and sup_user_id = #{supUserId}</if>
+            <if test="teamLevel != null "> and team_level = #{teamLevel}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserTeamLevelLineById" parameterType="Long" resultMap="UserTeamLevelLineResult">
+        <include refid="selectUserTeamLevelLineVo"/>
+        where id = #{id}
+    </select>
+    <select id="getSupTeamLine" resultMap="UserTeamLevelLineResult">
+        <include refid="selectUserTeamLevelLineVo"/>
+        where user_id = #{userId}
+        <if test="queryType == 1 and queryLevel != null">
+            and team_level = #{queryLevel}
+        </if>
+        <if test="queryType == 1 and queryLevel == null">
+            limit 0
+        </if>
+        <if test="queryType == 0 and queryLevel == null">
+            order by team_level
+        </if>
+        <if test="queryType == 0 and queryLevel != null">
+            order by team_level
+            limit #{queryLevel}
+        </if>
+    </select>
+
+    <select id="getLowerTeamLine" resultMap="UserTeamLevelLineResult">
+        <include refid="selectUserTeamLevelLineVo"/>
+        where sup_user_id = #{supUserId}
+        <if test="queryType == 1 and queryLevel != null">
+            and team_level = #{queryLevel}
+        </if>
+        <if test="queryType == 1 and queryLevel == null">
+            limit 0
+        </if>
+        <if test="queryType == 0 and queryLevel == null">
+            order by team_level
+        </if>
+        <if test="queryType == 0 and queryLevel != null">
+            and team_level <![CDATA[<=]]> #{queryLevel}
+            order by team_level
+        </if>
+    </select>
+
+    <insert id="insertUserTeamLevelLine" parameterType="UserTeamLevelLine" useGeneratedKeys="true" keyProperty="id">
+        insert into user_team_level_line
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="supUserId != null">sup_user_id,</if>
+            <if test="teamLevel != null">team_level,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="supUserId != null">#{supUserId},</if>
+            <if test="teamLevel != null">#{teamLevel},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+    <insert id="insertUserTeamLevelLines">
+        insert into user_team_level_line (user_id,sup_user_id,team_level,create_time)
+        <foreach collection="list" index="index" open="values(" separator="),(" close=")" item="item">
+            #{item.userId},#{item.supUserId},#{item.teamLevel},#{item.createTime}
+        </foreach>
+    </insert>
+
+    <update id="updateUserTeamLevelLine" parameterType="UserTeamLevelLine">
+        update user_team_level_line
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="supUserId != null">sup_user_id = #{supUserId},</if>
+            <if test="teamLevel != null">team_level = #{teamLevel},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="connectUpperAndLowerTeam">
+        update user_team_level_line set team_level = team_level - 1
+        where sup_user_id in
+        <foreach collection="supTeamUserIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and user_id in
+        <foreach collection="lowerTeamUserIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <delete id="deleteUserTeamLevelLineById" parameterType="Long">
+        delete from user_team_level_line where id = #{id}
+    </delete>
+
+    <delete id="deleteUserTeamLevelLineByIds" parameterType="String">
+        delete from user_team_level_line where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="cleanUserTeamLevelLineByUserId">
+        delete from user_team_level_line where user_id = #{userId} or sup_user_id = #{userId}
+    </delete>
+</mapper>

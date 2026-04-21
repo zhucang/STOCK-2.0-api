@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ForexProductMapper">
+    
+    <resultMap type="ForexProduct" id="ForexProductResult">
+        <result property="id"    column="id"    />
+        <result property="productName"    column="product_name"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="productType"    column="product_type"    />
+        <result property="productImg"    column="product_img"    />
+        <result property="isLock"    column="is_lock"    />
+        <result property="isShow"    column="is_show"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="positionIncomeCoefficient"    column="position_income_coefficient"    />
+        <result property="sort"    column="sort"    />
+        <association property="productNameLang" javaType="langMgr">
+            <result property="zh"    column="product_name"    />
+            <result property="en"    column="product_name_en"    />
+            <result property="tc"    column="product_name_tc"    />
+            <result property="de"    column="product_name_de"    />
+            <result property="es"    column="product_name_es"    />
+            <result property="fr"    column="product_name_fr"    />
+            <result property="idn"    column="product_name_idn"    />
+            <result property="jp"    column="product_name_jp"    />
+            <result property="ko"    column="product_name_ko"    />
+            <result property="my"    column="product_name_my"    />
+            <result property="th"    column="product_name_th"    />
+            <result property="vi"    column="product_name_vi"    />
+            <result property="pt"    column="product_name_pt"    />
+            <result property="rus"    column="product_name_rus"    />
+            <result property="blr"    column="product_name_blr"    />
+            <result property="ida"    column="product_name_ida"    />
+            <result property="sa"    column="product_name_sa"    />
+            <result property="ar"    column="product_name_ar"    />
+            <result property="it"    column="product_name_it"    />
+            <result property="tr"    column="product_name_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectForexProductVo">
+        select id, product_name, product_code,4 as product_type,product_img, is_lock, is_show, create_time, position_income_coefficient, sort, product_name_en, product_name_tc, product_name_de, product_name_es, product_name_fr, product_name_idn, product_name_jp, product_name_ko, product_name_my, product_name_th, product_name_vi, product_name_pt, product_name_rus, product_name_blr, product_name_ida, product_name_sa, product_name_ar, product_name_it, product_name_tr from forex_product
+    </sql>
+
+    <select id="selectForexProductList" parameterType="ForexProduct" resultMap="ForexProductResult">
+        <include refid="selectForexProductVo"/>
+        <where>  
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="productCode != null  and productCode != ''"> and product_code = #{productCode}</if>
+            <if test="isLock != null "> and is_lock = #{isLock}</if>
+            <if test="isShow != null "> and is_show = #{isShow}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="params.keyWords != null and params.keyWords != '' ">
+                and (product_code like CONCAT('%',#{params.keyWords},'%') or product_name like CONCAT('%',#{params.keyWords},'%'))
+            </if>
+            <if test="params.codes != null and params.codes.size > 0">
+                and product_code in
+                <foreach collection="params.codes" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.codes != null and params.codes.size == 0">
+                and id = 0
+            </if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectForexProductById" parameterType="Long" resultMap="ForexProductResult">
+        <include refid="selectForexProductVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectForexProductByCode" resultMap="ForexProductResult">
+        <include refid="selectForexProductVo"/>
+        where product_code = #{productCode}
+    </select>
+
+    <select id="selectForexProductByName" resultMap="ForexProductResult">
+        <include refid="selectForexProductVo"/>
+        where product_name = #{productName}
+    </select>
+        
+    <insert id="insertForexProduct" parameterType="ForexProduct" useGeneratedKeys="true" keyProperty="id">
+        insert into forex_product
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productName != null and productName != ''">product_name,</if>
+            <if test="productCode != null and productCode != ''">product_code,</if>
+            <if test="productImg != null and productImg != ''">product_img,</if>
+            <if test="isLock != null">is_lock,</if>
+            <if test="isShow != null">is_show,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="positionIncomeCoefficient != null">position_income_coefficient,</if>
+            <if test="sort != null">sort,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productName != null and productName != ''">#{productName},</if>
+            <if test="productCode != null and productCode != ''">#{productCode},</if>
+            <if test="productImg != null and productImg != ''">#{productImg},</if>
+            <if test="isLock != null">#{isLock},</if>
+            <if test="isShow != null">#{isShow},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="positionIncomeCoefficient != null">#{positionIncomeCoefficient},</if>
+            <if test="sort != null">#{sort},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertForexProducts">
+        insert into forex_product (product_name,product_code,create_time)
+        <foreach collection="products" item="item" index="index" open="values(" separator="),(" close=")" nullable="true">
+            #{item.productName},#{item.productCode},now()
+        </foreach>
+    </insert>
+
+    <update id="updateForexProduct" parameterType="ForexProduct">
+        update forex_product
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productName != null and productName != ''">product_name = #{productName},</if>
+            <if test="productCode != null and productCode != ''">product_code = #{productCode},</if>
+            <if test="productImg != null and productImg != ''">product_img = #{productImg},</if>
+            <if test="isLock != null">is_lock = #{isLock},</if>
+            <if test="isShow != null">is_show = #{isShow},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="positionIncomeCoefficient != null">position_income_coefficient = #{positionIncomeCoefficient},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="productNameLang.zh != null and productName == null">product_name = #{productNameLang.zh},</if>
+            <if test="productNameLang.en != null">product_name_en = #{productNameLang.en},</if>
+            <if test="productNameLang.tc != null">product_name_tc = #{productNameLang.tc},</if>
+            <if test="productNameLang.de != null">product_name_de = #{productNameLang.de},</if>
+            <if test="productNameLang.es != null">product_name_es = #{productNameLang.es},</if>
+            <if test="productNameLang.fr != null">product_name_fr = #{productNameLang.fr},</if>
+            <if test="productNameLang.idn != null">product_name_idn = #{productNameLang.idn},</if>
+            <if test="productNameLang.jp != null">product_name_jp = #{productNameLang.jp},</if>
+            <if test="productNameLang.ko != null">product_name_ko = #{productNameLang.ko},</if>
+            <if test="productNameLang.my != null">product_name_my = #{productNameLang.my},</if>
+            <if test="productNameLang.th != null">product_name_th = #{productNameLang.th},</if>
+            <if test="productNameLang.vi != null">product_name_vi = #{productNameLang.vi},</if>
+            <if test="productNameLang.pt != null">product_name_pt = #{productNameLang.pt},</if>
+            <if test="productNameLang.rus != null">product_name_rus = #{productNameLang.rus},</if>
+            <if test="productNameLang.blr != null">product_name_blr = #{productNameLang.blr},</if>
+            <if test="productNameLang.ida != null">product_name_ida = #{productNameLang.ida},</if>
+            <if test="productNameLang.sa != null">product_name_sa = #{productNameLang.sa},</if>
+            <if test="productNameLang.ar != null">product_name_ar = #{productNameLang.ar},</if>
+            <if test="productNameLang.it != null">product_name_it = #{productNameLang.it},</if>
+            <if test="productNameLang.tr != null">product_name_tr = #{productNameLang.tr},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="updateLock">
+        update forex_product set is_lock = #{status} where id in
+        <foreach collection="ids" open="(" separator="," close=")" item="item" index="index">
+            #{item}
+        </foreach>
+    </update>
+
+    <update id="updateShow">
+        update forex_product set is_show = #{status} where id in
+        <foreach collection="ids" open="(" separator="," close=")" item="item" index="index">
+            #{item}
+        </foreach>
+    </update>
+
+    <update id="batchUpdatePositionIncomeCoefficient">
+        update forex_product set position_income_coefficient = #{positionIncomeCoefficient} where id in
+        <foreach collection="ids" open="(" separator="," close=")" item="item" index="index">
+            #{item}
+        </foreach>
+    </update>
+
+    <update id="updateProductNameLang">
+        update forex_product
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="zh != null">product_name = #{zh},</if>
+            <if test="en != null">product_name_en = #{en},</if>
+            <if test="tc != null">product_name_tc = #{tc},</if>
+            <if test="de != null">product_name_de = #{de},</if>
+            <if test="es != null">product_name_es = #{es},</if>
+            <if test="fr != null">product_name_fr = #{fr},</if>
+            <if test="idn != null">product_name_idn = #{idn},</if>
+            <if test="jp != null">product_name_jp = #{jp},</if>
+            <if test="ko != null">product_name_ko = #{ko},</if>
+            <if test="my != null">product_name_my = #{my},</if>
+            <if test="th != null">product_name_th = #{th},</if>
+            <if test="vi != null">product_name_vi = #{vi},</if>
+            <if test="pt != null">product_name_pt = #{pt},</if>
+            <if test="rus != null">product_name_rus = #{rus},</if>
+            <if test="blr != null">product_name_blr = #{blr},</if>
+            <if test="ida != null">product_name_ida = #{ida},</if>
+            <if test="sa != null">product_name_sa = #{sa},</if>
+            <if test="ar != null">product_name_ar = #{ar},</if>
+            <if test="it != null">product_name_it = #{it},</if>
+            <if test="tr != null">product_name_tr = #{tr},</if>
+        </trim>
+        where product_code = #{langKey}
+    </update>
+
+    <delete id="deleteForexProductById" parameterType="Long">
+        delete from forex_product where id = #{id}
+    </delete>
+
+    <delete id="deleteForexProductByIds" parameterType="String">
+        delete from forex_product where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

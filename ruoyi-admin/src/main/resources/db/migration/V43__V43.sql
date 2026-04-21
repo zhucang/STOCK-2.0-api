@@ -1,0 +1,1 @@
+insert into `stock`.`switch_set` (id,switch_name,status,`type`,sort) select 89,'app端充值提现记录是否展示上分下分记录',1,1,78 from switch_set where not exists (select id from switch_set where id = 89)limit 1;

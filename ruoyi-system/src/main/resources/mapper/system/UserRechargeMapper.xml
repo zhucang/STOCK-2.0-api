@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserRechargeMapper">
+    
+    <resultMap type="UserRecharge" id="UserRechargeResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userAccount"    column="user_account"    />
+        <result property="email"    column="email"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="accountType"    column="account_type"    />
+        <result property="agentId"    column="agent_id"    />
+        <result property="agentName"    column="agent_name"    />
+        <result property="userRemark"    column="user_remark"    />
+        <result property="orderCode"    column="order_code"    />
+        <result property="rechargeAmount"    column="recharge_amount"    />
+        <result property="orderStatus"    column="order_status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="payTime"    column="pay_time"    />
+        <result property="payChannelName"    column="pay_channel_name"    />
+        <result property="payChannelId"    column="pay_channel_id"    />
+        <result property="currencyId"    column="currency_id"    />
+        <result property="currencyName"    column="currency_name"    />
+        <result property="rechargeImg"    column="recharge_img"    />
+        <result property="rechargeMsg"    column="recharge_msg"    />
+        <result property="userAmountBefore"    column="user_amount_before"    />
+        <result property="userAmountAfter"    column="user_amount_after"    />
+        <result property="rechargeMethod"    column="recharge_method"    />
+        <result property="operatorName"    column="operator_name"    />
+        <result property="remark"    column="remark"    />
+        <result property="params.userRemark"    column="user_remark"    />
+        <result property="sqlVersion"    column="sql_version"    />
+        <association property="payChannelNameLang" javaType="langMgr">
+            <result property="zh"    column="channel_name"    />
+            <result property="en"    column="channel_name_en"    />
+            <result property="tc"    column="channel_name_tc"    />
+            <result property="de"    column="channel_name_de"    />
+            <result property="es"    column="channel_name_es"    />
+            <result property="fr"    column="channel_name_fr"    />
+            <result property="idn"    column="channel_name_idn"    />
+            <result property="jp"    column="channel_name_jp"    />
+            <result property="ko"    column="channel_name_ko"    />
+            <result property="my"    column="channel_name_my"    />
+            <result property="th"    column="channel_name_th"    />
+            <result property="vi"    column="channel_name_vi"    />
+            <result property="pt"    column="channel_name_pt"    />
+            <result property="rus"    column="channel_name_rus"    />
+            <result property="blr"    column="channel_name_blr"    />
+            <result property="ida"    column="channel_name_ida"    />
+            <result property="sa"    column="channel_name_sa"    />
+            <result property="ar"    column="channel_name_ar"    />
+            <result property="it"    column="channel_name_it"    />
+            <result property="tr"    column="channel_name_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectUserRechargeVo">
+        select a.id, a.user_id,user_account,email,nick_name,b.account_type,agent_id,agent_name, IFNULL(b.remark,"") user_remark, order_code, recharge_amount, order_status, create_time, pay_time,operator_name, pay_channel_name, pay_channel_id, a.currency_id,currency_name, recharge_img,recharge_msg, user_amount_before, user_amount_after,recharge_method,a.remark,a.sql_version,channel_name,channel_name_en, channel_name_tc, channel_name_de, channel_name_es, channel_name_fr, channel_name_idn, channel_name_jp, channel_name_ko, channel_name_my, channel_name_th, channel_name_vi, channel_name_pt, channel_name_rus, channel_name_blr, channel_name_ida, channel_name_sa, channel_name_ar, channel_name_it, channel_name_tr
+        from user_recharge a
+                 left join user_info b
+                           on a.user_id = b.id
+                 left join platform_currency c
+                           on a.currency_id = c.id
+                 left join recharge_channel_config d
+                           on d.id = a.pay_channel_id
+    </sql>
+
+    <select id="selectUserRechargeList" parameterType="UserRecharge" resultMap="UserRechargeResult">
+        <include refid="selectUserRechargeVo"/>
+        <where>
+            <if test="params.currencyStatus != null"> and c.`status` = 0 </if>
+            <if test="userId != null "> and a.user_id = #{userId}</if>
+            <if test="userAccount != null "> and user_account like concat('%',#{userAccount},'%') </if>
+            <if test="nickName != null "> and nick_name like concat('%',#{nickName},'%') </if>
+            <if test="accountType != null "> and b.account_type = #{accountType}</if>
+            <if test="email != null "> and email like concat('%',#{email},'%')</if>
+            <if test="agentId != null and params.isAllAgentData != null and params.isAllAgentData == 0">
+                and agent_id in (select user_id from agent_team_level_line where sup_user_id = #{agentId} union select #{agentId})
+            </if>
+            <if test="agentId != null and params.isAllAgentData == null">
+                and agent_id = #{agentId}
+            </if>
+            <if test="orderCode != null  and orderCode != ''"> and order_code = #{orderCode}</if>
+            <if test="rechargeAmount != null "> and recharge_amount = #{rechargeAmount}</if>
+            <if test="orderStatus != null "> and order_status = #{orderStatus}</if>
+            <if test="payChannelName != null  and payChannelName != ''"> and pay_channel_name like concat('%', #{payChannelName}, '%')</if>
+            <if test="payChannelId != null "> and pay_channel_id = #{payChannelId}</if>
+            <if test="currencyId != null "> and a.currency_id = #{currencyId}</if>
+            <if test="rechargeImg != null  and rechargeImg != ''"> and recharge_img = #{rechargeImg}</if>
+            <if test="userAmountBefore != null "> and user_amount_before = #{userAmountBefore}</if>
+            <if test="userAmountAfter != null "> and user_amount_after = #{userAmountAfter}</if>
+            <if test="rechargeMethod != null "> and recharge_method = #{rechargeMethod}</if>
+            <if test="remark != null and remark == 1"> and (a.remark is not null and TRIM(a.remark) != '')</if>
+            <if test="remark != null and remark == 0"> and (a.remark is null or TRIM(a.remark) = '')</if>
+            <if test="startTime !=null ">
+                <![CDATA[   and DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+            <if test="endTime !=null ">
+                <![CDATA[  and DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+            <if test="params.createTimeStartTime !=null ">
+                <![CDATA[   and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+            <if test="params.createTimeEndTime !=null ">
+                <![CDATA[  and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="getStatisticalData" parameterType="UserRecharge" resultMap="UserRechargeResult">
+        select sum(recharge_amount) recharge_amount,currency_id,currency_name
+        from user_recharge a
+        left join user_info b
+        on a.user_id = b.id
+        left join platform_currency c
+        on a.currency_id = c.id
+        <where>
+            and order_status = 1 and c.`status` = 0
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="userAccount != null "> and user_account like concat('%',#{userAccount},'%') </if>
+            <if test="nickName != null "> and nick_name like concat('%',#{nickName},'%') </if>
+            <if test="accountType != null "> and account_type = #{accountType}</if>
+            <if test="orderCode != null  and orderCode != ''"> and order_code = #{orderCode}</if>
+            <if test="rechargeAmount != null "> and recharge_amount = #{rechargeAmount}</if>
+            <if test="orderStatus != null "> and order_status = #{orderStatus}</if>
+            <if test="payTime != null "><![CDATA[ and DATE_FORMAT(pay_time, '%Y-%m-%d') = DATE_FORMAT(#{payTime}, '%Y-%m-%d')]]></if>
+            <if test="payChannelName != null  and payChannelName != ''"> and pay_channel_name like concat('%', #{payChannelName}, '%')</if>
+            <if test="payChannelId != null "> and pay_channel_id = #{payChannelId}</if>
+            <if test="currencyId != null "> and currency_id = #{currencyId}</if>
+            <if test="rechargeImg != null  and rechargeImg != ''"> and recharge_img = #{rechargeImg}</if>
+            <if test="userAmountBefore != null "> and user_amount_before = #{userAmountBefore}</if>
+            <if test="userAmountAfter != null "> and user_amount_after = #{userAmountAfter}</if>
+            <if test="rechargeMethod != null "> and recharge_method = #{rechargeMethod}</if>
+            <if test="remark != null and remark == 1"> and (a.remark is not null and TRIM(a.remark) != '')</if>
+            <if test="remark != null and remark == 0"> and (a.remark is null or TRIM(a.remark) = '')</if>
+            <if test="agentId != null and params.isAllAgentData != null and params.isAllAgentData == 0">
+                and agent_id in (select user_id from agent_team_level_line where sup_user_id = #{agentId} union select #{agentId})
+            </if>
+            <if test="agentId != null and params.isAllAgentData == null">
+                and agent_id = #{agentId}
+            </if>
+            <if test="startTime !=null ">
+                <![CDATA[   and DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+            <if test="endTime !=null ">
+                <![CDATA[  and DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+            ${params.dataScope}
+        </where>
+        group by currency_id
+    </select>
+
+    <select id="selectUserRechargeListWithOthers" parameterType="UserRecharge" resultMap="UserRechargeResult">
+        select a.user_id,recharge_amount,order_status,order_code,pay_channel_name,recharge_msg,create_time,pay_time,recharge_method,a.currency_id,currency_name,channel_name,channel_name_en, channel_name_tc, channel_name_de, channel_name_es, channel_name_fr, channel_name_idn, channel_name_jp, channel_name_ko, channel_name_my, channel_name_th, channel_name_vi, channel_name_pt, channel_name_rus, channel_name_blr, channel_name_ida, channel_name_sa, channel_name_ar, channel_name_it, channel_name_tr
+        from user_recharge a
+        left join platform_currency b
+        on a.currency_id = b.id
+        left join recharge_channel_config c
+        on c.id = a.pay_channel_id
+        <where>
+            <if test="userId != null "> and a.user_id = #{userId}</if>
+            <if test="orderCode != null  and orderCode != ''"> and order_code = #{orderCode}</if>
+            <if test="orderStatus != null "> and order_status = #{orderStatus}</if>
+            <if test="currencyId != null "> and a.currency_id = #{currencyId}</if>
+            <if test="rechargeMethod != null "> and recharge_method = #{rechargeMethod}</if>
+            <if test="startTime !=null ">
+                <![CDATA[   and DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+            <if test="endTime !=null ">
+                <![CDATA[  and DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+            ${params.dataScope}
+        </where>
+        <if test="params.unionWinnings != null ">
+            union
+            select user_id,recharge_amount,order_status,order_code,pay_channel_name,'',create_time,pay_time,recharge_method,currency_id,currency_name,channel_name,currency_name_en, currency_name_tc, currency_name_de, currency_name_es, currency_name_fr, currency_name_idn, currency_name_jp, currency_name_ko, currency_name_my, currency_name_th, currency_name_vi, currency_name_pt, currency_name_rus, currency_name_blr, currency_name_ida, currency_name_sa, currency_name_ar, currency_name_it, currency_name_tr
+            from(
+            select user_id,order_amount as recharge_amount,1 as order_status,order_code,currency_name_en as pay_channel_name,'',create_time,create_time as pay_time,0 as recharge_method,currency_id,currency_name,currency_name as channel_name,currency_name_en, currency_name_tc, currency_name_de, currency_name_es, currency_name_fr, currency_name_idn, currency_name_jp, currency_name_ko, currency_name_my, currency_name_th, currency_name_vi, currency_name_pt, currency_name_rus, currency_name_blr, currency_name_ida, currency_name_sa, currency_name_ar, currency_name_it, currency_name_tr from user_winnings_change_record a
+            left join platform_currency b
+            on a.currency_id = b.id
+            where order_type = 0 or order_type = 1) as a
+            <where>
+                <if test="userId != null "> and user_id = #{userId}</if>
+                <if test="orderCode != null  and orderCode != ''"> and order_code = #{orderCode}</if>
+                <if test="orderStatus != null "> and order_status = #{orderStatus}</if>
+                <if test="currencyId != null "> and currency_id = #{currencyId}</if>
+                <if test="startTime !=null ">
+                    <![CDATA[   and DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+                <if test="endTime !=null ">
+                    <![CDATA[  and DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+                ${params.dataScope}
+            </where>
+        </if>
+        <if test="params.unionUpPoint != null ">
+            union
+            select user_id,recharge_amount,order_status,order_code,pay_channel_name,'',create_time,pay_time,recharge_method,currency_id,currency_name,channel_name,currency_name_en, currency_name_tc, currency_name_de, currency_name_es, currency_name_fr, currency_name_idn, currency_name_jp, currency_name_ko, currency_name_my, currency_name_th, currency_name_vi, currency_name_pt, currency_name_rus, currency_name_blr, currency_name_ida, currency_name_sa, currency_name_ar, currency_name_it, currency_name_tr
+            from (
+            select user_id,order_amount as recharge_amount,1 as order_status,order_code,currency_name_en as pay_channel_name,'',create_time,create_time as pay_time,0 as recharge_method,currency_id,currency_name,currency_name as channel_name,currency_name_en, currency_name_tc, currency_name_de, currency_name_es, currency_name_fr, currency_name_idn, currency_name_jp, currency_name_ko, currency_name_my, currency_name_th, currency_name_vi, currency_name_pt, currency_name_rus, currency_name_blr, currency_name_ida, currency_name_sa, currency_name_ar, currency_name_it, currency_name_tr from user_point_change_record a
+            left join platform_currency b
+            on a.currency_id = b.id
+            where order_type = 0) as a
+            <where>
+                <if test="userId != null "> and user_id = #{userId}</if>
+                <if test="orderCode != null  and orderCode != ''"> and order_code = #{orderCode}</if>
+                <if test="orderStatus != null "> and order_status = #{orderStatus}</if>
+                <if test="currencyId != null "> and currency_id = #{currencyId}</if>
+                <if test="startTime !=null ">
+                    <![CDATA[   and DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+                <if test="endTime !=null ">
+                    <![CDATA[  and DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+                ${params.dataScope}
+            </where>
+        </if>
+    </select>
+    
+    <select id="selectUserRechargeById" parameterType="Long" resultMap="UserRechargeResult">
+        <include refid="selectUserRechargeVo"/>
+        where a.id = #{id}
+    </select>
+
+    <select id="selectUserRechargeAmountAllCurrency" resultMap="UserRechargeResult">
+        select sum(recharge_amount) recharge_amount,currency_id
+        from user_recharge
+        where order_status = 1
+        <if test="userIds != null and userIds.size > 0">
+            and user_id in
+            <foreach collection="userIds" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="userIds == null || userIds.size == 0">
+            and user_id = 0
+        </if>
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s') >=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        group by currency_id
+    </select>
+
+    <select id="getRechargePersonNumToday" resultType="java.lang.Integer">
+        select count(1)
+        from (select user_id from user_recharge where order_status = 1 and user_id in
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <![CDATA[   and DATE_FORMAT(pay_time, '%Y-%m-%d') = CURRenT_DATE()   ]]>
+        group by user_id) as a
+    </select>
+
+    <select id="getFirstRechargePersonNum" resultType="java.lang.Integer">
+        select count(1)
+        from (select user_id from user_recharge where order_status = 1 and user_id in
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        group by user_id) as a
+    </select>
+
+    <select id="getUserRechargePendingReviewNum" resultType="java.lang.Long">
+        select a.id
+        from user_recharge a
+        LEFT JOIN user_info b
+        on a.user_id = b.id
+        where order_status = 3 and recharge_method = 0
+        <if test = "userId != null">
+            and user_id = #{userId}
+        </if>
+        <if test="baseEntity.params.tourists != null and baseEntity.params.tourists != 0">
+            and account_type = 0
+        </if>
+        <if test="baseEntity.params.dataScope != null and baseEntity.params.dataScope != ''">
+            ${baseEntity.params.dataScope}
+        </if>
+    </select>
+
+    <select id="selectUserRechargeAmountAllCurrencyByUserId" resultMap="UserRechargeResult">
+        select sum(recharge_amount) recharge_amount,currency_id,currency_name
+        <if test="userId != null">
+            ,user_id
+        </if>
+        from user_recharge a
+                 left join platform_currency b
+                           on a.currency_id = b.id
+        where order_status = 1 and b.`status` = 0
+        <if test="userId != null">
+            and user_id = #{userId}
+        </if>
+        group by currency_id;
+    </select>
+
+    <insert id="insertUserRecharge" parameterType="UserRecharge" useGeneratedKeys="true" keyProperty="id">
+        insert into user_recharge
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="orderCode != null and orderCode != ''">order_code,</if>
+            <if test="rechargeAmount != null">recharge_amount,</if>
+            <if test="orderStatus != null">order_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="payTime != null">pay_time,</if>
+            <if test="payChannelName != null and payChannelName != ''">pay_channel_name,</if>
+            <if test="payChannelId != null">pay_channel_id,</if>
+            <if test="currencyId != null">currency_id,</if>
+            <if test="rechargeImg != null">recharge_img,</if>
+            <if test="rechargeMsg != null">recharge_msg,</if>
+            <if test="userAmountBefore != null">user_amount_before,</if>
+            <if test="userAmountAfter != null">user_amount_after,</if>
+            <if test="rechargeMethod != null">recharge_method,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="orderCode != null and orderCode != ''">#{orderCode},</if>
+            <if test="rechargeAmount != null">#{rechargeAmount},</if>
+            <if test="orderStatus != null">#{orderStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="payTime != null">#{payTime},</if>
+            <if test="payChannelName != null and payChannelName != ''">#{payChannelName},</if>
+            <if test="payChannelId != null">#{payChannelId},</if>
+            <if test="currencyId != null">#{currencyId},</if>
+            <if test="rechargeImg != null">#{rechargeImg},</if>
+            <if test="rechargeMsg != null">#{rechargeMsg},</if>
+            <if test="userAmountBefore != null">#{userAmountBefore},</if>
+            <if test="userAmountAfter != null">#{userAmountAfter},</if>
+            <if test="rechargeMethod != null">#{rechargeMethod},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserRecharge" parameterType="UserRecharge">
+        update user_recharge
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="orderCode != null and orderCode != ''">order_code = #{orderCode},</if>
+            <if test="rechargeAmount != null">recharge_amount = #{rechargeAmount},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="payTime != null">pay_time = #{payTime},</if>
+            <if test="payChannelName != null and payChannelName != ''">pay_channel_name = #{payChannelName},</if>
+            <if test="payChannelId != null">pay_channel_id = #{payChannelId},</if>
+            <if test="currencyId != null">currency_id = #{currencyId},</if>
+            <if test="rechargeImg != null">recharge_img = #{rechargeImg},</if>
+            <if test="rechargeMsg != null">recharge_msg = #{rechargeMsg},</if>
+            <if test="userAmountBefore != null">user_amount_before = #{userAmountBefore},</if>
+            <if test="userAmountAfter != null">user_amount_after = #{userAmountAfter},</if>
+            <if test="rechargeMethod != null">recharge_method = #{rechargeMethod},</if>
+            <if test="operatorName != null">operator_name = #{operatorName},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="sqlVersion != null">sql_version = sql_version + 1,</if>
+        </trim>
+        where id = #{id}
+        <if test="sqlVersion != null">and sql_version = #{sqlVersion}</if>
+    </update>
+
+    <delete id="deleteUserRechargeById" parameterType="Long">
+        delete from user_recharge where id = #{id}
+    </delete>
+
+    <delete id="deleteUserRechargeByIds" parameterType="String">
+        delete from user_recharge where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

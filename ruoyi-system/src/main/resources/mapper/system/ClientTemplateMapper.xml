@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ClientTemplateMapper">
+    
+    <resultMap type="ClientTemplate" id="ClientTemplateResult">
+        <result property="id"    column="id"    />
+        <result property="templateName"    column="template_name"    />
+        <result property="fileStoragePath"    column="file_storage_path"    />
+    </resultMap>
+
+    <sql id="selectClientTemplateVo">
+        select id, template_name, file_storage_path from client_template
+    </sql>
+
+    <select id="selectClientTemplateList" parameterType="ClientTemplate" resultMap="ClientTemplateResult">
+        <include refid="selectClientTemplateVo"/>
+        <where>  
+            <if test="templateName != null  and templateName != ''"> and template_name like concat('%', #{templateName}, '%')</if>
+            <if test="fileStoragePath != null  and fileStoragePath != ''"> and file_storage_path = #{fileStoragePath}</if>
+        </where>
+    </select>
+    
+    <select id="selectClientTemplateById" parameterType="Long" resultMap="ClientTemplateResult">
+        <include refid="selectClientTemplateVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertClientTemplate" parameterType="ClientTemplate" useGeneratedKeys="true" keyProperty="id">
+        insert into client_template
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="templateName != null and templateName != ''">template_name,</if>
+            <if test="fileStoragePath != null and fileStoragePath != ''">file_storage_path,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="templateName != null and templateName != ''">#{templateName},</if>
+            <if test="fileStoragePath != null and fileStoragePath != ''">#{fileStoragePath},</if>
+         </trim>
+    </insert>
+
+    <update id="updateClientTemplate" parameterType="ClientTemplate">
+        update client_template
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="templateName != null and templateName != ''">template_name = #{templateName},</if>
+            <if test="fileStoragePath != null and fileStoragePath != ''">file_storage_path = #{fileStoragePath},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteClientTemplateById" parameterType="Long">
+        delete from client_template where id = #{id}
+    </delete>
+
+    <delete id="deleteClientTemplateByIds" parameterType="String">
+        delete from client_template where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

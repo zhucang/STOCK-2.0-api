@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.HelpCenterMapper">
+    
+    <resultMap type="HelpCenter" id="HelpCenterResult">
+        <result property="id"    column="id"    />
+        <result property="question"    column="question"    />
+        <result property="answer"    column="answer"    />
+        <result property="status"    column="status"    />
+        <result property="sort"    column="sort"    />
+        <result property="questionEn"    column="question_en"    />
+        <result property="questionTc"    column="question_tc"    />
+        <result property="questionDe"    column="question_de"    />
+        <result property="questionEs"    column="question_es"    />
+        <result property="questionFr"    column="question_fr"    />
+        <result property="questionIdn"    column="question_idn"    />
+        <result property="questionJp"    column="question_jp"    />
+        <result property="questionKo"    column="question_ko"    />
+        <result property="questionMy"    column="question_my"    />
+        <result property="questionTh"    column="question_th"    />
+        <result property="questionVi"    column="question_vi"    />
+        <result property="questionPt"    column="question_pt"    />
+        <result property="questionRus"    column="question_rus"    />
+        <result property="questionBlr"    column="question_blr"    />
+        <result property="questionIda"    column="question_ida"    />
+        <result property="questionSa"    column="question_sa"    />
+        <result property="questionAr"    column="question_ar"    />
+        <result property="questionIt"    column="question_it"    />
+        <result property="questionTr"    column="question_tr"    />
+        <result property="answerEn"    column="answer_en"    />
+        <result property="answerTc"    column="answer_tc"    />
+        <result property="answerDe"    column="answer_de"    />
+        <result property="answerEs"    column="answer_es"    />
+        <result property="answerFr"    column="answer_fr"    />
+        <result property="answerIdn"    column="answer_idn"    />
+        <result property="answerJp"    column="answer_jp"    />
+        <result property="answerKo"    column="answer_ko"    />
+        <result property="answerMy"    column="answer_my"    />
+        <result property="answerTh"    column="answer_th"    />
+        <result property="answerVi"    column="answer_vi"    />
+        <result property="answerPt"    column="answer_pt"    />
+        <result property="answerRus"    column="answer_rus"    />
+        <result property="answerBlr"    column="answer_blr"    />
+        <result property="answerIda"    column="answer_ida"    />
+        <result property="answerSa"    column="answer_sa"    />
+        <result property="answerAr"    column="answer_ar"    />
+        <result property="answerIt"    column="answer_it"    />
+        <result property="answerTr"    column="answer_tr"    />
+    </resultMap>
+
+    <sql id="selectHelpCenterVo">
+        select id, question, answer,status,sort, question_en, question_tc, question_de, question_es, question_fr, question_idn, question_jp, question_ko, question_my, question_th, question_vi, question_pt, question_rus, question_blr, question_ida, question_sa, question_ar, question_it, question_tr, answer_en, answer_tc, answer_de, answer_es, answer_fr, answer_idn, answer_jp,answer_ko, answer_my, answer_th, answer_vi, answer_pt, answer_rus, answer_blr, answer_ida, answer_sa, answer_ar, answer_it, answer_tr from help_center
+    </sql>
+
+    <select id="selectHelpCenterList" parameterType="HelpCenter" resultMap="HelpCenterResult">
+        <include refid="selectHelpCenterVo"/>
+        <where>  
+            <if test="question != null  and question != ''"> and question = #{question}</if>
+            <if test="answer != null  and answer != ''"> and answer = #{answer}</if>
+            <if test="status != null"> and status = #{status}</if>
+            <if test="questionEn != null  and questionEn != ''"> and question_en = #{questionEn}</if>
+            <if test="questionTc != null  and questionTc != ''"> and question_tc = #{questionTc}</if>
+            <if test="questionDe != null  and questionDe != ''"> and question_de = #{questionDe}</if>
+            <if test="questionEs != null  and questionEs != ''"> and question_es = #{questionEs}</if>
+            <if test="questionFr != null  and questionFr != ''"> and question_fr = #{questionFr}</if>
+            <if test="questionIdn != null  and questionIdn != ''"> and question_idn = #{questionIdn}</if>
+            <if test="questionJp != null  and questionJp != ''"> and question_jp = #{questionJp}</if>
+            <if test="questionKo != null  and questionKo != ''"> and question_ko = #{questionKo}</if>
+            <if test="questionMy != null  and questionMy != ''"> and question_my = #{questionMy}</if>
+            <if test="questionTh != null  and questionTh != ''"> and question_th = #{questionTh}</if>
+            <if test="questionVi != null  and questionVi != ''"> and question_vi = #{questionVi}</if>
+            <if test="questionPt != null  and questionPt != ''"> and question_pt = #{questionPt}</if>
+            <if test="questionRus != null  and questionRus != ''"> and question_rus = #{questionRus}</if>
+            <if test="questionBlr != null  and questionBlr != ''"> and question_blr = #{questionBlr}</if>
+            <if test="questionIda != null  and questionIda != ''"> and question_ida = #{questionIda}</if>
+            <if test="questionSa != null  and questionSa != ''"> and question_sa = #{questionSa}</if>
+            <if test="questionAr != null  and questionAr != ''"> and question_ar = #{questionAr}</if>
+            <if test="questionIt != null  and questionIt != ''"> and question_it = #{questionIt}</if>
+            <if test="questionTr != null  and questionTr != ''"> and question_tr = #{questionTr}</if>
+            <if test="answerEn != null  and answerEn != ''"> and answer_en = #{answerEn}</if>
+            <if test="answerTc != null  and answerTc != ''"> and answer_tc = #{answerTc}</if>
+            <if test="answerDe != null  and answerDe != ''"> and answer_de = #{answerDe}</if>
+            <if test="answerEs != null  and answerEs != ''"> and answer_es = #{answerEs}</if>
+            <if test="answerFr != null  and answerFr != ''"> and answer_fr = #{answerFr}</if>
+            <if test="answerIdn != null  and answerIdn != ''"> and answer_idn = #{answerIdn}</if>
+            <if test="answerJp != null  and answerJp != ''"> and answer_jp = #{answerJp}</if>
+            <if test="answerKo != null  and answerKo != ''"> and answer_ko = #{answerKo}</if>
+            <if test="answerMy != null  and answerMy != ''"> and answer_my = #{answerMy}</if>
+            <if test="answerTh != null  and answerTh != ''"> and answer_th = #{answerTh}</if>
+            <if test="answerVi != null  and answerVi != ''"> and answer_vi = #{answerVi}</if>
+            <if test="answerPt != null  and answerPt != ''"> and answer_pt = #{answerPt}</if>
+            <if test="answerRus != null  and answerRus != ''"> and answer_rus = #{answerRus}</if>
+            <if test="answerBlr != null  and answerBlr != ''"> and answer_blr = #{answerBlr}</if>
+            <if test="answerIda != null  and answerIda != ''"> and answer_ida = #{answerIda}</if>
+            <if test="answerSa != null  and answerSa != ''"> and answer_sa = #{answerSa}</if>
+            <if test="answerAr != null  and answerAr != ''"> and answer_ar = #{answerAr}</if>
+            <if test="answerIt != null  and answerIt != ''"> and answer_it = #{answerIt}</if>
+            <if test="answerTr != null  and answerTr != ''"> and answer_tr = #{answerTr}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectHelpCenterById" parameterType="Long" resultMap="HelpCenterResult">
+        <include refid="selectHelpCenterVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertHelpCenter" parameterType="HelpCenter">
+        insert into help_center
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="question != null and question != ''">question,</if>
+            <if test="answer != null and answer != ''">answer,</if>
+            <if test="status != null">status,</if>
+            <if test="sort != null">sort,</if>
+            <if test="questionEn != null">question_en,</if>
+            <if test="questionTc != null">question_tc,</if>
+            <if test="questionDe != null">question_de,</if>
+            <if test="questionEs != null">question_es,</if>
+            <if test="questionFr != null">question_fr,</if>
+            <if test="questionIdn != null">question_idn,</if>
+            <if test="questionJp != null">question_jp,</if>
+            <if test="questionKo != null">question_ko,</if>
+            <if test="questionMy != null">question_my,</if>
+            <if test="questionTh != null">question_th,</if>
+            <if test="questionVi != null">question_vi,</if>
+            <if test="questionPt != null">question_pt,</if>
+            <if test="questionRus != null">question_rus,</if>
+            <if test="questionBlr != null">question_blr,</if>
+            <if test="questionIda != null">question_ida,</if>
+            <if test="questionSa != null">question_sa,</if>
+            <if test="questionAr != null">question_ar,</if>
+            <if test="questionIt != null">question_it,</if>
+            <if test="questionTr != null">question_tr,</if>
+            <if test="answerEn != null">answer_en,</if>
+            <if test="answerTc != null">answer_tc,</if>
+            <if test="answerDe != null">answer_de,</if>
+            <if test="answerEs != null">answer_es,</if>
+            <if test="answerFr != null">answer_fr,</if>
+            <if test="answerIdn != null">answer_idn,</if>
+            <if test="answerJp != null">answer_jp,</if>
+            <if test="answerKo != null">answer_ko,</if>
+            <if test="answerMy != null">answer_my,</if>
+            <if test="answerTh != null">answer_th,</if>
+            <if test="answerVi != null">answer_vi,</if>
+            <if test="answerPt != null">answer_pt,</if>
+            <if test="answerRus != null">answer_rus,</if>
+            <if test="answerBlr != null">answer_blr,</if>
+            <if test="answerIda != null">answer_ida,</if>
+            <if test="answerSa != null">answer_sa,</if>
+            <if test="answerAr != null">answer_ar,</if>
+            <if test="answerIt != null">answer_it,</if>
+            <if test="answerTr != null">answer_tr,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="question != null and question != ''">#{question},</if>
+            <if test="answer != null and answer != ''">#{answer},</if>
+            <if test="status != null">#{status},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="questionEn != null">#{questionEn},</if>
+            <if test="questionTc != null">#{questionTc},</if>
+            <if test="questionDe != null">#{questionDe},</if>
+            <if test="questionEs != null">#{questionEs},</if>
+            <if test="questionFr != null">#{questionFr},</if>
+            <if test="questionIdn != null">#{questionIdn},</if>
+            <if test="questionJp != null">#{questionJp},</if>
+            <if test="questionKo != null">#{questionKo},</if>
+            <if test="questionMy != null">#{questionMy},</if>
+            <if test="questionTh != null">#{questionTh},</if>
+            <if test="questionVi != null">#{questionVi},</if>
+            <if test="questionPt != null">#{questionPt},</if>
+            <if test="questionRus != null">#{questionRus},</if>
+            <if test="questionBlr != null">#{questionBlr},</if>
+            <if test="questionIda != null">#{questionIda},</if>
+            <if test="questionSa != null">#{questionSa},</if>
+            <if test="questionAr != null">#{questionAr},</if>
+            <if test="questionIt != null">#{questionIt},</if>
+            <if test="questionTr != null">#{questionTr},</if>
+            <if test="answerEn != null">#{answerEn},</if>
+            <if test="answerTc != null">#{answerTc},</if>
+            <if test="answerDe != null">#{answerDe},</if>
+            <if test="answerEs != null">#{answerEs},</if>
+            <if test="answerFr != null">#{answerFr},</if>
+            <if test="answerIdn != null">#{answerIdn},</if>
+            <if test="answerJp != null">#{answerJp},</if>
+            <if test="answerKo != null">#{answerKo},</if>
+            <if test="answerMy != null">#{answerMy},</if>
+            <if test="answerTh != null">#{answerTh},</if>
+            <if test="answerVi != null">#{answerVi},</if>
+            <if test="answerPt != null">#{answerPt},</if>
+            <if test="answerRus != null">#{answerRus},</if>
+            <if test="answerBlr != null">#{answerBlr},</if>
+            <if test="answerIda != null">#{answerIda},</if>
+            <if test="answerSa != null">#{answerSa},</if>
+            <if test="answerAr != null">#{answerAr},</if>
+            <if test="answerIt != null">#{answerIt},</if>
+            <if test="answerTr != null">#{answerTr},</if>
+         </trim>
+    </insert>
+
+    <update id="updateHelpCenter" parameterType="HelpCenter">
+        update help_center
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="question != null and question != ''">question = #{question},</if>
+            <if test="answer != null and answer != ''">answer = #{answer},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="questionEn != null">question_en = #{questionEn},</if>
+            <if test="questionTc != null">question_tc = #{questionTc},</if>
+            <if test="questionDe != null">question_de = #{questionDe},</if>
+            <if test="questionEs != null">question_es = #{questionEs},</if>
+            <if test="questionFr != null">question_fr = #{questionFr},</if>
+            <if test="questionIdn != null">question_idn = #{questionIdn},</if>
+            <if test="questionJp != null">question_jp = #{questionJp},</if>
+            <if test="questionKo != null">question_ko = #{questionKo},</if>
+            <if test="questionMy != null">question_my = #{questionMy},</if>
+            <if test="questionTh != null">question_th = #{questionTh},</if>
+            <if test="questionVi != null">question_vi = #{questionVi},</if>
+            <if test="questionPt != null">question_pt = #{questionPt},</if>
+            <if test="questionRus != null">question_rus = #{questionRus},</if>
+            <if test="questionBlr != null">question_blr = #{questionBlr},</if>
+            <if test="questionIda != null">question_ida = #{questionIda},</if>
+            <if test="questionSa != null">question_sa = #{questionSa},</if>
+            <if test="questionAr != null">question_ar = #{questionAr},</if>
+            <if test="questionIt != null">question_it = #{questionIt},</if>
+            <if test="questionTr != null">question_tr = #{questionTr},</if>
+            <if test="answerEn != null">answer_en = #{answerEn},</if>
+            <if test="answerTc != null">answer_tc = #{answerTc},</if>
+            <if test="answerDe != null">answer_de = #{answerDe},</if>
+            <if test="answerEs != null">answer_es = #{answerEs},</if>
+            <if test="answerFr != null">answer_fr = #{answerFr},</if>
+            <if test="answerIdn != null">answer_idn = #{answerIdn},</if>
+            <if test="answerJp != null">answer_jp = #{answerJp},</if>
+            <if test="answerKo != null">answer_ko = #{answerKo},</if>
+            <if test="answerMy != null">answer_my = #{answerMy},</if>
+            <if test="answerTh != null">answer_th = #{answerTh},</if>
+            <if test="answerVi != null">answer_vi = #{answerVi},</if>
+            <if test="answerPt != null">answer_pt = #{answerPt},</if>
+            <if test="answerRus != null">answer_rus = #{answerRus},</if>
+            <if test="answerBlr != null">answer_blr = #{answerBlr},</if>
+            <if test="answerIda != null">answer_ida = #{answerIda},</if>
+            <if test="answerSa != null">answer_sa = #{answerSa},</if>
+            <if test="answerAr != null">answer_ar = #{answerAr},</if>
+            <if test="answerIt != null">answer_it = #{answerIt},</if>
+            <if test="answerTr != null">answer_tr = #{answerTr},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteHelpCenterById" parameterType="Long">
+        delete from help_center where id = #{id}
+    </delete>
+
+    <delete id="deleteHelpCenterByIds" parameterType="String">
+        delete from help_center where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

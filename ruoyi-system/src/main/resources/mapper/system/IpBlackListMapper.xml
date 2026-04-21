@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.IpBlackListMapper">
+    
+    <resultMap type="IpBlackList" id="IpBlackListResult">
+        <result property="id"    column="id"    />
+        <result property="ipAddress"    column="ip_address"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectIpBlackListVo">
+        select id, ip_address, create_time from ip_black_list
+    </sql>
+
+    <select id="selectIpBlackListList" parameterType="IpBlackList" resultMap="IpBlackListResult">
+        <include refid="selectIpBlackListVo"/>
+        <where>  
+            <if test="ipAddress != null  and ipAddress != ''"> and ip_address like concat('%',#{ipAddress},'%')</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectIpBlackListById" parameterType="Long" resultMap="IpBlackListResult">
+        <include refid="selectIpBlackListVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectIpBlackListByIp" resultMap="IpBlackListResult">
+        <include refid="selectIpBlackListVo"/>
+        where ip_address = #{ip}
+    </select>
+        
+    <insert id="insertIpBlackList" parameterType="IpBlackList" useGeneratedKeys="true" keyProperty="id">
+        insert into ip_black_list
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="ipAddress != null">ip_address,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="ipAddress != null">#{ipAddress},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateIpBlackList" parameterType="IpBlackList">
+        update ip_black_list
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="ipAddress != null">ip_address = #{ipAddress},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteIpBlackListById" parameterType="Long">
+        delete from ip_black_list where id = #{id}
+    </delete>
+
+    <delete id="deleteIpBlackListByIds" parameterType="String">
+        delete from ip_black_list where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

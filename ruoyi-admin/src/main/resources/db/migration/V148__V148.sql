@@ -1,0 +1,1 @@
+insert into `stock`.`other_value` (other_key,`name`,other_value,remark,visible_flag) select 'allDemoAccount_fastTrade_control','所有模拟账户极速交易控制（0：全部未控 1：全部控赢 2：全部控输）','0',null,0 from other_value where not exists (select other_key from other_value where other_key = 'allDemoAccount_fastTrade_control')limit 1;

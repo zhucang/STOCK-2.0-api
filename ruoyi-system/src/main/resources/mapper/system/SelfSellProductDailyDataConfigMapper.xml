@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SelfSellProductDailyDataConfigMapper">
+    
+    <resultMap type="SelfSellProductDailyDataConfig" id="SelfSellProductDailyDataConfigResult">
+        <result property="id"    column="id"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="isDefault"    column="is_default"    />
+        <result property="finallyChangeRate"    column="finally_change_rate"    />
+        <result property="finallyPrice"    column="finally_price"    />
+        <result property="isTemp"    column="is_temp"    />
+        <result property="tempProductCode"    column="temp_product_code"    />
+        <result property="productType"    column="product_type"    />
+        <result property="selfSellProductId"    column="self_sell_product_id"    />
+        <result property="createBy"     column="create_by"    />
+        <result property="createTime"   column="create_time"  />
+        <result property="updateBy"     column="update_by"    />
+        <result property="updateTime"   column="update_time"  />
+    </resultMap>
+
+    <sql id="selectSelfSellProductDailyDataConfigVo">
+        select id, self_sell_product_id,product_code, is_default, finally_change_rate, finally_price, is_temp, temp_product_code, product_type,create_by,create_time,update_by,update_time from self_sell_product_daily_data_config
+    </sql>
+
+    <select id="selectSelfSellProductDailyDataConfigList" parameterType="SelfSellProductDailyDataConfig" resultMap="SelfSellProductDailyDataConfigResult">
+        <include refid="selectSelfSellProductDailyDataConfigVo"/>
+        <where>  
+            <if test="productCode != null  and productCode != ''"> and product_code = #{productCode}</if>
+            <if test="isDefault != null "> and is_default = #{isDefault}</if>
+            <if test="finallyChangeRate != null "> and finally_change_rate = #{finallyChangeRate}</if>
+            <if test="finallyPrice != null "> and finally_price = #{finallyPrice}</if>
+            <if test="isTemp != null "> and is_temp = #{isTemp}</if>
+            <if test="tempProductCode != null  and tempProductCode != ''"> and temp_product_code = #{tempProductCode}</if>
+            <if test="productType != null "> and product_type = #{productType}</if>
+            <if test="selfSellProductId != null "> and self_sell_product_id = #{selfSellProductId}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectSelfSellProductDailyDataConfigById" parameterType="Long" resultMap="SelfSellProductDailyDataConfigResult">
+        <include refid="selectSelfSellProductDailyDataConfigVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSelfSellProductDailyDataConfig" parameterType="SelfSellProductDailyDataConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into self_sell_product_daily_data_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productCode != null and productCode != ''">product_code,</if>
+            <if test="isDefault != null">is_default,</if>
+            <if test="finallyChangeRate != null">finally_change_rate,</if>
+            <if test="finallyPrice != null">finally_price,</if>
+            <if test="isTemp != null">is_temp,</if>
+            <if test="tempProductCode != null">temp_product_code,</if>
+            <if test="productType != null">product_type,</if>
+            <if test="selfSellProductId != null">self_sell_product_id,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productCode != null and productCode != ''">#{productCode},</if>
+            <if test="isDefault != null">#{isDefault},</if>
+            <if test="finallyChangeRate != null">#{finallyChangeRate},</if>
+            <if test="finallyPrice != null">#{finallyPrice},</if>
+            <if test="isTemp != null">#{isTemp},</if>
+            <if test="tempProductCode != null">#{tempProductCode},</if>
+            <if test="productType != null">#{productType},</if>
+            <if test="selfSellProductId != null">#{selfSellProductId},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSelfSellProductDailyDataConfig" parameterType="SelfSellProductDailyDataConfig">
+        update self_sell_product_daily_data_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="isDefault != null">is_default = #{isDefault},</if>
+            <if test="finallyChangeRate != null">finally_change_rate = #{finallyChangeRate},</if>
+            <if test="finallyPrice != null">finally_price = #{finallyPrice},</if>
+            <if test="isTemp != null">is_temp = #{isTemp},</if>
+            <if test="tempProductCode != null">temp_product_code = #{tempProductCode},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="cancelAllDefault">
+        update self_sell_product_daily_data_config set is_default = 1 where product_code = #{productCode}
+    </update>
+
+    <delete id="deleteSelfSellProductDailyDataConfigById" parameterType="Long">
+        delete from self_sell_product_daily_data_config where id = #{id}
+    </delete>
+
+    <delete id="deleteSelfSellProductDailyDataConfigByIds" parameterType="String">
+        delete from self_sell_product_daily_data_config where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteSelfSellProductDailyDataConfigBySelfSellProductIds">
+        delete from self_sell_product_daily_data_config where self_sell_product_id in
+        <foreach item="id" collection="selfSellProductIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

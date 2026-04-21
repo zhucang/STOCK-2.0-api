@@ -1,0 +1,1 @@
+insert into `stock`.`switch_set` (id,switch_name,status,`type`,sort) values (66,'上分下分自动转化平台默认交易币种',1,1,66);

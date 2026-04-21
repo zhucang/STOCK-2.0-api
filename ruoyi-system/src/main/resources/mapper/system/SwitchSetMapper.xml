@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SwitchSetMapper">
+    
+    <resultMap type="SwitchSet" id="SwitchSetResult">
+        <result property="id"    column="id"    />
+        <result property="switchName"    column="switch_name"    />
+        <result property="status"    column="status"    />
+        <result property="type"    column="type"    />
+    </resultMap>
+
+    <sql id="selectSwitchSetVo">
+        select id, switch_name, status, `type` from switch_set
+    </sql>
+
+    <select id="selectSwitchSetList" parameterType="SwitchSet" resultMap="SwitchSetResult">
+        <include refid="selectSwitchSetVo"/>
+        <where>
+            <if test="id != null "> and id = #{id}</if>
+            <if test="switchName != null  and switchName != ''"> and switch_name like concat('%', #{switchName}, '%')</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="type != null "> and `type` = #{type}</if>
+        </where>
+    </select>
+    
+    <select id="selectSwitchSetById" parameterType="Long" resultMap="SwitchSetResult">
+        <include refid="selectSwitchSetVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectSwitchStatusById" parameterType="Long" resultType="java.lang.Integer">
+        select IFNULL((select status from switch_set where id = #{id}),1)
+    </select>
+        
+    <insert id="insertSwitchSet" parameterType="SwitchSet" useGeneratedKeys="true" keyProperty="id">
+        insert into switch_set
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="switchName != null">switch_name,</if>
+            <if test="status != null">status,</if>
+            <if test="type != null">`type`,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="switchName != null">#{switchName},</if>
+            <if test="status != null">#{status},</if>
+            <if test="type != null">#{type},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSwitchSet" parameterType="SwitchSet">
+        update switch_set
+        <set>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSwitchSetById" parameterType="Long">
+        delete from switch_set where id = #{id}
+    </delete>
+
+    <delete id="deleteSwitchSetByIds" parameterType="String">
+        delete from switch_set where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

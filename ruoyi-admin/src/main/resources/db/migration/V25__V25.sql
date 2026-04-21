@@ -1,0 +1,1 @@
+insert into `stock`.`other_value` (other_key,`name`,other_value,remark,visible_flag) select 'send_validate_code_cooling_time','发送验证码冷却时间（秒）','60',null,0 from other_value where not exists (select other_key from other_value where other_key = 'send_validate_code_cooling_time')limit 1;

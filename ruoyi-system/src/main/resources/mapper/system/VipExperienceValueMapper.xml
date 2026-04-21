@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.VipExperienceValueMapper">
+    
+    <resultMap type="VipExperienceValue" id="VipExperienceValueResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="relateOrderCode"    column="relate_order_code"    />
+        <result property="experienceValue"    column="experience_value"    />
+        <result property="experienceValueBefore"    column="experience_value_before"    />
+        <result property="experienceValueAfter"    column="experience_value_after"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectVipExperienceValueVo">
+        select id, user_id, relate_order_code, experience_value,experience_value_before, experience_value_after, create_time from vip_experience_value
+    </sql>
+
+    <select id="selectVipExperienceValueList" parameterType="VipExperienceValue" resultMap="VipExperienceValueResult">
+        <include refid="selectVipExperienceValueVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="relateOrderCode != null  and relateOrderCode != ''"> and relate_order_code = #{relateOrderCode}</if>
+            <if test="experienceValueBefore != null "> and experience_value_before = #{experienceValueBefore}</if>
+            <if test="experienceValueAfter != null "> and experience_value_after = #{experienceValueAfter}</if>
+            <if test="startTime !=null ">
+                <![CDATA[   and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+            <if test="endTime !=null ">
+                <![CDATA[  and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        </where>
+    </select>
+    
+    <select id="selectVipExperienceValueById" parameterType="Long" resultMap="VipExperienceValueResult">
+        <include refid="selectVipExperienceValueVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="getUserCurrentVipExperienceValue" resultType="java.math.BigDecimal">
+        SELECT IFNULL((select experience_value_after from vip_experience_value where user_id = #{userId} order by id desc limit 1),0)
+    </select>
+
+    <insert id="insertVipExperienceValue" parameterType="VipExperienceValue" useGeneratedKeys="true" keyProperty="id">
+        insert into vip_experience_value
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="relateOrderCode != null and relateOrderCode != ''">relate_order_code,</if>
+            <if test="experienceValue != null">experience_value,</if>
+            <if test="experienceValueBefore != null">experience_value_before,</if>
+            <if test="experienceValueAfter != null">experience_value_after,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="relateOrderCode != null and relateOrderCode != ''">#{relateOrderCode},</if>
+            <if test="experienceValue != null">#{experienceValue},</if>
+            <if test="experienceValueBefore != null">#{experienceValueBefore},</if>
+            <if test="experienceValueAfter != null">#{experienceValueAfter},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateVipExperienceValue" parameterType="VipExperienceValue">
+        update vip_experience_value
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="relateOrderCode != null and relateOrderCode != ''">relate_order_code = #{relateOrderCode},</if>
+            <if test="experienceValue != null">experience_value = #{experienceValue},</if>
+            <if test="experienceValueBefore != null">experience_value_before = #{experienceValueBefore},</if>
+            <if test="experienceValueAfter != null">experience_value_after = #{experienceValueAfter},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteVipExperienceValueById" parameterType="Long">
+        delete from vip_experience_value where id = #{id}
+    </delete>
+
+    <delete id="deleteVipExperienceValueByIds" parameterType="String">
+        delete from vip_experience_value where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserFastTradeControlMapper">
+    
+    <resultMap type="UserFastTradeControl" id="UserFastTradeControlResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="controlType"    column="control_type"    />
+        <result property="minLimitTradeAmount"    column="min_limit_trade_amount"    />
+        <result property="maxLimitTradeAmount"    column="max_limit_trade_amount"    />
+        <result property="winPercentWithinTradeAmount"    column="win_percent_within_trade_amount"    />
+        <result property="winPercentOutsideTradeAmount"    column="win_percent_outside_trade_amount"    />
+        <result property="minLimitUserBalance"    column="min_limit_user_balance"    />
+        <result property="maxLimitUserBalance"    column="max_limit_user_balance"    />
+        <result property="winPercentWithinUserBalance"    column="win_percent_within_user_balance"    />
+        <result property="winPercentOutsideUserBalance"    column="win_percent_outside_user_balance"    />
+    </resultMap>
+
+    <sql id="selectUserFastTradeControlVo">
+        select id, user_id, control_type, min_limit_trade_amount, max_limit_trade_amount, win_percent_within_trade_amount, win_percent_outside_trade_amount, min_limit_user_balance, max_limit_user_balance, win_percent_within_user_balance, win_percent_outside_user_balance from user_fast_trade_control
+    </sql>
+
+    <select id="selectUserFastTradeControlList" parameterType="UserFastTradeControl" resultMap="UserFastTradeControlResult">
+        <include refid="selectUserFastTradeControlVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="controlType != null "> and control_type = #{controlType}</if>
+            <if test="minLimitTradeAmount != null "> and min_limit_trade_amount = #{minLimitTradeAmount}</if>
+            <if test="maxLimitTradeAmount != null "> and max_limit_trade_amount = #{maxLimitTradeAmount}</if>
+            <if test="winPercentWithinTradeAmount != null "> and win_percent_within_trade_amount = #{winPercentWithinTradeAmount}</if>
+            <if test="winPercentOutsideTradeAmount != null "> and win_percent_outside_trade_amount = #{winPercentOutsideTradeAmount}</if>
+            <if test="minLimitUserBalance != null "> and min_limit_user_balance = #{minLimitUserBalance}</if>
+            <if test="maxLimitUserBalance != null "> and max_limit_user_balance = #{maxLimitUserBalance}</if>
+            <if test="winPercentWithinUserBalance != null "> and win_percent_within_user_balance = #{winPercentWithinUserBalance}</if>
+            <if test="winPercentOutsideUserBalance != null "> and win_percent_outside_user_balance = #{winPercentOutsideUserBalance}</if>
+            <if test="params.userIds != null and params.userIds.size > 0">
+                and user_id in
+                <foreach collection="params.userIds" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.userIds != null and params.userIds.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectUserFastTradeControlById" parameterType="Long" resultMap="UserFastTradeControlResult">
+        <include refid="selectUserFastTradeControlVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertUserFastTradeControl" parameterType="UserFastTradeControl" useGeneratedKeys="true" keyProperty="id">
+        insert into user_fast_trade_control
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="controlType != null">control_type,</if>
+            <if test="minLimitTradeAmount != null">min_limit_trade_amount,</if>
+            <if test="maxLimitTradeAmount != null">max_limit_trade_amount,</if>
+            <if test="winPercentWithinTradeAmount != null">win_percent_within_trade_amount,</if>
+            <if test="winPercentOutsideTradeAmount != null">win_percent_outside_trade_amount,</if>
+            <if test="minLimitUserBalance != null">min_limit_user_balance,</if>
+            <if test="maxLimitUserBalance != null">max_limit_user_balance,</if>
+            <if test="winPercentWithinUserBalance != null">win_percent_within_user_balance,</if>
+            <if test="winPercentOutsideUserBalance != null">win_percent_outside_user_balance,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="controlType != null">#{controlType},</if>
+            <if test="minLimitTradeAmount != null">#{minLimitTradeAmount},</if>
+            <if test="maxLimitTradeAmount != null">#{maxLimitTradeAmount},</if>
+            <if test="winPercentWithinTradeAmount != null">#{winPercentWithinTradeAmount},</if>
+            <if test="winPercentOutsideTradeAmount != null">#{winPercentOutsideTradeAmount},</if>
+            <if test="minLimitUserBalance != null">#{minLimitUserBalance},</if>
+            <if test="maxLimitUserBalance != null">#{maxLimitUserBalance},</if>
+            <if test="winPercentWithinUserBalance != null">#{winPercentWithinUserBalance},</if>
+            <if test="winPercentOutsideUserBalance != null">#{winPercentOutsideUserBalance},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserFastTradeControl" parameterType="UserFastTradeControl">
+        update user_fast_trade_control
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="controlType != null">control_type = #{controlType},</if>
+            <if test="minLimitTradeAmount != null">min_limit_trade_amount = #{minLimitTradeAmount},</if>
+            <if test="maxLimitTradeAmount != null">max_limit_trade_amount = #{maxLimitTradeAmount},</if>
+            <if test="winPercentWithinTradeAmount != null">win_percent_within_trade_amount = #{winPercentWithinTradeAmount},</if>
+            <if test="winPercentOutsideTradeAmount != null">win_percent_outside_trade_amount = #{winPercentOutsideTradeAmount},</if>
+            <if test="minLimitUserBalance != null">min_limit_user_balance = #{minLimitUserBalance},</if>
+            <if test="maxLimitUserBalance != null">max_limit_user_balance = #{maxLimitUserBalance},</if>
+            <if test="winPercentWithinUserBalance != null">win_percent_within_user_balance = #{winPercentWithinUserBalance},</if>
+            <if test="winPercentOutsideUserBalance != null">win_percent_outside_user_balance = #{winPercentOutsideUserBalance},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserFastTradeControlById" parameterType="Long">
+        delete from user_fast_trade_control where id = #{id}
+    </delete>
+
+    <delete id="deleteUserFastTradeControlByIds" parameterType="String">
+        delete from user_fast_trade_control where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

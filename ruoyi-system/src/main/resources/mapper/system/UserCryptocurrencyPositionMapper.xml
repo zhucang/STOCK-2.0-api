@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserCryptocurrencyPositionMapper">
+    
+    <resultMap type="UserCryptocurrencyPosition" id="UserCryptocurrencyPositionResult">
+        <result property="id"    column="id"    />
+        <result property="orderCode"    column="order_code"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userAccount"    column="user_account"    />
+        <result property="email"    column="email"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="accountType"    column="account_type"    />
+        <result property="agentId"    column="agent_id"    />
+        <result property="agentName"    column="agent_name"    />
+        <result property="userRemark"    column="user_remark"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="productDesc"    column="product_desc"    />
+        <result property="productName"    column="product_name"    />
+        <result property="buyOrderTime"    column="buy_order_time"    />
+        <result property="buyOrderPrice"    column="buy_order_price"    />
+        <result property="sellOrderTime"    column="sell_order_time"    />
+        <result property="sellOrderPrice"    column="sell_order_price"    />
+        <result property="orderDirection"    column="order_direction"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="orderLever"    column="order_lever"    />
+        <result property="orderTotalPrice"    column="order_total_price"    />
+        <result property="orderFee"    column="order_fee"    />
+        <result property="orderYhsFee"    column="order_yhs_fee"    />
+        <result property="profitAndLose"    column="profit_and_lose"    />
+        <result property="allProfitAndLose"    column="all_profit_and_lose"    />
+        <result property="isLock"    column="is_lock"    />
+        <result property="lockMsg"    column="lock_msg"    />
+        <result property="currencyId"    column="currency_id"    />
+        <result property="stopProfitPrice"    column="stop_profit_price"    />
+        <result property="stopLossPrice"    column="stop_loss_price"    />
+        <result property="orderStatus"    column="order_status"    />
+        <result property="sqlVersion"    column="sql_version"    />
+    </resultMap>
+
+    <sql id="selectUserCryptocurrencyPositionVo">
+        select a.id, order_code, user_id, user_account, email, nick_name,account_type,agent_id,agent_name, b.remark user_remark, a.product_code,product_desc, c.product_name, buy_order_time, buy_order_price, sell_order_time, sell_order_price, order_direction, order_num, order_lever, order_total_price, order_fee, order_yhs_fee, profit_and_lose, all_profit_and_lose, a.is_lock, lock_msg, currency_id, stop_profit_price, stop_loss_price, order_status, a.sql_version
+        from user_cryptocurrency_position a
+                 left join user_info b
+                           on a.user_id = b.id
+                 left join cryptocurrency_product c
+                           on a.product_code = c.product_code
+    </sql>
+
+    <select id="selectUserCryptocurrencyPositionList" parameterType="UserCryptocurrencyPosition" resultMap="UserCryptocurrencyPositionResult">
+        <include refid="selectUserCryptocurrencyPositionVo"/>
+        <where>
+            <if test="id != null "> and a.id = #{id}</if>
+            <if test="orderCode != null  and orderCode != ''"> and order_code like concat('%',#{orderCode},'%')</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="userAccount != null "> and user_account like concat('%',#{userAccount},'%') </if>
+            <if test="nickName != null "> and nick_name like concat('%',#{nickName},'%') </if>
+            <if test="accountType != null "> and account_type = #{accountType}</if>
+            <if test="email != null "> and email like concat('%',#{email},'%')</if>
+            <if test="productCode != null  and productCode != ''"> and a.product_code like concat('%',#{productCode},'%')</if>
+            <if test="orderDirection != null "> and order_direction = #{orderDirection}</if>
+            <if test="isLock != null "> and a.is_lock = #{isLock}</if>
+            <if test="currencyId != null "> and currency_id = #{currencyId}</if>
+            <if test="orderStatus != null "> and order_status = #{orderStatus}</if>
+            <if test="agentId != null and params.isAllAgentData != null and params.isAllAgentData == 0">
+                and agent_id in (select user_id from agent_team_level_line where sup_user_id = #{agentId} union select #{agentId})
+            </if>
+            <if test="agentId != null and params.isAllAgentData == null">
+                and agent_id = #{agentId}
+            </if>
+            <if test="startTime !=null ">
+                <![CDATA[   and DATE_FORMAT(buy_order_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+            <if test="endTime !=null ">
+                <![CDATA[  and DATE_FORMAT(buy_order_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+            ${params.dataScope}
+        </where>
+    </select>
+    
+    <select id="selectUserCryptocurrencyPositionById" parameterType="Long" resultMap="UserCryptocurrencyPositionResult">
+        <include refid="selectUserCryptocurrencyPositionVo"/>
+        where a.id = #{id}
+    </select>
+        
+    <insert id="insertUserCryptocurrencyPosition" parameterType="UserCryptocurrencyPosition" useGeneratedKeys="true" keyProperty="id">
+        insert into user_cryptocurrency_position
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderCode != null and orderCode != ''">order_code,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="productCode != null and productCode != ''">product_code,</if>
+            <if test="productName != null">product_name,</if>
+            <if test="buyOrderTime != null">buy_order_time,</if>
+            <if test="buyOrderPrice != null">buy_order_price,</if>
+            <if test="sellOrderTime != null">sell_order_time,</if>
+            <if test="sellOrderPrice != null">sell_order_price,</if>
+            <if test="orderDirection != null">order_direction,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="orderLever != null">order_lever,</if>
+            <if test="orderTotalPrice != null">order_total_price,</if>
+            <if test="orderFee != null">order_fee,</if>
+            <if test="orderYhsFee != null">order_yhs_fee,</if>
+            <if test="profitAndLose != null">profit_and_lose,</if>
+            <if test="allProfitAndLose != null">all_profit_and_lose,</if>
+            <if test="isLock != null">is_lock,</if>
+            <if test="lockMsg != null">lock_msg,</if>
+            <if test="currencyId != null">currency_id,</if>
+            <if test="stopProfitPrice != null">stop_profit_price,</if>
+            <if test="stopLossPrice != null">stop_loss_price,</if>
+            <if test="orderStatus != null">order_status,</if>
+            <if test="sqlVersion != null">sql_version,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderCode != null and orderCode != ''">#{orderCode},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="productCode != null and productCode != ''">#{productCode},</if>
+            <if test="productName != null">#{productName},</if>
+            <if test="buyOrderTime != null">#{buyOrderTime},</if>
+            <if test="buyOrderPrice != null">#{buyOrderPrice},</if>
+            <if test="sellOrderTime != null">#{sellOrderTime},</if>
+            <if test="sellOrderPrice != null">#{sellOrderPrice},</if>
+            <if test="orderDirection != null">#{orderDirection},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="orderLever != null">#{orderLever},</if>
+            <if test="orderTotalPrice != null">#{orderTotalPrice},</if>
+            <if test="orderFee != null">#{orderFee},</if>
+            <if test="orderYhsFee != null">#{orderYhsFee},</if>
+            <if test="profitAndLose != null">#{profitAndLose},</if>
+            <if test="allProfitAndLose != null">#{allProfitAndLose},</if>
+            <if test="isLock != null">#{isLock},</if>
+            <if test="lockMsg != null">#{lockMsg},</if>
+            <if test="currencyId != null">#{currencyId},</if>
+            <if test="stopProfitPrice != null">#{stopProfitPrice},</if>
+            <if test="stopLossPrice != null">#{stopLossPrice},</if>
+            <if test="orderStatus != null">#{orderStatus},</if>
+            <if test="sqlVersion != null">#{sqlVersion},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserCryptocurrencyPosition" parameterType="UserCryptocurrencyPosition">
+        update user_cryptocurrency_position
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderCode != null and orderCode != ''">order_code = #{orderCode},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="productCode != null and productCode != ''">product_code = #{productCode},</if>
+            <if test="productName != null">product_name = #{productName},</if>
+            <if test="buyOrderTime != null">buy_order_time = #{buyOrderTime},</if>
+            <if test="buyOrderPrice != null">buy_order_price = #{buyOrderPrice},</if>
+            <if test="sellOrderTime != null">sell_order_time = #{sellOrderTime},</if>
+            <if test="sellOrderPrice != null">sell_order_price = #{sellOrderPrice},</if>
+            <if test="orderDirection != null">order_direction = #{orderDirection},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="orderLever != null">order_lever = #{orderLever},</if>
+            <if test="orderTotalPrice != null">order_total_price = #{orderTotalPrice},</if>
+            <if test="orderFee != null">order_fee = #{orderFee},</if>
+            <if test="orderYhsFee != null">order_yhs_fee = #{orderYhsFee},</if>
+            <if test="profitAndLose != null">profit_and_lose = #{profitAndLose},</if>
+            <if test="allProfitAndLose != null">all_profit_and_lose = #{allProfitAndLose},</if>
+            <if test="isLock != null">is_lock = #{isLock},</if>
+            <if test="lockMsg != null">lock_msg = #{lockMsg},</if>
+            <if test="currencyId != null">currency_id = #{currencyId},</if>
+            <if test="stopProfitPrice != null">stop_profit_price = #{stopProfitPrice},</if>
+            <if test="stopLossPrice != null">stop_loss_price = #{stopLossPrice},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="sqlVersion != null">sql_version = sql_version + 1,</if>
+        </trim>
+        where id = #{id}
+        <if test="sqlVersion != null">and sql_version = #{sqlVersion}</if>
+    </update>
+
+    <delete id="deleteUserCryptocurrencyPositionById" parameterType="Long">
+        delete from user_cryptocurrency_position where id = #{id}
+    </delete>
+
+    <delete id="deleteUserCryptocurrencyPositionByIds" parameterType="String">
+        delete from user_cryptocurrency_position where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

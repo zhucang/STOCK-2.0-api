@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.RechargeChannelConfigMapper">
+    
+    <resultMap type="RechargeChannelConfig" id="RechargeChannelConfigResult">
+        <result property="id"    column="id"    />
+        <result property="channelName"    column="channel_name"    />
+        <result property="channelAccount"    column="channel_account"    />
+        <result property="walletReceiptCode"    column="wallet_receipt_code"    />
+        <result property="channelImg"    column="channel_img"    />
+        <result property="bankName"    column="bank_name"    />
+        <result property="accountOpenBank"    column="account_open_bank"    />
+        <result property="holder"    column="holder"    />
+        <result property="bankPhone"    column="bank_phone"    />
+        <result property="bankCountry"    column="bank_country"    />
+        <result property="abaCode"    column="aba_code"    />
+        <result property="swift"    column="swift"    />
+        <result property="postCode"    column="post_code"    />
+        <result property="userRealAddress"    column="user_real_address"    />
+        <result property="accountType"    column="account_type"    />
+        <result property="channelMinLimit"    column="channel_min_limit"    />
+        <result property="channelMaxLimit"    column="channel_max_limit"    />
+        <result property="channelType"    column="channel_type"    />
+        <result property="userId"    column="user_id"    />
+        <result property="originalChannelId"    column="original_channel_id"    />
+        <result property="currencyId"    column="currency_id"    />
+        <result property="currencyName"    column="currency_name"    />
+        <result property="sort"    column="sort"    />
+        <result property="quickAmounts"    column="quick_amounts"    />
+        <result property="customerUrl"    column="customer_url"    />
+        <result property="firstRechargeWinningsAmount"    column="first_recharge_winnings_amount"    />
+        <result property="firstRechargeWinningsRate"    column="first_recharge_winnings_rate"    />
+        <result property="firstRechargeWinningsMethod"    column="first_recharge_winnings_method"    />
+        <result property="dailyRechargeWinningsAmount"    column="daily_recharge_winnings_amount"    />
+        <result property="dailyRechargeWinningsRate"    column="daily_recharge_winnings_rate"    />
+        <result property="dailyRechargeWinningsMethod"    column="daily_recharge_winnings_method"    />
+        <result property="status"    column="status"    />
+        <association property="channelNameLang" javaType="langMgr">
+            <result property="zh"    column="channel_name"    />
+            <result property="en"    column="channel_name_en"    />
+            <result property="tc"    column="channel_name_tc"    />
+            <result property="de"    column="channel_name_de"    />
+            <result property="es"    column="channel_name_es"    />
+            <result property="fr"    column="channel_name_fr"    />
+            <result property="idn"    column="channel_name_idn"    />
+            <result property="jp"    column="channel_name_jp"    />
+            <result property="ko"    column="channel_name_ko"    />
+            <result property="my"    column="channel_name_my"    />
+            <result property="th"    column="channel_name_th"    />
+            <result property="vi"    column="channel_name_vi"    />
+            <result property="pt"    column="channel_name_pt"    />
+            <result property="rus"    column="channel_name_rus"    />
+            <result property="blr"    column="channel_name_blr"    />
+            <result property="ida"    column="channel_name_ida"    />
+            <result property="sa"    column="channel_name_sa"    />
+            <result property="ar"    column="channel_name_ar"    />
+            <result property="it"    column="channel_name_it"    />
+            <result property="tr"    column="channel_name_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectRechargeChannelConfigVo">
+        select a.id, channel_name, channel_account, wallet_receipt_code, channel_img, bank_name, account_open_bank, holder,bank_phone,bank_country, aba_code, swift, post_code, user_real_address, account_type, channel_min_limit, channel_max_limit, channel_type, user_id, original_channel_id, currency_id,currency_name, a.sort, quick_amounts, customer_url,first_recharge_winnings_amount,first_recharge_winnings_rate,first_recharge_winnings_method, daily_recharge_winnings_amount,daily_recharge_winnings_rate,daily_recharge_winnings_method,a.status,channel_name_en, channel_name_tc, channel_name_de, channel_name_es, channel_name_fr, channel_name_idn, channel_name_jp, channel_name_ko, channel_name_my, channel_name_th, channel_name_vi, channel_name_pt, channel_name_rus, channel_name_blr, channel_name_ida, channel_name_sa, channel_name_ar, channel_name_it, channel_name_tr
+        from recharge_channel_config a
+                 left join platform_currency b
+                           on a.currency_id = b.id
+    </sql>
+
+    <select id="selectRechargeChannelConfigList" parameterType="RechargeChannelConfig" resultMap="RechargeChannelConfigResult">
+        <include refid="selectRechargeChannelConfigVo"/>
+        <where>  
+            <if test="channelName != null  and channelName != ''"> and channel_name like concat('%', #{channelName}, '%')</if>
+            <if test="channelAccount != null  and channelAccount != ''"> and channel_account = #{channelAccount}</if>
+            <if test="walletReceiptCode != null  and walletReceiptCode != ''"> and wallet_receipt_code = #{walletReceiptCode}</if>
+            <if test="channelImg != null  and channelImg != ''"> and channel_img = #{channelImg}</if>
+            <if test="bankName != null  and bankName != ''"> and bank_name like concat('%', #{bankName}, '%')</if>
+            <if test="accountOpenBank != null  and accountOpenBank != ''"> and account_open_bank = #{accountOpenBank}</if>
+            <if test="holder != null  and holder != ''"> and holder = #{holder}</if>
+            <if test="channelMinLimit != null "> and channel_min_limit = #{channelMinLimit}</if>
+            <if test="channelMaxLimit != null "> and channel_max_limit = #{channelMaxLimit}</if>
+            <if test="channelType != null "> and channel_type = #{channelType}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="userId == null "> and user_id is null</if>
+            <if test="originalChannelId != null "> and original_channel_id = #{originalChannelId}</if>
+            <if test="currencyId != null "> and currency_id = #{currencyId}</if>
+            <if test="sort != null "> and a.sort = #{sort}</if>
+            <if test="quickAmounts != null  and quickAmounts != ''"> and quick_amounts = #{quickAmounts}</if>
+            <if test="customerUrl != null  and customerUrl != ''"> and customer_url = #{customerUrl}</if>
+            <if test="status != null "> and a.status = #{status}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and a.id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and a.id = 0
+            </if>
+            and (b.status = 0 or a.currency_id = 0)
+        </where>
+    </select>
+    
+    <select id="selectRechargeChannelConfigById" parameterType="Long" resultMap="RechargeChannelConfigResult">
+        <include refid="selectRechargeChannelConfigVo"/>
+        where a.id = #{id}
+    </select>
+
+    <select id="selectRechargeChannelConfigByChannelName" resultMap="RechargeChannelConfigResult">
+        <include refid="selectRechargeChannelConfigVo"/>
+        where channel_name = #{channelName}
+    </select>
+        
+    <insert id="insertRechargeChannelConfig" parameterType="RechargeChannelConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into recharge_channel_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="channelName != null">channel_name,</if>
+            <if test="channelAccount != null">channel_account,</if>
+            <if test="walletReceiptCode != null">wallet_receipt_code,</if>
+            <if test="channelImg != null">channel_img,</if>
+            <if test="bankName != null">bank_name,</if>
+            <if test="accountOpenBank != null">account_open_bank,</if>
+            <if test="holder != null">holder,</if>
+            <if test="bankPhone != null">bank_phone,</if>
+            <if test="bankCountry != null">bank_country,</if>
+            <if test="abaCode != null">aba_code,</if>
+            <if test="swift != null">swift,</if>
+            <if test="postCode != null">post_code,</if>
+            <if test="userRealAddress != null">user_real_address,</if>
+            <if test="accountType != null">account_type,</if>
+            <if test="channelMinLimit != null">channel_min_limit,</if>
+            <if test="channelMaxLimit != null">channel_max_limit,</if>
+            <if test="channelType != null">channel_type,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="originalChannelId != null">original_channel_id,</if>
+            <if test="currencyId != null">currency_id,</if>
+            <if test="sort != null">sort,</if>
+            <if test="quickAmounts != null">quick_amounts,</if>
+            <if test="customerUrl != null">customer_url,</if>
+            <if test="firstRechargeWinningsAmount != null">first_recharge_winnings_amount,</if>
+            <if test="firstRechargeWinningsRate != null">first_recharge_winnings_rate,</if>
+            <if test="firstRechargeWinningsMethod != null">first_recharge_winnings_method,</if>
+            <if test="dailyRechargeWinningsAmount != null">daily_recharge_winnings_amount,</if>
+            <if test="dailyRechargeWinningsRate != null">daily_recharge_winnings_rate,</if>
+            <if test="dailyRechargeWinningsMethod != null">daily_recharge_winnings_method,</if>
+            <if test="status != null">status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="channelName != null">#{channelName},</if>
+            <if test="channelAccount != null">#{channelAccount},</if>
+            <if test="walletReceiptCode != null">#{walletReceiptCode},</if>
+            <if test="channelImg != null">#{channelImg},</if>
+            <if test="bankName != null">#{bankName},</if>
+            <if test="accountOpenBank != null">#{accountOpenBank},</if>
+            <if test="holder != null">#{holder},</if>
+            <if test="bankPhone != null">#{bankPhone},</if>
+            <if test="bankCountry != null">#{bankCountry},</if>
+            <if test="abaCode != null">#{abaCode},</if>
+            <if test="swift != null">#{swift},</if>
+            <if test="postCode != null">#{postCode},</if>
+            <if test="userRealAddress != null">#{userRealAddress},</if>
+            <if test="accountType != null">#{accountType},</if>
+            <if test="channelMinLimit != null">#{channelMinLimit},</if>
+            <if test="channelMaxLimit != null">#{channelMaxLimit},</if>
+            <if test="channelType != null">#{channelType},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="originalChannelId != null">#{originalChannelId},</if>
+            <if test="currencyId != null">#{currencyId},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="quickAmounts != null">#{quickAmounts},</if>
+            <if test="customerUrl != null">#{customerUrl},</if>
+            <if test="firstRechargeWinningsAmount != null">#{firstRechargeWinningsAmount},</if>
+            <if test="firstRechargeWinningsRate != null">#{firstRechargeWinningsRate},</if>
+            <if test="firstRechargeWinningsMethod != null">#{firstRechargeWinningsMethod},</if>
+            <if test="dailyRechargeWinningsAmount != null">#{dailyRechargeWinningsAmount},</if>
+            <if test="dailyRechargeWinningsRate != null">#{dailyRechargeWinningsRate},</if>
+            <if test="dailyRechargeWinningsMethod != null">#{dailyRechargeWinningsMethod},</if>
+            <if test="status != null">#{status},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRechargeChannelConfig" parameterType="RechargeChannelConfig">
+        update recharge_channel_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="channelName != null">channel_name = #{channelName},</if>
+            <if test="channelAccount != null">channel_account = #{channelAccount},</if>
+            <if test="walletReceiptCode != null">wallet_receipt_code = #{walletReceiptCode},</if>
+            <if test="channelImg != null">channel_img = #{channelImg},</if>
+            <if test="bankName != null">bank_name = #{bankName},</if>
+            <if test="accountOpenBank != null">account_open_bank = #{accountOpenBank},</if>
+            <if test="holder != null">holder = #{holder},</if>
+            <if test="bankPhone != null">bank_phone = #{bankPhone},</if>
+            <if test="bankCountry != null">bank_country = #{bankCountry},</if>
+            <if test="abaCode != null">aba_code = #{abaCode},</if>
+            <if test="swift != null">swift = #{swift},</if>
+            <if test="postCode != null">post_code = #{postCode},</if>
+            <if test="userRealAddress != null">user_real_address = #{userRealAddress},</if>
+            <if test="accountType != null">account_type = #{accountType},</if>
+            <if test="channelMinLimit != null">channel_min_limit = #{channelMinLimit},</if>
+            <if test="channelMaxLimit != null">channel_max_limit = #{channelMaxLimit},</if>
+            <if test="channelType != null">channel_type = #{channelType},</if>
+            <if test="currencyId != null">currency_id = #{currencyId},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="quickAmounts != null">quick_amounts = #{quickAmounts},</if>
+            <if test="customerUrl != null">customer_url = #{customerUrl},</if>
+            <if test="firstRechargeWinningsAmount != null">first_recharge_winnings_amount = #{firstRechargeWinningsAmount},</if>
+            <if test="firstRechargeWinningsRate != null">first_recharge_winnings_rate = #{firstRechargeWinningsRate},</if>
+            <if test="firstRechargeWinningsMethod != null">first_recharge_winnings_method = #{firstRechargeWinningsMethod},</if>
+            <if test="dailyRechargeWinningsAmount != null">daily_recharge_winnings_amount = #{dailyRechargeWinningsAmount},</if>
+            <if test="dailyRechargeWinningsRate != null">daily_recharge_winnings_rate = #{dailyRechargeWinningsRate},</if>
+            <if test="dailyRechargeWinningsMethod != null">daily_recharge_winnings_method = #{dailyRechargeWinningsMethod},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="channelNameLang.zh != null and channelName == null">channel_name = #{channelNameLang.zh},</if>
+            <if test="channelNameLang.en != null">channel_name_en = #{channelNameLang.en},</if>
+            <if test="channelNameLang.tc != null">channel_name_tc = #{channelNameLang.tc},</if>
+            <if test="channelNameLang.de != null">channel_name_de = #{channelNameLang.de},</if>
+            <if test="channelNameLang.es != null">channel_name_es = #{channelNameLang.es},</if>
+            <if test="channelNameLang.fr != null">channel_name_fr = #{channelNameLang.fr},</if>
+            <if test="channelNameLang.idn != null">channel_name_idn = #{channelNameLang.idn},</if>
+            <if test="channelNameLang.jp != null">channel_name_jp = #{channelNameLang.jp},</if>
+            <if test="channelNameLang.ko != null">channel_name_ko = #{channelNameLang.ko},</if>
+            <if test="channelNameLang.my != null">channel_name_my = #{channelNameLang.my},</if>
+            <if test="channelNameLang.th != null">channel_name_th = #{channelNameLang.th},</if>
+            <if test="channelNameLang.vi != null">channel_name_vi = #{channelNameLang.vi},</if>
+            <if test="channelNameLang.pt != null">channel_name_pt = #{channelNameLang.pt},</if>
+            <if test="channelNameLang.rus != null">channel_name_rus = #{channelNameLang.rus},</if>
+            <if test="channelNameLang.blr != null">channel_name_blr = #{channelNameLang.blr},</if>
+            <if test="channelNameLang.ida != null">channel_name_ida = #{channelNameLang.ida},</if>
+            <if test="channelNameLang.sa != null">channel_name_sa = #{channelNameLang.sa},</if>
+            <if test="channelNameLang.ar != null">channel_name_ar = #{channelNameLang.ar},</if>
+            <if test="channelNameLang.it != null">channel_name_it = #{channelNameLang.it},</if>
+            <if test="channelNameLang.tr != null">channel_name_tr = #{channelNameLang.tr},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRechargeChannelConfigById" parameterType="Long">
+        delete from recharge_channel_config where id = #{id}
+    </delete>
+
+    <delete id="deleteRechargeChannelConfigByIds" parameterType="String">
+        delete from recharge_channel_config where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

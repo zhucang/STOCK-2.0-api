@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.BibiTradeOrderMapper">
+    
+    <resultMap type="BibiTradeOrder" id="BibiTradeOrderResult">
+        <result property="id"    column="id"    />
+        <result property="orderCode"    column="order_code"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userAccount"    column="user_account"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="accountType"    column="account_type"    />
+        <result property="agentId"    column="agent_id"    />
+        <result property="agentName"    column="agent_name"    />
+        <result property="userRemark"    column="user_remark"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="productName"    column="product_name"    />
+        <result property="productType"    column="product_type"    />
+        <result property="orderAmount"    column="order_amount"    />
+        <result property="turnoverAmount"    column="turnover_amount"    />
+        <result property="orderVolume"    column="order_volume"    />
+        <result property="handingFee"    column="handing_fee"    />
+        <result property="productPrice"    column="product_price"    />
+        <result property="orderType"    column="order_type"    />
+        <result property="orderMethod"    column="order_method"    />
+        <result property="orderStatus"    column="order_status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="currencyId"    column="currency_id"    />
+        <result property="sqlVersion"    column="sql_version"    />
+    </resultMap>
+
+    <sql id="selectBibiTradeOrderVo">
+        select a.id, order_code, user_id,user_account,nick_name,account_type,agent_id,agent_name, b.remark user_remark, a.product_code, a.product_type,product_desc,c.product_name, order_amount, turnover_amount, order_volume, handing_fee, product_price, order_type, order_method, order_status, create_time, a.remark,currency_id, a.sql_version
+        from bibi_trade_order a
+                 left join user_info b
+                           on a.user_id = b.id
+                 left join
+             (select product_name,product_code,null as product_desc,1 as product_type from stock_product
+              union
+              select product_name,product_code,product_desc,2 as product_type from cryptocurrency_product
+              union
+              select product_name,product_code,null as product_desc,3 as product_type from futures_product
+              union
+              select product_name,product_code,null as product_desc,4 as product_type  from forex_product) as c
+             on a.product_code = c.product_code and a.product_type = c.product_type
+    </sql>
+
+    <select id="selectBibiTradeOrderList" parameterType="BibiTradeOrder" resultMap="BibiTradeOrderResult">
+        <include refid="selectBibiTradeOrderVo"/>
+        <where>  
+            <if test="orderCode != null  and orderCode != ''"> and order_code = #{orderCode}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="userAccount != null "> and user_account like concat('%',#{userAccount},'%') </if>
+            <if test="nickName != null "> and nick_name like concat('%',#{nickName},'%') </if>
+            <if test="accountType != null "> and account_type = #{accountType}</if>
+            <if test="agentId != null and params.isAllAgentData != null and params.isAllAgentData == 0">
+                and agent_id in (select user_id from agent_team_level_line where sup_user_id = #{agentId} union select #{agentId})
+            </if>
+            <if test="agentId != null and params.isAllAgentData == null">
+                and agent_id = #{agentId}
+            </if>
+            <if test="productCode != null  and productCode != ''"> and a.product_code like concat('%',#{productCode},'%')</if>
+            <if test="productName != null  and productName != ''"> and c.product_name like concat('%',#{productName},'%')</if>
+            <if test="productType != null "> and a.product_type = #{productType}</if>
+            <if test="orderAmount != null "> and order_amount = #{orderAmount}</if>
+            <if test="turnoverAmount != null "> and turnover_amount = #{turnoverAmount}</if>
+            <if test="orderVolume != null "> and order_volume = #{orderVolume}</if>
+            <if test="handingFee != null "> and handing_fee = #{handingFee}</if>
+            <if test="productPrice != null "> and product_price = #{productPrice}</if>
+            <if test="orderType != null "> and order_type = #{orderType}</if>
+            <if test="orderMethod != null "> and order_method = #{orderMethod}</if>
+            <if test="orderStatus != null and orderStatus != 4"> and order_status = #{orderStatus}</if>
+            <if test="orderStatus != null and orderStatus == 4"> and order_status != 0</if>
+            <if test="currencyId != null "> and currency_id = #{currencyId}</if>
+            <if test="startTime !=null ">
+                <![CDATA[   and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+            <if test="endTime !=null ">
+                <![CDATA[  and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+            <if test="sqlVersion != null "> and sql_version = #{sqlVersion}</if>
+            ${params.dataScope}
+        </where>
+    </select>
+    
+    <select id="selectBibiTradeOrderById" parameterType="Long" resultMap="BibiTradeOrderResult">
+        <include refid="selectBibiTradeOrderVo"/>
+        where a.id = #{id}
+    </select>
+        
+    <insert id="insertBibiTradeOrder" parameterType="BibiTradeOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into bibi_trade_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderCode != null and orderCode != ''">order_code,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="productCode != null and productCode != ''">product_code,</if>
+            <if test="productType != null">product_type,</if>
+            <if test="orderAmount != null">order_amount,</if>
+            <if test="turnoverAmount != null">turnover_amount,</if>
+            <if test="orderVolume != null">order_volume,</if>
+            <if test="handingFee != null">handing_fee,</if>
+            <if test="productPrice != null">product_price,</if>
+            <if test="orderType != null">order_type,</if>
+            <if test="orderMethod != null">order_method,</if>
+            <if test="orderStatus != null">order_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="currencyId != null">currency_id,</if>
+            <if test="sqlVersion != null">sql_version,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderCode != null and orderCode != ''">#{orderCode},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="productCode != null and productCode != ''">#{productCode},</if>
+            <if test="productType != null">#{productType},</if>
+            <if test="orderAmount != null">#{orderAmount},</if>
+            <if test="turnoverAmount != null">#{turnoverAmount},</if>
+            <if test="orderVolume != null">#{orderVolume},</if>
+            <if test="handingFee != null">#{handingFee},</if>
+            <if test="productPrice != null">#{productPrice},</if>
+            <if test="orderType != null">#{orderType},</if>
+            <if test="orderMethod != null">#{orderMethod},</if>
+            <if test="orderStatus != null">#{orderStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="currencyId != null">#{currencyId},</if>
+            <if test="sqlVersion != null">#{sqlVersion},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertBibiTradeOrders">
+        insert into bibi_trade_order(order_code, user_id, product_code, product_type, order_amount, turnover_amount, order_volume,
+        handing_fee, product_price, order_type, order_method, order_status, create_time, remark, currency_id)
+        <foreach collection="list" open="values(" close=")" separator="),(" index="index" item="item" nullable="true">
+            #{item.orderCode},#{item.userId},#{item.productCode},#{item.productType},#{item.orderAmount},#{item.turnoverAmount},#{item.orderVolume},
+            #{item.handingFee},#{item.productPrice},#{item.orderType},#{item.orderMethod},#{item.orderStatus},#{item.createTime},#{item.remark},#{item.currencyId}
+        </foreach>
+    </insert>
+
+    <update id="updateBibiTradeOrder" parameterType="BibiTradeOrder">
+        update bibi_trade_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderCode != null and orderCode != ''">order_code = #{orderCode},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="productCode != null and productCode != ''">product_code = #{productCode},</if>
+            <if test="productType != null">product_type = #{productType},</if>
+            <if test="orderAmount != null">order_amount = #{orderAmount},</if>
+            <if test="turnoverAmount != null">turnover_amount = #{turnoverAmount},</if>
+            <if test="orderVolume != null">order_volume = #{orderVolume},</if>
+            <if test="handingFee != null">handing_fee = #{handingFee},</if>
+            <if test="productPrice != null">product_price = #{productPrice},</if>
+            <if test="orderType != null">order_type = #{orderType},</if>
+            <if test="orderMethod != null">order_method = #{orderMethod},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="currencyId != null">currency_id = #{currencyId},</if>
+            <if test="sqlVersion != null">sql_version = sql_version + 1,</if>
+        </trim>
+        where id = #{id}
+        <if test="sqlVersion != null">and sql_version = #{sqlVersion}</if>
+    </update>
+
+    <delete id="deleteBibiTradeOrderById" parameterType="Long">
+        delete from bibi_trade_order where id = #{id}
+    </delete>
+
+    <delete id="deleteBibiTradeOrderByIds" parameterType="String">
+        delete from bibi_trade_order where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

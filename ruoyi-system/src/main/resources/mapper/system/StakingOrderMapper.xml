@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StakingOrderMapper">
+    
+    <resultMap type="StakingOrder" id="StakingOrderResult">
+        <result property="id"    column="id"    />
+        <result property="orderCode"    column="order_code"    />
+        <result property="stakingProductId"    column="staking_product_id"    />
+        <result property="stakingTime"    column="staking_time"    />
+        <result property="buyPrice"    column="buy_price"    />
+        <result property="stakingPoolAmount"    column="staking_pool_amount"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userAccount"    column="user_account"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="accountType"    column="account_type"    />
+        <result property="agentId"    column="agent_id"    />
+        <result property="agentName"    column="agent_name"    />
+        <result property="userRemark"    column="user_remark"    />
+        <result property="startDate"    column="start_date"    />
+        <result property="endDate"    column="end_date"    />
+        <result property="lastInterestTime"    column="last_interest_time"    />
+        <result property="alreadyInterestCount"    column="already_interest_count"    />
+        <result property="breakContractRate"    column="break_contract_rate"    />
+        <result property="dailyIncomeRate"    column="daily_income_rate"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="orderStatus"    column="order_status"    />
+        <result property="currencyId"    column="currency_id"    />
+        <result property="currencyName"    column="currency_name"    />
+        <result property="floatDailyIncomeMinRate"    column="float_daily_income_min_rate"    />
+        <result property="floatDailyIncomeMaxRate"    column="float_daily_income_max_rate"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="sqlVersion"    column="sql_version"    />
+        <association property="stakingNameLang" javaType="langMgr">
+            <result property="zh"    column="staking_name"    />
+            <result property="en"    column="staking_name_en"    />
+            <result property="tc"    column="staking_name_tc"    />
+            <result property="de"    column="staking_name_de"    />
+            <result property="es"    column="staking_name_es"    />
+            <result property="fr"    column="staking_name_fr"    />
+            <result property="idn"    column="staking_name_idn"    />
+            <result property="jp"    column="staking_name_jp"    />
+            <result property="ko"    column="staking_name_ko"    />
+            <result property="my"    column="staking_name_my"    />
+            <result property="th"    column="staking_name_th"    />
+            <result property="vi"    column="staking_name_vi"    />
+            <result property="pt"    column="staking_name_pt"    />
+            <result property="rus"    column="staking_name_rus"    />
+            <result property="blr"    column="staking_name_blr"    />
+            <result property="ida"    column="staking_name_ida"    />
+            <result property="sa"    column="staking_name_sa"    />
+            <result property="ar"    column="staking_name_ar"    />
+            <result property="it"    column="staking_name_it"    />
+            <result property="tr"    column="staking_name_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectStakingOrderVo">
+        select a.id, order_code, staking_product_id, staking_name, a.staking_time, buy_price, staking_pool_amount, user_id, user_account, nick_name, account_type, agent_id, agent_name, d.remark user_remark, start_date, end_date, last_interest_time, already_interest_count, a.break_contract_rate, daily_income_rate, create_time, order_status, a.currency_id, currency_name, a.float_daily_income_min_rate, a.float_daily_income_max_rate, update_by, update_time, a.sql_version, staking_name_en, staking_name_tc, staking_name_de, staking_name_es, staking_name_fr, staking_name_idn, staking_name_jp, staking_name_ko, staking_name_my, staking_name_th, staking_name_vi, staking_name_pt, staking_name_rus, staking_name_blr, staking_name_ida, staking_name_sa, staking_name_ar, staking_name_it, staking_name_tr
+        from staking_order a
+                 left join staking_product b
+                           on a.staking_product_id = b.id
+                 left join platform_currency c
+                           on a.currency_id = c.id
+                 left join user_info d
+                           on user_id = d.id
+    </sql>
+
+    <select id="selectStakingOrderList" parameterType="StakingOrder" resultMap="StakingOrderResult">
+        <include refid="selectStakingOrderVo"/>
+        <where>  
+            <if test="orderCode != null  and orderCode != ''"> and order_code = #{orderCode}</if>
+            <if test="stakingProductId != null "> and staking_product_id = #{stakingProductId}</if>
+            <if test="stakingTime != null "> and staking_time = #{stakingTime}</if>
+            <if test="buyPrice != null "> and buy_price = #{buyPrice}</if>
+            <if test="stakingPoolAmount != null "> and staking_pool_amount = #{stakingPoolAmount}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="userAccount != null "> and user_account like concat('%',#{userAccount},'%') </if>
+            <if test="nickName != null "> and nick_name like concat('%',#{nickName},'%') </if>
+            <if test="accountType != null "> and account_type = #{accountType}</if>
+            <if test="agentId != null and params.isAllAgentData != null and params.isAllAgentData == 0">
+                and agent_id in (select user_id from agent_team_level_line where sup_user_id = #{agentId} union select #{agentId})
+            </if>
+            <if test="agentId != null and params.isAllAgentData == null">
+                and agent_id = #{agentId}
+            </if>
+            <if test="startDate != null  and startDate != ''"> and start_date = #{startDate}</if>
+            <if test="endDate != null  and endDate != ''"> and end_date = #{endDate}</if>
+            <if test="lastInterestTime != null "> and last_interest_time = #{lastInterestTime}</if>
+            <if test="alreadyInterestCount != null "> and already_interest_count = #{alreadyInterestCount}</if>
+            <if test="breakContractRate != null "> and break_contract_rate = #{breakContractRate}</if>
+            <if test="dailyIncomeRate != null "> and daily_income_rate = #{dailyIncomeRate}</if>
+            <if test="orderStatus != null "> and order_status = #{orderStatus}</if>
+            <if test="currencyId != null "> and currency_id = #{currencyId}</if>
+            <if test="floatDailyIncomeMinRate != null "> and float_daily_income_min_rate = #{floatDailyIncomeMinRate}</if>
+            <if test="floatDailyIncomeMaxRate != null "> and float_daily_income_max_rate = #{floatDailyIncomeMaxRate}</if>
+            <if test="sqlVersion != null "> and sql_version = #{sqlVersion}</if>
+            <if test="startTime !=null ">
+                <![CDATA[   and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+            <if test="endTime !=null ">
+                <![CDATA[  and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+            <if test="params.notDoneOrder !=null "> and date_format(now(),'%y%m%d') &gt;= date_format(start_date,'%y%m%d') and (date_format(now(),'%y%m%d') &lt;= date_format(end_date,'%y%m%d') or end_date is null) </if>
+            ${params.dataScope}
+        </where>
+    </select>
+    
+    <select id="selectStakingOrderById" parameterType="Long" resultMap="StakingOrderResult">
+        <include refid="selectStakingOrderVo"/>
+        where a.id = #{id}
+    </select>
+
+    <select id="getUserStakingPendingReviewNum" resultType="java.lang.Long">
+        select a.id
+        from staking_order a
+        LEFT JOIN user_info b
+        on a.user_id = b.id
+        where order_status = 0
+        <if test="params.tourists != null and params.tourists != 0">
+            and account_type = 0
+        </if>
+        <if test="params.dataScope != null and params.dataScope != ''">
+            ${params.dataScope}
+        </if>
+    </select>
+
+    <insert id="insertStakingOrder" parameterType="StakingOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into staking_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderCode != null and orderCode != ''">order_code,</if>
+            <if test="stakingProductId != null">staking_product_id,</if>
+            <if test="stakingTime != null">staking_time,</if>
+            <if test="buyPrice != null">buy_price,</if>
+            <if test="stakingPoolAmount != null">staking_pool_amount,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="startDate != null">start_date,</if>
+            <if test="endDate != null">end_date,</if>
+            <if test="lastInterestTime != null">last_interest_time,</if>
+            <if test="alreadyInterestCount != null">already_interest_count,</if>
+            <if test="breakContractRate != null">break_contract_rate,</if>
+            <if test="dailyIncomeRate != null">daily_income_rate,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="orderStatus != null">order_status,</if>
+            <if test="currencyId != null">currency_id,</if>
+            <if test="floatDailyIncomeMinRate != null">float_daily_income_min_rate,</if>
+            <if test="floatDailyIncomeMaxRate != null">float_daily_income_max_rate,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="sqlVersion != null">sql_version,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderCode != null and orderCode != ''">#{orderCode},</if>
+            <if test="stakingProductId != null">#{stakingProductId},</if>
+            <if test="stakingTime != null">#{stakingTime},</if>
+            <if test="buyPrice != null">#{buyPrice},</if>
+            <if test="stakingPoolAmount != null">#{stakingPoolAmount},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="startDate != null">#{startDate},</if>
+            <if test="endDate != null">#{endDate},</if>
+            <if test="lastInterestTime != null">#{lastInterestTime},</if>
+            <if test="alreadyInterestCount != null">#{alreadyInterestCount},</if>
+            <if test="breakContractRate != null">#{breakContractRate},</if>
+            <if test="dailyIncomeRate != null">#{dailyIncomeRate},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="orderStatus != null">#{orderStatus},</if>
+            <if test="currencyId != null">#{currencyId},</if>
+            <if test="floatDailyIncomeMinRate != null">#{floatDailyIncomeMinRate},</if>
+            <if test="floatDailyIncomeMaxRate != null">#{floatDailyIncomeMaxRate},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="sqlVersion != null">#{sqlVersion},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStakingOrder" parameterType="StakingOrder">
+        update staking_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderCode != null and orderCode != ''">order_code = #{orderCode},</if>
+            <if test="stakingProductId != null">staking_product_id = #{stakingProductId},</if>
+            <if test="stakingTime != null">staking_time = #{stakingTime},</if>
+            <if test="buyPrice != null">buy_price = #{buyPrice},</if>
+            <if test="stakingPoolAmount != null">staking_pool_amount = #{stakingPoolAmount},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="startDate != null">start_date = #{startDate},</if>
+            <if test="endDate != null">end_date = #{endDate},</if>
+            <if test="lastInterestTime != null">last_interest_time = #{lastInterestTime},</if>
+            <if test="alreadyInterestCount != null">already_interest_count = #{alreadyInterestCount},</if>
+            <if test="breakContractRate != null">break_contract_rate = #{breakContractRate},</if>
+            <if test="dailyIncomeRate != null">daily_income_rate = #{dailyIncomeRate},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="currencyId != null">currency_id = #{currencyId},</if>
+            <if test="floatDailyIncomeMinRate != null">float_daily_income_min_rate = #{floatDailyIncomeMinRate},</if>
+            <if test="floatDailyIncomeMaxRate != null">float_daily_income_max_rate = #{floatDailyIncomeMaxRate},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="sqlVersion != null">sql_version = sql_version + 1,</if>
+        </trim>
+        where id = #{id}
+        <if test="sqlVersion != null">and sql_version = #{sqlVersion}</if>
+    </update>
+
+    <delete id="deleteStakingOrderById" parameterType="Long">
+        delete from staking_order where id = #{id}
+    </delete>
+
+    <delete id="deleteStakingOrderByIds" parameterType="String">
+        delete from staking_order where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.HomeRecommendProductsMapper">
+    
+    <resultMap type="HomeRecommendProducts" id="HomeRecommendProductsResult">
+        <result property="id"    column="id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="productName"    column="product_name"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="productDesc"    column="product_desc"    />
+        <result property="productImg"    column="product_img"    />
+        <result property="productType"    column="product_type"    />
+        <result property="isVisible"    column="is_visible"    />
+        <result property="sort"    column="sort"    />
+        <association property="productNameLang" javaType="langMgr">
+            <result property="zh"    column="product_name"    />
+            <result property="en"    column="product_name_en"    />
+            <result property="tc"    column="product_name_tc"    />
+            <result property="de"    column="product_name_de"    />
+            <result property="es"    column="product_name_es"    />
+            <result property="fr"    column="product_name_fr"    />
+            <result property="idn"    column="product_name_idn"    />
+            <result property="jp"    column="product_name_jp"    />
+            <result property="ko"    column="product_name_ko"    />
+            <result property="my"    column="product_name_my"    />
+            <result property="th"    column="product_name_th"    />
+            <result property="vi"    column="product_name_vi"    />
+            <result property="pt"    column="product_name_pt"    />
+            <result property="rus"    column="product_name_rus"    />
+            <result property="blr"    column="product_name_blr"    />
+            <result property="ida"    column="product_name_ida"    />
+            <result property="sa"    column="product_name_sa"    />
+            <result property="ar"    column="product_name_ar"    />
+            <result property="it"    column="product_name_it"    />
+            <result property="tr"    column="product_name_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectHomeRecommendProductsVo">
+        select a.id, product_id, a.product_type, is_visible, sort,product_code,product_desc,product_img,product_name,product_name_en, product_name_tc, product_name_de, product_name_es, product_name_fr, product_name_idn, product_name_jp, product_name_ko, product_name_my, product_name_th, product_name_vi, product_name_pt, product_name_rus, product_name_blr, product_name_ida, product_name_sa, product_name_ar, product_name_it, product_name_tr
+        from home_recommend_products a
+                 left join (select id,product_code,'' as product_desc,product_img,product_name,product_name_en, product_name_tc, product_name_de, product_name_es, product_name_fr, product_name_idn, product_name_jp, product_name_ko, product_name_my, product_name_th, product_name_vi, product_name_pt, product_name_rus, product_name_blr, product_name_ida, product_name_sa, product_name_ar, product_name_it, product_name_tr,1 as product_type
+                            from stock_product
+                            union
+                            select id,product_code,product_desc,product_img,product_name,product_name_en, product_name_tc, product_name_de, product_name_es, product_name_fr, product_name_idn, product_name_jp, product_name_ko, product_name_my, product_name_th, product_name_vi, product_name_pt, product_name_rus, product_name_blr, product_name_ida, product_name_sa, product_name_ar, product_name_it, product_name_tr,2 as product_type
+                            from cryptocurrency_product
+                            union
+                            select id,product_code,null,product_img,product_name,product_name_en, product_name_tc, product_name_de, product_name_es, product_name_fr, product_name_idn, product_name_jp, product_name_ko, product_name_my, product_name_th, product_name_vi, product_name_pt, product_name_rus, product_name_blr, product_name_ida, product_name_sa, product_name_ar, product_name_it, product_name_tr,3 as product_type
+                            from futures_product
+                            union
+                            select id,product_code,null,product_img,product_name,product_name_en, product_name_tc, product_name_de, product_name_es, product_name_fr, product_name_idn, product_name_jp, product_name_ko, product_name_my, product_name_th, product_name_vi, product_name_pt, product_name_rus, product_name_blr, product_name_ida, product_name_sa, product_name_ar, product_name_it, product_name_tr,4 as product_type
+                            from forex_product
+                            ) as b
+                           on a.product_id = b.id and a.product_type = b.product_type
+    </sql>
+
+    <select id="selectHomeRecommendProductsList" parameterType="HomeRecommendProducts" resultMap="HomeRecommendProductsResult">
+        <include refid="selectHomeRecommendProductsVo"/>
+        <where>  
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="productType != null "> and a.product_type = #{productType}</if>
+            <if test="isVisible != null "> and is_visible = #{isVisible}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and a.id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and a.id = 0
+            </if>
+            and product_code is not null
+        </where>
+    </select>
+    
+    <select id="selectHomeRecommendProductsById" parameterType="Long" resultMap="HomeRecommendProductsResult">
+        <include refid="selectHomeRecommendProductsVo"/>
+        where a.id = #{id}
+    </select>
+        
+    <insert id="insertHomeRecommendProducts" parameterType="HomeRecommendProducts" useGeneratedKeys="true" keyProperty="id">
+        insert into home_recommend_products
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productId != null">product_id,</if>
+            <if test="productType != null">product_type,</if>
+            <if test="isVisible != null">is_visible,</if>
+            <if test="sort != null">sort,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productId != null">#{productId},</if>
+            <if test="productType != null">#{productType},</if>
+            <if test="isVisible != null">#{isVisible},</if>
+            <if test="sort != null">#{sort},</if>
+         </trim>
+    </insert>
+
+    <update id="updateHomeRecommendProducts" parameterType="HomeRecommendProducts">
+        update home_recommend_products
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="productType != null">product_type = #{productType},</if>
+            <if test="isVisible != null">is_visible = #{isVisible},</if>
+            <if test="sort != null">sort = #{sort},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="updateHomeRecommendProductByProductId">
+        update home_recommend_products
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="isVisible != null">is_visible = #{isVisible},</if>
+            <if test="sort != null">sort = #{sort},</if>
+        </trim>
+        where product_type = #{productType} and product_id = #{productId}
+    </update>
+
+    <delete id="deleteHomeRecommendProductsById" parameterType="Long">
+        delete from home_recommend_products where id = #{id}
+    </delete>
+
+    <delete id="deleteHomeRecommendProductsByIds" parameterType="String">
+        delete from home_recommend_products where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

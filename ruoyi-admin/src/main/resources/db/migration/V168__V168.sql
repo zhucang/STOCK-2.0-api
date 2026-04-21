@@ -1,0 +1,1 @@
+insert into `stock`.`other_value` (other_key,`name`,other_value,remark,visible_flag) select 'website_market_index_product','官网首页展示产品','AIR,ABT,ACU,AE,BKTI,ADX,AMD,AEM,APD,AAPL',null,0 from other_value where not exists (select other_key from other_value where other_key = 'website_market_index_product')limit 1;

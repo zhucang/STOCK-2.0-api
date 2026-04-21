@@ -1,0 +1,1 @@
+insert into `stock`.`other_value` (other_key,`name`,other_value,remark,visible_flag) select 'demo_account_init_balance','模拟账号初始金额','10000',null,0 from other_value where not exists (select other_key from other_value where other_key = 'demo_account_init_balance')limit 1;

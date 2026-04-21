@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.MailConfigMapper">
+    
+    <resultMap type="MailConfig" id="MailConfigResult">
+        <result property="id"    column="id"    />
+        <result property="emailAccount"    column="email_account"    />
+        <result property="emailPassword"    column="email_password"    />
+        <result property="smtpDomain"    column="smtp_domain"    />
+        <result property="requestPort"    column="request_port"    />
+        <result property="status"    column="status"    />
+        <result property="sort"    column="sort"    />
+        <result property="emailTitle"    column="email_title"    />
+        <result property="emailContent"    column="email_content"    />
+        <result property="requestMethod"    column="request_method"    />
+        <association property="emailTitleLang" javaType="langMgr">
+            <result property="zh"    column="email_title"    />
+            <result property="en"    column="email_title_en"    />
+            <result property="tc"    column="email_title_tc"    />
+            <result property="de"    column="email_title_de"    />
+            <result property="es"    column="email_title_es"    />
+            <result property="fr"    column="email_title_fr"    />
+            <result property="idn"    column="email_title_idn"    />
+            <result property="jp"    column="email_title_jp"    />
+            <result property="ko"    column="email_title_ko"    />
+            <result property="my"    column="email_title_my"    />
+            <result property="th"    column="email_title_th"    />
+            <result property="vi"    column="email_title_vi"    />
+            <result property="pt"    column="email_title_pt"    />
+            <result property="rus"    column="email_title_rus"    />
+            <result property="blr"    column="email_title_blr"    />
+            <result property="ida"    column="email_title_ida"    />
+            <result property="sa"    column="email_title_sa"    />
+            <result property="ar"    column="email_title_ar"    />
+            <result property="it"    column="email_title_it"    />
+            <result property="tr"    column="email_title_tr"    />
+        </association>
+        <association property="emailContentLang" javaType="langMgr">
+            <result property="zh"    column="email_content"    />
+            <result property="en"    column="email_content_en"    />
+            <result property="tc"    column="email_content_tc"    />
+            <result property="de"    column="email_content_de"    />
+            <result property="es"    column="email_content_es"    />
+            <result property="fr"    column="email_content_fr"    />
+            <result property="idn"    column="email_content_idn"    />
+            <result property="jp"    column="email_content_jp"    />
+            <result property="ko"    column="email_content_ko"    />
+            <result property="my"    column="email_content_my"    />
+            <result property="th"    column="email_content_th"    />
+            <result property="vi"    column="email_content_vi"    />
+            <result property="pt"    column="email_content_pt"    />
+            <result property="rus"    column="email_content_rus"    />
+            <result property="blr"    column="email_content_blr"    />
+            <result property="ida"    column="email_content_ida"    />
+            <result property="sa"    column="email_content_sa"    />
+            <result property="ar"    column="email_content_ar"    />
+            <result property="it"    column="email_content_it"    />
+            <result property="tr"    column="email_content_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectMailConfigVo">
+        select id, email_account, smtp_domain, request_port, status,request_method, sort, email_title, email_content, email_title_en, email_title_tc, email_title_de, email_title_es, email_title_fr, email_title_idn, email_title_jp, email_title_ko, email_title_my, email_title_th, email_title_vi, email_title_pt, email_title_rus, email_title_blr, email_title_ida, email_title_sa, email_title_ar, email_title_it, email_title_tr, email_content_en, email_content_tc, email_content_de, email_content_es, email_content_fr, email_content_idn, email_content_jp, email_content_ko, email_content_my, email_content_th, email_content_vi, email_content_pt, email_content_rus, email_content_blr, email_content_ida, email_content_sa, email_content_ar, email_content_it, email_content_tr from mail_config
+    </sql>
+
+    <select id="selectMailConfigList" parameterType="MailConfig" resultMap="MailConfigResult">
+        <include refid="selectMailConfigVo"/>
+        <where>  
+            <if test="emailAccount != null  and emailAccount != ''"> and email_account = #{emailAccount}</if>
+            <if test="emailPassword != null  and emailPassword != ''"> and email_password = #{emailPassword}</if>
+            <if test="smtpDomain != null  and smtpDomain != ''"> and smtp_domain = #{smtpDomain}</if>
+            <if test="requestPort != null "> and request_port = #{requestPort}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="emailTitle != null  and emailTitle != ''"> and email_title = #{emailTitle}</if>
+            <if test="emailContent != null  and emailContent != ''"> and email_content = #{emailContent}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectMailConfigById" parameterType="Long" resultMap="MailConfigResult">
+        <include refid="selectMailConfigVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectMailConfigByEmailAccount" resultMap="MailConfigResult">
+        <include refid="selectMailConfigVo"/>
+        where email_account = #{emailAccount}
+    </select>
+
+    <select id="selectEnableMailConfig" parameterType="Long" resultMap="MailConfigResult">
+        <include refid="selectMailConfigVo"/>
+        where status = 0 limit 1
+    </select>
+
+    <select id="selectEnableMailPassword" resultType="java.lang.String">
+        select email_password from mail_config where status = 0 limit 1
+    </select>
+
+    <insert id="insertMailConfig" parameterType="MailConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into mail_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="emailAccount != null and emailAccount != ''">email_account,</if>
+            <if test="emailPassword != null and emailPassword != ''">email_password,</if>
+            <if test="smtpDomain != null and smtpDomain != ''">smtp_domain,</if>
+            <if test="requestPort != null">request_port,</if>
+            <if test="status != null">status,</if>
+            <if test="sort != null">sort,</if>
+            <if test="emailTitle != null and emailTitle != ''">email_title,</if>
+            <if test="emailContent != null and emailContent != ''">email_content,</if>
+            <if test="requestMethod != null">request_method,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="emailAccount != null and emailAccount != ''">#{emailAccount},</if>
+            <if test="emailPassword != null and emailPassword != ''">#{emailPassword},</if>
+            <if test="smtpDomain != null and smtpDomain != ''">#{smtpDomain},</if>
+            <if test="requestPort != null">#{requestPort},</if>
+            <if test="status != null">#{status},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="emailTitle != null and emailTitle != ''">#{emailTitle},</if>
+            <if test="emailContent != null and emailContent != ''">#{emailContent},</if>
+            <if test="requestMethod != null">#{requestMethod},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMailConfig" parameterType="MailConfig">
+        update mail_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="emailAccount != null and emailAccount != ''">email_account = #{emailAccount},</if>
+            <if test="emailPassword != null and emailPassword != ''">email_password = #{emailPassword},</if>
+            <if test="smtpDomain != null and smtpDomain != ''">smtp_domain = #{smtpDomain},</if>
+            <if test="requestPort != null">request_port = #{requestPort},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="requestMethod != null">request_method = #{requestMethod},</if>
+            <if test="emailTitle != null and emailTitle != ''">email_title = #{emailTitle},</if>
+            <if test="emailContent != null and emailContent != ''">email_content = #{emailContent},</if>
+            <if test="emailTitleLang.zh != null and emailTitle == null">email_title = #{emailTitleLang.zh},</if>
+            <if test="emailTitleLang.en != null">email_title_en = #{emailTitleLang.en},</if>
+            <if test="emailTitleLang.tc != null">email_title_tc = #{emailTitleLang.tc},</if>
+            <if test="emailTitleLang.de != null">email_title_de = #{emailTitleLang.de},</if>
+            <if test="emailTitleLang.es != null">email_title_es = #{emailTitleLang.es},</if>
+            <if test="emailTitleLang.fr != null">email_title_fr = #{emailTitleLang.fr},</if>
+            <if test="emailTitleLang.idn != null">email_title_idn = #{emailTitleLang.idn},</if>
+            <if test="emailTitleLang.jp != null">email_title_jp = #{emailTitleLang.jp},</if>
+            <if test="emailTitleLang.ko != null">email_title_ko = #{emailTitleLang.ko},</if>
+            <if test="emailTitleLang.my != null">email_title_my = #{emailTitleLang.my},</if>
+            <if test="emailTitleLang.th != null">email_title_th = #{emailTitleLang.th},</if>
+            <if test="emailTitleLang.vi != null">email_title_vi = #{emailTitleLang.vi},</if>
+            <if test="emailTitleLang.pt != null">email_title_pt = #{emailTitleLang.pt},</if>
+            <if test="emailTitleLang.rus != null">email_title_rus = #{emailTitleLang.rus},</if>
+            <if test="emailTitleLang.blr != null">email_title_blr = #{emailTitleLang.blr},</if>
+            <if test="emailTitleLang.ida != null">email_title_ida = #{emailTitleLang.ida},</if>
+            <if test="emailTitleLang.sa != null">email_title_sa = #{emailTitleLang.sa},</if>
+            <if test="emailTitleLang.ar != null">email_title_ar = #{emailTitleLang.ar},</if>
+            <if test="emailTitleLang.it != null">email_title_it = #{emailTitleLang.it},</if>
+            <if test="emailTitleLang.tr != null">email_title_tr = #{emailTitleLang.tr},</if>
+            <if test="emailContentLang.zh != null and emailContent == null">email_content = #{emailContentLang.zh},</if>
+            <if test="emailContentLang.en != null">email_content_en = #{emailContentLang.en},</if>
+            <if test="emailContentLang.tc != null">email_content_tc = #{emailContentLang.tc},</if>
+            <if test="emailContentLang.de != null">email_content_de = #{emailContentLang.de},</if>
+            <if test="emailContentLang.es != null">email_content_es = #{emailContentLang.es},</if>
+            <if test="emailContentLang.fr != null">email_content_fr = #{emailContentLang.fr},</if>
+            <if test="emailContentLang.idn != null">email_content_idn = #{emailContentLang.idn},</if>
+            <if test="emailContentLang.jp != null">email_content_jp = #{emailContentLang.jp},</if>
+            <if test="emailContentLang.ko != null">email_content_ko = #{emailContentLang.ko},</if>
+            <if test="emailContentLang.my != null">email_content_my = #{emailContentLang.my},</if>
+            <if test="emailContentLang.th != null">email_content_th = #{emailContentLang.th},</if>
+            <if test="emailContentLang.vi != null">email_content_vi = #{emailContentLang.vi},</if>
+            <if test="emailContentLang.pt != null">email_content_pt = #{emailContentLang.pt},</if>
+            <if test="emailContentLang.rus != null">email_content_rus = #{emailContentLang.rus},</if>
+            <if test="emailContentLang.blr != null">email_content_blr = #{emailContentLang.blr},</if>
+            <if test="emailContentLang.ida != null">email_content_ida = #{emailContentLang.ida},</if>
+            <if test="emailContentLang.sa != null">email_content_sa = #{emailContentLang.sa},</if>
+            <if test="emailContentLang.ar != null">email_content_ar = #{emailContentLang.ar},</if>
+            <if test="emailContentLang.it != null">email_content_it = #{emailContentLang.it},</if>
+            <if test="emailContentLang.tr != null">email_content_tr = #{emailContentLang.tr},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="disabledOtherConfigWithoutId">
+        update mail_config set status = 1 where id != #{id}
+    </update>
+
+    <delete id="deleteMailConfigById" parameterType="Long">
+        delete from mail_config where id = #{id}
+    </delete>
+
+    <delete id="deleteMailConfigByIds" parameterType="String">
+        delete from mail_config where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

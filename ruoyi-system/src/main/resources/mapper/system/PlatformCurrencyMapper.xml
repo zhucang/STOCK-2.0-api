@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PlatformCurrencyMapper">
+    
+    <resultMap type="PlatformCurrency" id="PlatformCurrencyResult">
+        <result property="id"    column="id"    />
+        <result property="currencyName"    column="currency_name"    />
+        <result property="currencyDesc"    column="currency_desc"    />
+        <result property="currencyImg"    column="currency_img"    />
+        <result property="currencyType"    column="currency_type"    />
+        <result property="status"    column="status"    />
+        <result property="sort"    column="sort"    />
+        <result property="isPlatformCurrency"    column="is_platform_currency"    />
+        <result property="useInFastTrade"    column="use_in_fast_trade"    />
+        <result property="balanceConvertMinLimit"    column="balance_convert_min_limit"    />
+        <result property="balanceConvertMaxLimit"    column="balance_convert_max_limit"    />
+        <result property="exchangeHandlingFeeRate"    column="exchange_handling_fee_rate"    />
+        <result property="realTimeExchangeRateFlag"    column="real_time_exchange_rate_flag"    />
+        <result property="fixedExchangeRate"    column="fixed_exchange_rate"    />
+        <result property="realTimeExchangeRateProduct"    column="real_time_exchange_rate_product"    />
+        <result property="walletAddressType"    column="wallet_address_type"    />
+        <result property="savaScale"    column="sava_scale"    />
+        <association property="currencyNameLang" javaType="langMgr">
+            <result property="zh"    column="currency_name"    />
+            <result property="en"    column="currency_name_en"    />
+            <result property="tc"    column="currency_name_tc"    />
+            <result property="de"    column="currency_name_de"    />
+            <result property="es"    column="currency_name_es"    />
+            <result property="fr"    column="currency_name_fr"    />
+            <result property="idn"    column="currency_name_idn"    />
+            <result property="jp"    column="currency_name_jp"    />
+            <result property="ko"    column="currency_name_ko"    />
+            <result property="my"    column="currency_name_my"    />
+            <result property="th"    column="currency_name_th"    />
+            <result property="vi"    column="currency_name_vi"    />
+            <result property="pt"    column="currency_name_pt"    />
+            <result property="rus"    column="currency_name_rus"    />
+            <result property="blr"    column="currency_name_blr"    />
+            <result property="ida"    column="currency_name_ida"    />
+            <result property="sa"    column="currency_name_sa"    />
+            <result property="ar"    column="currency_name_ar"    />
+            <result property="it"    column="currency_name_it"    />
+            <result property="tr"    column="currency_name_tr"    />
+        </association>
+        <association property="currencyDescLang" javaType="langMgr">
+            <result property="zh"    column="currency_desc"    />
+            <result property="en"    column="currency_desc_en"    />
+            <result property="tc"    column="currency_desc_tc"    />
+            <result property="de"    column="currency_desc_de"    />
+            <result property="es"    column="currency_desc_es"    />
+            <result property="fr"    column="currency_desc_fr"    />
+            <result property="idn"    column="currency_desc_idn"    />
+            <result property="jp"    column="currency_desc_jp"    />
+            <result property="ko"    column="currency_desc_ko"    />
+            <result property="my"    column="currency_desc_my"    />
+            <result property="th"    column="currency_desc_th"    />
+            <result property="vi"    column="currency_desc_vi"    />
+            <result property="pt"    column="currency_desc_pt"    />
+            <result property="rus"    column="currency_desc_rus"    />
+            <result property="blr"    column="currency_desc_blr"    />
+            <result property="ida"    column="currency_desc_ida"    />
+            <result property="sa"    column="currency_desc_sa"    />
+            <result property="ar"    column="currency_desc_ar"    />
+            <result property="it"    column="currency_desc_it"    />
+            <result property="tr"    column="currency_desc_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectPlatformCurrencyVo">
+        select id, currency_name,currency_desc,currency_img,is_platform_currency,use_in_fast_trade, currency_type,sava_scale,balance_convert_min_limit,balance_convert_max_limit,exchange_handling_fee_rate,real_time_exchange_rate_flag,fixed_exchange_rate,real_time_exchange_rate_product, status,wallet_address_type, sort, currency_name_en, currency_name_tc, currency_name_de, currency_name_es, currency_name_fr, currency_name_idn, currency_name_jp, currency_name_ko, currency_name_my, currency_name_th, currency_name_vi, currency_name_pt, currency_name_rus, currency_name_blr, currency_name_ida, currency_name_sa, currency_name_ar, currency_name_it, currency_name_tr, currency_desc_en, currency_desc_tc, currency_desc_de, currency_desc_es, currency_desc_fr, currency_desc_idn, currency_desc_jp, currency_desc_ko, currency_desc_my, currency_desc_th, currency_desc_vi, currency_desc_pt, currency_desc_rus, currency_desc_blr, currency_desc_ida, currency_desc_sa, currency_desc_ar, currency_desc_it, currency_desc_tr from platform_currency
+    </sql>
+
+    <select id="selectPlatformCurrencyList" parameterType="PlatformCurrency" resultMap="PlatformCurrencyResult">
+        <include refid="selectPlatformCurrencyVo"/>
+        <where>  
+            <if test="currencyName != null  and currencyName != ''"> and currency_name like concat('%', #{currencyName}, '%')</if>
+            <if test="currencyType != null "> and currency_type = #{currencyType}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="isPlatformCurrency != null "> and is_platform_currency = #{isPlatformCurrency}</if>
+            <if test="useInFastTrade != null"> and use_in_fast_trade = #{useInFastTrade}</if>
+            <if test="savaScale != null"> and sava_scale = #{savaScale}</if>
+            <if test="realTimeExchangeRateFlag != null"> and real_time_exchange_rate_flag = #{realTimeExchangeRateFlag}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectPlatformCurrencyById" parameterType="Long" resultMap="PlatformCurrencyResult">
+        <include refid="selectPlatformCurrencyVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectPlatformCurrencyByName" parameterType="string" resultMap="PlatformCurrencyResult">
+        <include refid="selectPlatformCurrencyVo"/>
+        where currency_name = #{name}
+    </select>
+
+    <insert id="insertPlatformCurrency" parameterType="PlatformCurrency" useGeneratedKeys="true" keyProperty="id">
+        insert into platform_currency
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="currencyName != null and currencyName != ''">currency_name,</if>
+            <if test="currencyDesc != null and currencyDesc != ''">currency_desc,</if>
+            <if test="currencyImg != null and currencyImg != ''">currency_img,</if>
+            <if test="currencyType != null">currency_type,</if>
+            <if test="status != null">status,</if>
+            <if test="sort != null">sort,</if>
+            <if test="isPlatformCurrency != null">is_platform_currency,</if>
+            <if test="useInFastTrade != null">use_in_fast_trade,</if>
+            <if test="balanceConvertMinLimit != null">balance_convert_min_limit,</if>
+            <if test="balanceConvertMaxLimit != null">balance_convert_max_limit,</if>
+            <if test="exchangeHandlingFeeRate != null">exchange_handling_fee_rate,</if>
+            <if test="realTimeExchangeRateFlag != null">real_time_exchange_rate_flag,</if>
+            <if test="fixedExchangeRate != null">fixed_exchange_rate,</if>
+            <if test="realTimeExchangeRateProduct != null">real_time_exchange_rate_product,</if>
+            <if test="savaScale != null">sava_scale,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="currencyName != null and currencyName != ''">#{currencyName},</if>
+            <if test="currencyDesc != null and currencyDesc != ''">#{currencyDesc},</if>
+            <if test="currencyImg != null and currencyImg != ''">#{currencyImg},</if>
+            <if test="currencyType != null">#{currencyType},</if>
+            <if test="status != null">#{status},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="isPlatformCurrency != null">#{isPlatformCurrency},</if>
+            <if test="useInFastTrade != null">#{useInFastTrade},</if>
+            <if test="balanceConvertMinLimit != null">#{balanceConvertMinLimit},</if>
+            <if test="balanceConvertMaxLimit != null">#{balanceConvertMaxLimit},</if>
+            <if test="exchangeHandlingFeeRate != null">#{exchangeHandlingFeeRate},</if>
+            <if test="realTimeExchangeRateFlag != null">#{realTimeExchangeRateFlag},</if>
+            <if test="fixedExchangeRate != null">#{fixedExchangeRate},</if>
+            <if test="realTimeExchangeRateProduct != null">#{realTimeExchangeRateProduct},</if>
+            <if test="savaScale != null">#{savaScale},</if>
+        </trim>
+    </insert>
+
+    <update id="updatePlatformCurrency" parameterType="PlatformCurrency">
+        update platform_currency
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="currencyName != null and currencyName != ''">currency_name = #{currencyName},</if>
+            <if test="currencyDesc != null and currencyDesc != ''">currency_desc = #{currencyDesc},</if>
+            <if test="currencyImg != null and currencyImg != ''">currency_img = #{currencyImg},</if>
+            <if test="currencyType != null">currency_type = #{currencyType},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="isPlatformCurrency != null">is_platform_currency = #{isPlatformCurrency},</if>
+            <if test="useInFastTrade != null">use_in_fast_trade = #{useInFastTrade},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="balanceConvertMinLimit != null">balance_convert_min_limit = #{balanceConvertMinLimit},</if>
+            <if test="balanceConvertMaxLimit != null">balance_convert_max_limit = #{balanceConvertMaxLimit},</if>
+            <if test="exchangeHandlingFeeRate != null">exchange_handling_fee_rate = #{exchangeHandlingFeeRate},</if>
+            <if test="realTimeExchangeRateFlag != null">real_time_exchange_rate_flag = #{realTimeExchangeRateFlag},</if>
+            <if test="fixedExchangeRate != null">fixed_exchange_rate = #{fixedExchangeRate},</if>
+            <if test="realTimeExchangeRateProduct != null">real_time_exchange_rate_product = #{realTimeExchangeRateProduct},</if>
+            <if test="savaScale != null">sava_scale = #{savaScale},</if>
+            <if test="currencyNameLang.zh != null and currencyName == null">currency_name = #{currencyNameLang.zh},</if>
+            <if test="currencyNameLang.en != null">currency_name_en = #{currencyNameLang.en},</if>
+            <if test="currencyNameLang.tc != null">currency_name_tc = #{currencyNameLang.tc},</if>
+            <if test="currencyNameLang.de != null">currency_name_de = #{currencyNameLang.de},</if>
+            <if test="currencyNameLang.es != null">currency_name_es = #{currencyNameLang.es},</if>
+            <if test="currencyNameLang.fr != null">currency_name_fr = #{currencyNameLang.fr},</if>
+            <if test="currencyNameLang.idn != null">currency_name_idn = #{currencyNameLang.idn},</if>
+            <if test="currencyNameLang.jp != null">currency_name_jp = #{currencyNameLang.jp},</if>
+            <if test="currencyNameLang.ko != null">currency_name_ko = #{currencyNameLang.ko},</if>
+            <if test="currencyNameLang.my != null">currency_name_my = #{currencyNameLang.my},</if>
+            <if test="currencyNameLang.th != null">currency_name_th = #{currencyNameLang.th},</if>
+            <if test="currencyNameLang.vi != null">currency_name_vi = #{currencyNameLang.vi},</if>
+            <if test="currencyNameLang.pt != null">currency_name_pt = #{currencyNameLang.pt},</if>
+            <if test="currencyNameLang.rus != null">currency_name_rus = #{currencyNameLang.rus},</if>
+            <if test="currencyNameLang.blr != null">currency_name_blr = #{currencyNameLang.blr},</if>
+            <if test="currencyNameLang.ida != null">currency_name_ida = #{currencyNameLang.ida},</if>
+            <if test="currencyNameLang.sa != null">currency_name_sa = #{currencyNameLang.sa},</if>
+            <if test="currencyNameLang.ar != null">currency_name_ar = #{currencyNameLang.ar},</if>
+            <if test="currencyNameLang.it != null">currency_name_it = #{currencyNameLang.it},</if>
+            <if test="currencyNameLang.tr != null">currency_name_tr = #{currencyNameLang.tr},</if>
+            <if test="currencyDescLang.zh != null and currencyDesc == null">currency_desc = #{currencyDescLang.zh},</if>
+            <if test="currencyDescLang.en != null">currency_desc_en = #{currencyDescLang.en},</if>
+            <if test="currencyDescLang.tc != null">currency_desc_tc = #{currencyDescLang.tc},</if>
+            <if test="currencyDescLang.de != null">currency_desc_de = #{currencyDescLang.de},</if>
+            <if test="currencyDescLang.es != null">currency_desc_es = #{currencyDescLang.es},</if>
+            <if test="currencyDescLang.fr != null">currency_desc_fr = #{currencyDescLang.fr},</if>
+            <if test="currencyDescLang.idn != null">currency_desc_idn = #{currencyDescLang.idn},</if>
+            <if test="currencyDescLang.jp != null">currency_desc_jp = #{currencyDescLang.jp},</if>
+            <if test="currencyDescLang.ko != null">currency_desc_ko = #{currencyDescLang.ko},</if>
+            <if test="currencyDescLang.my != null">currency_desc_my = #{currencyDescLang.my},</if>
+            <if test="currencyDescLang.th != null">currency_desc_th = #{currencyDescLang.th},</if>
+            <if test="currencyDescLang.vi != null">currency_desc_vi = #{currencyDescLang.vi},</if>
+            <if test="currencyDescLang.pt != null">currency_desc_pt = #{currencyDescLang.pt},</if>
+            <if test="currencyDescLang.rus != null">currency_desc_rus = #{currencyDescLang.rus},</if>
+            <if test="currencyDescLang.blr != null">currency_desc_blr = #{currencyDescLang.blr},</if>
+            <if test="currencyDescLang.ida != null">currency_desc_ida = #{currencyDescLang.ida},</if>
+            <if test="currencyDescLang.sa != null">currency_desc_sa = #{currencyDescLang.sa},</if>
+            <if test="currencyDescLang.ar != null">currency_desc_ar = #{currencyDescLang.ar},</if>
+            <if test="currencyDescLang.it != null">currency_desc_it = #{currencyDescLang.it},</if>
+            <if test="currencyDescLang.tr != null">currency_desc_tr = #{currencyDescLang.tr},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePlatformCurrencyById" parameterType="Long">
+        delete from platform_currency where id = #{id}
+    </delete>
+
+    <delete id="deletePlatformCurrencyByIds" parameterType="String">
+        delete from platform_currency where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

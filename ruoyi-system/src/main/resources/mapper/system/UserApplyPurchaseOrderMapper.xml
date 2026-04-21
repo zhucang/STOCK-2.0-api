@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserApplyPurchaseOrderMapper">
+    
+    <resultMap type="UserApplyPurchaseOrder" id="UserApplyPurchaseOrderResult">
+        <result property="id"    column="id"    />
+        <result property="orderCode"    column="order_code"    />
+        <result property="productName"    column="product_name"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userAccount"    column="user_account"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="accountType"    column="account_type"    />
+        <result property="agentId"    column="agent_id"    />
+        <result property="agentName"    column="agent_name"    />
+        <result property="userRemark"    column="user_remark"    />
+        <result property="applyPurchaseTime"    column="apply_purchase_time"    />
+        <result property="applyPurchaseAmount"    column="apply_purchase_amount"    />
+        <result property="applyPurchaseQuantity"    column="apply_purchase_quantity"    />
+        <result property="applyPurchaseSingleAmount"    column="apply_purchase_single_amount"    />
+        <result property="listingStartDate"    column="listing_start_date"    />
+        <result property="winningRate"    column="winning_rate"    />
+        <result property="winningAmount"    column="winning_amount"    />
+        <result property="winningQuantity"    column="winning_quantity"    />
+        <result property="sellPrice"    column="sell_price"    />
+        <result property="sellTime"    column="sell_time"    />
+        <result property="profitAndLose"    column="profit_and_lose"    />
+        <result property="newProductApplyPurchaseId"    column="new_product_apply_purchase_id"    />
+        <result property="status"    column="status"    />
+        <result property="productType"    column="product_type"    />
+        <result property="lockFlag"    column="lock_flag"    />
+        <result property="unLockTime"    column="un_lock_time"    />
+        <result property="sqlVersion"    column="sql_version"    />
+        <association property="productNameLang" javaType="langMgr">
+            <result property="zh"    column="product_name"    />
+            <result property="en"    column="product_name_en"    />
+            <result property="tc"    column="product_name_tc"    />
+            <result property="de"    column="product_name_de"    />
+            <result property="es"    column="product_name_es"    />
+            <result property="fr"    column="product_name_fr"    />
+            <result property="idn"    column="product_name_idn"    />
+            <result property="jp"    column="product_name_jp"    />
+            <result property="ko"    column="product_name_ko"    />
+            <result property="my"    column="product_name_my"    />
+            <result property="th"    column="product_name_th"    />
+            <result property="vi"    column="product_name_vi"    />
+            <result property="pt"    column="product_name_pt"    />
+            <result property="rus"    column="product_name_rus"    />
+            <result property="blr"    column="product_name_blr"    />
+            <result property="ida"    column="product_name_ida"    />
+            <result property="sa"    column="product_name_sa"    />
+            <result property="ar"    column="product_name_ar"    />
+            <result property="it"    column="product_name_it"    />
+            <result property="tr"    column="product_name_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectUserApplyPurchaseOrderVo">
+        select a.id, order_code,  product_name, product_code, user_id,user_account,nick_name,account_type,agent_id,agent_name, d.remark user_remark, apply_purchase_time, apply_purchase_amount, apply_purchase_quantity, apply_purchase_single_amount, a.listing_start_date, winning_rate, winning_amount, winning_quantity, sell_price, sell_time, profit_and_lose, new_product_apply_purchase_id, a.status, a.sql_version,a.product_type,lock_flag,un_lock_time,product_name_en, product_name_tc, product_name_de, product_name_es, product_name_fr, product_name_idn, product_name_jp, product_name_ko, product_name_my, product_name_th, product_name_vi, product_name_pt, product_name_rus, product_name_blr, product_name_ida, product_name_sa, product_name_ar, product_name_it, product_name_tr
+        from user_apply_purchase_order a
+                 left join new_product_apply_purchase b
+                           on new_product_apply_purchase_id = b.id
+                 left join self_sell_product c
+                           on self_sell_product_id = c.id
+                 left join user_info d
+                           on a.user_id = d.id
+    </sql>
+
+    <select id="selectUserApplyPurchaseOrderList" parameterType="UserApplyPurchaseOrder" resultMap="UserApplyPurchaseOrderResult">
+        <include refid="selectUserApplyPurchaseOrderVo"/>
+        <where>  
+            <if test="orderCode != null  and orderCode != ''"> and order_code  like concat('%',#{orderCode},'%')</if>
+            <if test="productCode != null  and productCode != ''"> and product_code = #{productCode}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="userAccount != null "> and user_account like concat('%',#{userAccount},'%') </if>
+            <if test="nickName != null "> and nick_name like concat('%',#{nickName},'%') </if>
+            <if test="accountType != null "> and account_type = #{accountType}</if>
+            <if test="applyPurchaseTime != null  and applyPurchaseTime != ''"> and apply_purchase_time = #{applyPurchaseTime}</if>
+            <if test="applyPurchaseAmount != null "> and apply_purchase_amount = #{applyPurchaseAmount}</if>
+            <if test="applyPurchaseQuantity != null "> and apply_purchase_quantity = #{applyPurchaseQuantity}</if>
+            <if test="applyPurchaseSingleAmount != null "> and apply_purchase_single_amount = #{applyPurchaseSingleAmount}</if>
+            <if test="listingStartDate != null"> and a.listing_start_date = #{listingStartDate}</if>
+            <if test="winningRate != null "> and winning_rate = #{winningRate}</if>
+            <if test="winningAmount != null "> and winning_amount = #{winningAmount}</if>
+            <if test="winningQuantity != null "> and winning_quantity = #{winningQuantity}</if>
+            <if test="sellPrice != null "> and sell_price = #{sellPrice}</if>
+            <if test="sellTime != null "> and sell_time = #{sellTime}</if>
+            <if test="profitAndLose != null "> and profit_and_lose = #{profitAndLose}</if>
+            <if test="newProductApplyPurchaseId != null "> and new_product_apply_purchase_id = #{newProductApplyPurchaseId}</if>
+            <if test="status != null "> and a.status = #{status}</if>
+            <if test="productType != null "> and a.product_type = #{productType}</if>
+            <if test="lockFlag != null "> and a.lock_flag = #{lockFlag}</if>
+            <if test="unLockTime != null "> and un_lock_time <![CDATA[ <= ]]> #{unLockTime}</if>
+            ${params.dataScope}
+        </where>
+    </select>
+    
+    <select id="selectUserApplyPurchaseOrderById" parameterType="Long" resultMap="UserApplyPurchaseOrderResult">
+        <include refid="selectUserApplyPurchaseOrderVo"/>
+        where a.id = #{id}
+    </select>
+
+    <select id="getUserBibiOrderLockAmount" resultType="java.math.BigDecimal">
+        select IFNULL(sum(winning_quantity),0)
+        from user_apply_purchase_order a
+        left join new_product_apply_purchase b
+        on new_product_apply_purchase_id = b.id
+        left join self_sell_product c
+        on self_sell_product_id = c.id
+        where a.product_type = #{productType} and product_code = #{productCode} and user_id = #{userId}
+        and lock_flag = 0 and un_lock_time <![CDATA[ > ]]> #{nowDateTime}
+    </select>
+
+    <insert id="insertUserApplyPurchaseOrder" parameterType="UserApplyPurchaseOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into user_apply_purchase_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderCode != null and orderCode != ''">order_code,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="applyPurchaseTime != null">apply_purchase_time,</if>
+            <if test="applyPurchaseAmount != null">apply_purchase_amount,</if>
+            <if test="applyPurchaseQuantity != null">apply_purchase_quantity,</if>
+            <if test="applyPurchaseSingleAmount != null">apply_purchase_single_amount,</if>
+            <if test="listingStartDate != null">listing_start_date,</if>
+            <if test="winningRate != null">winning_rate,</if>
+            <if test="winningAmount != null">winning_amount,</if>
+            <if test="winningQuantity != null">winning_quantity,</if>
+            <if test="sellPrice != null">sell_price,</if>
+            <if test="sellTime != null">sell_time,</if>
+            <if test="profitAndLose != null">profit_and_lose,</if>
+            <if test="newProductApplyPurchaseId != null">new_product_apply_purchase_id,</if>
+            <if test="status != null">status,</if>
+            <if test="productType != null">product_type,</if>
+            <if test="lockFlag != null">lock_flag,</if>
+            <if test="unLockTime != null">un_lock_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderCode != null and orderCode != ''">#{orderCode},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="applyPurchaseTime != null">#{applyPurchaseTime},</if>
+            <if test="applyPurchaseAmount != null">#{applyPurchaseAmount},</if>
+            <if test="applyPurchaseQuantity != null">#{applyPurchaseQuantity},</if>
+            <if test="applyPurchaseSingleAmount != null">#{applyPurchaseSingleAmount},</if>
+            <if test="listingStartDate != null">#{listingStartDate},</if>
+            <if test="winningRate != null">#{winningRate},</if>
+            <if test="winningAmount != null">#{winningAmount},</if>
+            <if test="winningQuantity != null">#{winningQuantity},</if>
+            <if test="sellPrice != null">#{sellPrice},</if>
+            <if test="sellTime != null">#{sellTime},</if>
+            <if test="profitAndLose != null">#{profitAndLose},</if>
+            <if test="newProductApplyPurchaseId != null">#{newProductApplyPurchaseId},</if>
+            <if test="status != null">#{status},</if>
+            <if test="productType != null">#{productType},</if>
+            <if test="lockFlag != null">#{lockFlag},</if>
+            <if test="unLockTime != null">#{unLockTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserApplyPurchaseOrder" parameterType="UserApplyPurchaseOrder">
+        update user_apply_purchase_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderCode != null and orderCode != ''">order_code = #{orderCode},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="applyPurchaseTime != null">apply_purchase_time = #{applyPurchaseTime},</if>
+            <if test="applyPurchaseAmount != null">apply_purchase_amount = #{applyPurchaseAmount},</if>
+            <if test="applyPurchaseQuantity != null">apply_purchase_quantity = #{applyPurchaseQuantity},</if>
+            <if test="applyPurchaseSingleAmount != null">apply_purchase_single_amount = #{applyPurchaseSingleAmount},</if>
+            <if test="listingStartDate != null">listing_start_date = #{listingStartDate},</if>
+            <if test="winningRate != null">winning_rate = #{winningRate},</if>
+            <if test="winningAmount != null">winning_amount = #{winningAmount},</if>
+            <if test="winningQuantity != null">winning_quantity = #{winningQuantity},</if>
+            <if test="sellPrice != null">sell_price = #{sellPrice},</if>
+            <if test="sellTime != null">sell_time = #{sellTime},</if>
+            <if test="profitAndLose != null">profit_and_lose = #{profitAndLose},</if>
+            <if test="newProductApplyPurchaseId != null">new_product_apply_purchase_id = #{newProductApplyPurchaseId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="productType != null">product_type = #{productType},</if>
+            <if test="lockFlag != null">lock_flag = #{lockFlag},</if>
+            <if test="unLockTime != null">un_lock_time = #{unLockTime},</if>
+            <if test="sqlVersion != null">sql_version = sql_version + 1,</if>
+        </trim>
+        where id = #{id}
+        <if test="sqlVersion != null">and sql_version = #{sqlVersion}</if>
+    </update>
+
+    <delete id="deleteUserApplyPurchaseOrderById" parameterType="Long">
+        delete from user_apply_purchase_order where id = #{id}
+    </delete>
+</mapper>

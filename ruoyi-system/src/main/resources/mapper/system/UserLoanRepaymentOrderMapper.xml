@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserLoanRepaymentOrderMapper">
+    
+    <resultMap type="UserLoanRepaymentOrder" id="UserLoanRepaymentOrderResult">
+        <result property="id"    column="id"    />
+        <result property="loanOrderId"    column="loan_order_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userAccount"    column="user_account"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="accountType"    column="account_type"    />
+        <result property="agentId"    column="agent_id"    />
+        <result property="agentName"    column="agent_name"    />
+        <result property="userRemark"    column="user_remark"    />
+        <result property="orderCode"    column="order_code"    />
+        <result property="loanOrderCode"    column="loan_order_code"    />
+        <result property="orderAmount"    column="order_amount"    />
+        <result property="orderStatus"    column="order_status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="operatorName"    column="operator_name"    />
+        <result property="payChannelName"    column="pay_channel_name"    />
+        <result property="payChannelId"    column="pay_channel_id"    />
+        <result property="currencyId"    column="currency_id"    />
+        <result property="currencyName"    column="currency_name"    />
+        <result property="rechargeImg"    column="recharge_img"    />
+        <result property="rechargeMsg"    column="recharge_msg"    />
+        <result property="rechargeMethod"    column="recharge_method"    />
+        <result property="remark"    column="remark"    />
+        <result property="sqlVersion"    column="sql_version"    />
+    </resultMap>
+
+    <sql id="selectUserLoanRepaymentOrderVo">
+        select a.id, loan_order_id,d.order_code loan_order_code,a.user_id,user_account,nick_name,account_type,agent_id,agent_name, b.remark user_remark, a.order_code, order_amount, a.order_status, a.create_time, a.update_time, operator_name, pay_channel_name, pay_channel_id, a.currency_id,currency_name, recharge_img, recharge_msg, recharge_method, a.remark, a.sql_version
+        from user_loan_repayment_order a
+                 left join user_info b
+                           on a.user_id = b.id
+                 left join platform_currency c
+                           on a.currency_id = c.id
+                 left join loan_order d
+                           on a.loan_order_id = d.id
+    </sql>
+
+    <select id="selectUserLoanRepaymentOrderList" parameterType="UserLoanRepaymentOrder" resultMap="UserLoanRepaymentOrderResult">
+        <include refid="selectUserLoanRepaymentOrderVo"/>
+        <where>  
+            <if test="loanOrderId != null "> and loan_order_id = #{loanOrderId}</if>
+            <if test="userId != null "> and a.user_id = #{userId}</if>
+            <if test="userAccount != null "> and user_account like concat('%',#{userAccount},'%') </if>
+            <if test="nickName != null "> and nick_name like concat('%',#{nickName},'%') </if>
+            <if test="accountType != null "> and account_type = #{accountType}</if>
+            <if test="orderCode != null  and orderCode != ''"> and a.order_code like concat('%', #{orderCode}, '%')</if>
+            <if test="loanOrderCode != null  and loanOrderCode != ''"> and d.order_code like concat('%', #{loanOrderCode}, '%')</if>
+            <if test="orderAmount != null "> and order_amount = #{orderAmount}</if>
+            <if test="orderStatus != null "> and a.order_status = #{orderStatus}</if>
+            <if test="operatorName != null  and operatorName != ''"> and operator_name like concat('%', #{operatorName}, '%')</if>
+            <if test="payChannelName != null  and payChannelName != ''"> and pay_channel_name like concat('%', #{payChannelName}, '%')</if>
+            <if test="payChannelId != null "> and pay_channel_id = #{payChannelId}</if>
+            <if test="currencyId != null "> and a.currency_id = #{currencyId}</if>
+            <if test="rechargeImg != null  and rechargeImg != ''"> and recharge_img = #{rechargeImg}</if>
+            <if test="rechargeMsg != null  and rechargeMsg != ''"> and recharge_msg = #{rechargeMsg}</if>
+            <if test="rechargeMethod != null "> and recharge_method = #{rechargeMethod}</if>
+            <if test="sqlVersion != null "> and sql_version = #{sqlVersion}</if>
+            <if test="agentId != null and params.isAllAgentData != null and params.isAllAgentData == 0">
+                and agent_id in (select user_id from agent_team_level_line where sup_user_id = #{agentId} union select #{agentId})
+            </if>
+            <if test="agentId != null and params.isAllAgentData == null">
+                and agent_id = #{agentId}
+            </if>
+            <if test="startTime !=null ">
+                <![CDATA[   and DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+            <if test="endTime !=null ">
+                <![CDATA[  and DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+            ${params.dataScope}
+        </where>
+    </select>
+    
+    <select id="selectUserLoanRepaymentOrderById" parameterType="Long" resultMap="UserLoanRepaymentOrderResult">
+        <include refid="selectUserLoanRepaymentOrderVo"/>
+        where a.id = #{id}
+    </select>
+
+    <select id="getUserLoanRepaymentPendingReviewNum" resultType="java.lang.Long">
+        select a.id
+        from user_loan_repayment_order a
+        LEFT JOIN user_info b
+        on a.user_id = b.id
+        where order_status = 0
+        <if test="params.tourists != null and params.tourists != 0">
+            and account_type = 0
+        </if>
+        <if test="params.dataScope != null and params.dataScope != ''">
+            ${params.dataScope}
+        </if>
+    </select>
+
+    <select id="getStatisticalData" parameterType="UserLoanRepaymentOrder" resultMap="UserLoanRepaymentOrderResult">
+        select sum(order_amount) order_amount,a.currency_id,currency_name
+        from user_loan_repayment_order a
+        left join user_info b
+        on a.user_id = b.id
+        left join platform_currency c
+        on a.currency_id = c.id
+        left join loan_order d
+        on a.loan_order_id = d.id
+        <where>
+            and a.order_status = 1 and c.`status` = 0
+            <if test="loanOrderId != null "> and loan_order_id = #{loanOrderId}</if>
+            <if test="userId != null "> and a.user_id = #{userId}</if>
+            <if test="userAccount != null "> and user_account like concat('%',#{userAccount},'%') </if>
+            <if test="nickName != null "> and nick_name like concat('%',#{nickName},'%') </if>
+            <if test="accountType != null "> and account_type = #{accountType}</if>
+            <if test="orderCode != null  and orderCode != ''"> and a.order_code like concat('%', #{orderCode}, '%')</if>
+            <if test="loanOrderCode != null  and loanOrderCode != ''"> and d.order_code like concat('%', #{loanOrderCode}, '%')</if>
+            <if test="orderAmount != null "> and order_amount = #{orderAmount}</if>
+            <if test="orderStatus != null "> and a.order_status = #{orderStatus}</if>
+            <if test="operatorName != null  and operatorName != ''"> and operator_name like concat('%', #{operatorName}, '%')</if>
+            <if test="payChannelName != null  and payChannelName != ''"> and pay_channel_name like concat('%', #{payChannelName}, '%')</if>
+            <if test="payChannelId != null "> and pay_channel_id = #{payChannelId}</if>
+            <if test="currencyId != null "> and a.currency_id = #{currencyId}</if>
+            <if test="rechargeImg != null  and rechargeImg != ''"> and recharge_img = #{rechargeImg}</if>
+            <if test="rechargeMsg != null  and rechargeMsg != ''"> and recharge_msg = #{rechargeMsg}</if>
+            <if test="rechargeMethod != null "> and recharge_method = #{rechargeMethod}</if>
+            <if test="sqlVersion != null "> and sql_version = #{sqlVersion}</if>
+            <if test="agentId != null and params.isAllAgentData != null and params.isAllAgentData == 0">
+                and agent_id in (select user_id from agent_team_level_line where sup_user_id = #{agentId} union select #{agentId})
+            </if>
+            <if test="agentId != null and params.isAllAgentData == null">
+                and agent_id = #{agentId}
+            </if>
+            <if test="startTime !=null ">
+                <![CDATA[   and DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+            <if test="endTime !=null ">
+                <![CDATA[  and DATE_FORMAT(a.create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+            ${params.dataScope}
+        </where>
+        group by a.currency_id
+    </select>
+
+    <insert id="insertUserLoanRepaymentOrder" parameterType="UserLoanRepaymentOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into user_loan_repayment_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="loanOrderId != null">loan_order_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="orderCode != null and orderCode != ''">order_code,</if>
+            <if test="orderAmount != null">order_amount,</if>
+            <if test="orderStatus != null">order_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="operatorName != null">operator_name,</if>
+            <if test="payChannelName != null and payChannelName != ''">pay_channel_name,</if>
+            <if test="payChannelId != null">pay_channel_id,</if>
+            <if test="currencyId != null">currency_id,</if>
+            <if test="rechargeImg != null">recharge_img,</if>
+            <if test="rechargeMsg != null">recharge_msg,</if>
+            <if test="rechargeMethod != null">recharge_method,</if>
+            <if test="remark != null">remark,</if>
+            <if test="sqlVersion != null">sql_version,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="loanOrderId != null">#{loanOrderId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="orderCode != null and orderCode != ''">#{orderCode},</if>
+            <if test="orderAmount != null">#{orderAmount},</if>
+            <if test="orderStatus != null">#{orderStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="operatorName != null">#{operatorName},</if>
+            <if test="payChannelName != null and payChannelName != ''">#{payChannelName},</if>
+            <if test="payChannelId != null">#{payChannelId},</if>
+            <if test="currencyId != null">#{currencyId},</if>
+            <if test="rechargeImg != null">#{rechargeImg},</if>
+            <if test="rechargeMsg != null">#{rechargeMsg},</if>
+            <if test="rechargeMethod != null">#{rechargeMethod},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="sqlVersion != null">#{sqlVersion},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserLoanRepaymentOrder" parameterType="UserLoanRepaymentOrder">
+        update user_loan_repayment_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="loanOrderId != null">loan_order_id = #{loanOrderId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="orderCode != null and orderCode != ''">order_code = #{orderCode},</if>
+            <if test="orderAmount != null">order_amount = #{orderAmount},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="operatorName != null">operator_name = #{operatorName},</if>
+            <if test="payChannelName != null and payChannelName != ''">pay_channel_name = #{payChannelName},</if>
+            <if test="payChannelId != null">pay_channel_id = #{payChannelId},</if>
+            <if test="currencyId != null">currency_id = #{currencyId},</if>
+            <if test="rechargeImg != null">recharge_img = #{rechargeImg},</if>
+            <if test="rechargeMsg != null">recharge_msg = #{rechargeMsg},</if>
+            <if test="rechargeMethod != null">recharge_method = #{rechargeMethod},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="sqlVersion != null">sql_version = #{sqlVersion},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserLoanRepaymentOrderById" parameterType="Long">
+        delete from user_loan_repayment_order where id = #{id}
+    </delete>
+
+    <delete id="deleteUserLoanRepaymentOrderByIds" parameterType="String">
+        delete from user_loan_repayment_order where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

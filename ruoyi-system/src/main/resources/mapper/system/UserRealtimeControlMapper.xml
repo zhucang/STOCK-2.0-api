@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserRealtimeControlMapper">
+    
+    <resultMap type="UserRealtimeControl" id="UserRealtimeControlResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="time"    column="time"    />
+        <result property="volumes"    column="volumes"    />
+        <result property="price"    column="price"    />
+        <result property="rates"    column="rates"    />
+        <result property="amounts"    column="amounts"    />
+        <result property="averagePrice"    column="average_price"    />
+        <result property="productType"    column="product_type"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectUserRealtimeControlVo">
+        select id, user_id, product_code, time, volumes, price, rates, amounts, average_price, product_type, create_time from user_realtime_control
+    </sql>
+
+    <select id="selectUserRealtimeControlList" parameterType="UserRealtimeControl" resultMap="UserRealtimeControlResult">
+        <include refid="selectUserRealtimeControlVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="productCode != null  and productCode != ''"> and product_code = #{productCode}</if>
+            <if test="time != null  and time != ''"> and time = #{time}</if>
+            <if test="volumes != null "> and volumes = #{volumes}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="rates != null "> and rates = #{rates}</if>
+            <if test="amounts != null "> and amounts = #{amounts}</if>
+            <if test="averagePrice != null "> and average_price = #{averagePrice}</if>
+            <if test="productType != null "> and product_type = #{productType}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserRealtimeControlById" parameterType="Long" resultMap="UserRealtimeControlResult">
+        <include refid="selectUserRealtimeControlVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertUserRealtimeControl" parameterType="UserRealtimeControl" useGeneratedKeys="true" keyProperty="id">
+        insert into user_realtime_control
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="productCode != null and productCode != ''">product_code,</if>
+            <if test="time != null and time != ''">time,</if>
+            <if test="volumes != null">volumes,</if>
+            <if test="price != null">price,</if>
+            <if test="rates != null">rates,</if>
+            <if test="amounts != null">amounts,</if>
+            <if test="averagePrice != null">average_price,</if>
+            <if test="productType != null">product_type,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="productCode != null and productCode != ''">#{productCode},</if>
+            <if test="time != null and time != ''">#{time},</if>
+            <if test="volumes != null">#{volumes},</if>
+            <if test="price != null">#{price},</if>
+            <if test="rates != null">#{rates},</if>
+            <if test="amounts != null">#{amounts},</if>
+            <if test="averagePrice != null">#{averagePrice},</if>
+            <if test="productType != null">#{productType},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserRealtimeControl" parameterType="UserRealtimeControl">
+        update user_realtime_control
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="productCode != null and productCode != ''">product_code = #{productCode},</if>
+            <if test="time != null and time != ''">time = #{time},</if>
+            <if test="volumes != null">volumes = #{volumes},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="rates != null">rates = #{rates},</if>
+            <if test="amounts != null">amounts = #{amounts},</if>
+            <if test="averagePrice != null">average_price = #{averagePrice},</if>
+            <if test="productType != null">product_type = #{productType},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserRealtimeControlById" parameterType="Long">
+        delete from user_realtime_control where id = #{id}
+    </delete>
+
+    <delete id="deleteUserRealtimeControlByIds" parameterType="String">
+        delete from user_realtime_control where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="cleanProductRealTimeDataTaskWithoutToday">
+        delete from user_realtime_control where product_type = #{stockType} and DATE_FORMAT(now(), '%Y-%m-%d') !=  DATE_FORMAT(create_time, '%Y-%m-%d')
+    </delete>
+</mapper>

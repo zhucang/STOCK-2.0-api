@@ -1,0 +1,68 @@
+version: '3'
+
+services:
+  mysql:
+    restart: unless-stopped
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASS}
+      - MYSQL_DATABASE=stock
+      - TZ=${TIME_ZONE}
+      - MYSQL_LOG_BIN=0
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./mysql_backup:/mysql_backup
+      - ./mysql_data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+
+  redis:
+    restart: unless-stopped
+    image: redis:5.0
+    command: ["redis-server", "--requirepass", "@Redis6379"]
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./redis_data:/data
+    ports:
+      - "6379:6379"
+
+  springboot-app:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        DOCKER_BUILDKIT: 0
+    command: ["java", "-Dfile.encoding=utf-8", "-jar", "/springboot/app.jar"]
+    ports:
+      - "9201:9201"
+
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./uploadPath:/springboot/uploadPath
+      - ./res:/springboot/res
+      - ./logs:/springboot/logs
+      - ./app.jar:/springboot/app.jar
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      - SPRING_DATASOURCE_TYPE=com.alibaba.druid.pool.DruidDataSource
+      - SPRING_DATASOURCE_DRIVERCLASSNAME=com.mysql.cj.jdbc.Driver
+      - SPRING_DATASOURCE_DRUID_MASTER_URL=jdbc:mysql://mysql:3306/stock?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=${TIME_ZONE}
+      - SPRING_DATASOURCE_DRUID_MASTER_USERNAME=root
+      - SPRING_DATASOURCE_DRUID_MASTER_PASSWORD=${DB_PASS}
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PASSWORD=@Redis6379
+  nginx:
+    restart: unless-stopped
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./web:/web-vue
+    ports:
+      - "80:80"
+    depends_on:
+      - springboot-app
+

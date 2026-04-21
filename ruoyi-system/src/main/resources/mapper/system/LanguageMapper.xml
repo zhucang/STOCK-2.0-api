@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.LanguageMapper">
+    
+    <resultMap type="Language" id="LanguageResult">
+        <result property="id"    column="id"    />
+        <result property="language"    column="language"    />
+        <result property="abbreviations"    column="abbreviations"    />
+        <result property="nationalFlag"    column="nationalFlag"    />
+        <result property="value"    column="value"    />
+        <result property="status"    column="status"    />
+        <result property="sort"    column="sort"    />
+    </resultMap>
+
+    <sql id="selectLanguageVo">
+        select id, language, abbreviations, nationalFlag, value, status, sort from language
+    </sql>
+
+    <select id="selectLanguageList" parameterType="Language" resultMap="LanguageResult">
+        <include refid="selectLanguageVo"/>
+        <where>  
+            <if test="language != null  and language != ''"> and language = #{language}</if>
+            <if test="abbreviations != null  and abbreviations != ''"> and abbreviations = #{abbreviations}</if>
+            <if test="nationalFlag != null  and nationalFlag != ''"> and nationalFlag = #{nationalFlag}</if>
+            <if test="value != null  and value != ''"> and value = #{value}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectLanguageById" parameterType="Long" resultMap="LanguageResult">
+        <include refid="selectLanguageVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertLanguage" parameterType="Language" useGeneratedKeys="true" keyProperty="id">
+        insert into language
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="language != null">language,</if>
+            <if test="abbreviations != null">abbreviations,</if>
+            <if test="nationalFlag != null">nationalFlag,</if>
+            <if test="value != null">value,</if>
+            <if test="status != null">status,</if>
+            <if test="sort != null">sort,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="language != null">#{language},</if>
+            <if test="abbreviations != null">#{abbreviations},</if>
+            <if test="nationalFlag != null">#{nationalFlag},</if>
+            <if test="value != null">#{value},</if>
+            <if test="status != null">#{status},</if>
+            <if test="sort != null">#{sort},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLanguage" parameterType="Language">
+        update language
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="language != null">language = #{language},</if>
+            <if test="abbreviations != null">abbreviations = #{abbreviations},</if>
+            <if test="nationalFlag != null">nationalFlag = #{nationalFlag},</if>
+            <if test="value != null">value = #{value},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="sort != null">sort = #{sort},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLanguageById" parameterType="Long">
+        delete from language where id = #{id}
+    </delete>
+
+    <delete id="deleteLanguageByIds" parameterType="String">
+        delete from language where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

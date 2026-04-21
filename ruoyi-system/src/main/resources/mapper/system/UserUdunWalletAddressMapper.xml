@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserUdunWalletAddressMapper">
+    
+    <resultMap type="UserUdunWalletAddress" id="UserUdunWalletAddressResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userAccount"    column="user_account"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="accountType"    column="account_type"    />
+        <result property="agentId"    column="agent_id"    />
+        <result property="agentName"    column="agent_name"    />
+        <result property="userRemark"    column="user_remark"    />
+        <result property="mainCoinType"    column="main_coin_type"    />
+        <result property="coinName"    column="coin_name"    />
+        <result property="walletAddress"    column="wallet_address"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectUserUdunWalletAddressVo">
+        select a.id, user_id,user_account,nick_name,account_type,agent_id,agent_name, b.remark user_remark, main_coin_type,coin_name, wallet_address, create_time
+        from user_udun_wallet_address a
+                 left join user_info b
+                           on a.user_id = b.id
+    </sql>
+
+    <select id="selectUserUdunWalletAddressList" parameterType="UserUdunWalletAddress" resultMap="UserUdunWalletAddressResult">
+        <include refid="selectUserUdunWalletAddressVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="userAccount != null "> and user_account like concat('%',#{userAccount},'%') </if>
+            <if test="nickName != null "> and nick_name like concat('%',#{nickName},'%') </if>
+            <if test="accountType != null "> and account_type = #{accountType}</if>
+            <if test="agentId != null and params.isAllAgentData != null and params.isAllAgentData == 0">
+                and agent_id in (select user_id from agent_team_level_line where sup_user_id = #{agentId} union select #{agentId})
+            </if>
+            <if test="agentId != null and params.isAllAgentData == null">
+                and agent_id = #{agentId}
+            </if>
+            <if test="mainCoinType != null "> and main_coin_type = #{mainCoinType}</if>
+            <if test="coinName != null "> and coin_name = #{coinName}</if>
+            <if test="walletAddress != null  and walletAddress != ''"> and wallet_address = #{walletAddress}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and a.id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and a.id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectUserUdunWalletAddressById" parameterType="Long" resultMap="UserUdunWalletAddressResult">
+        <include refid="selectUserUdunWalletAddressVo"/>
+        where a.id = #{id}
+    </select>
+        
+    <insert id="insertUserUdunWalletAddress" parameterType="UserUdunWalletAddress" useGeneratedKeys="true" keyProperty="id">
+        insert into user_udun_wallet_address
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="mainCoinType != null">main_coin_type,</if>
+            <if test="coinName != null">coin_name,</if>
+            <if test="walletAddress != null and walletAddress != ''">wallet_address,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="mainCoinType != null">#{mainCoinType},</if>
+            <if test="coinName != null">#{coinName},</if>
+            <if test="walletAddress != null and walletAddress != ''">#{walletAddress},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserUdunWalletAddress" parameterType="UserUdunWalletAddress">
+        update user_udun_wallet_address
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="mainCoinType != null">main_coin_type = #{mainCoinType},</if>
+            <if test="coinName != null">coin_name = #{coinName},</if>
+            <if test="walletAddress != null and walletAddress != ''">wallet_address = #{walletAddress},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserUdunWalletAddressById" parameterType="Long">
+        delete from user_udun_wallet_address where id = #{id}
+    </delete>
+
+    <delete id="deleteUserUdunWalletAddressByIds" parameterType="String">
+        delete from user_udun_wallet_address where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.LoanProductMapper">
+    
+    <resultMap type="LoanProduct" id="LoanProductResult">
+        <result property="id"    column="id"    />
+        <result property="productName"    column="product_name"    />
+        <result property="productImg"    column="product_img"    />
+        <result property="minPrice"    column="min_price"    />
+        <result property="maxPrice"    column="max_price"    />
+        <result property="loanDays"    column="loan_days"    />
+        <result property="interestFreeDays"    column="interest_free_days"    />
+        <result property="loanDailyRate"    column="loan_daily_rate"    />
+        <result property="breakContractDailyRate"    column="break_contract_daily_rate"    />
+        <result property="maxLoanCount"    column="max_loan_count"    />
+        <result property="interestSettlementMethod"    column="interest_settlement_method"    />
+        <result property="repaymentMethod"    column="repayment_method"    />
+        <result property="status"    column="status"    />
+        <result property="sort"    column="sort"    />
+        <result property="currencyId"    column="currency_id"    />
+        <result property="currencyName"    column="currency_name"    />
+        <result property="createTime"    column="create_time"    />
+        <association property="productNameLang" javaType="langMgr">
+            <result property="zh"    column="product_name"    />
+            <result property="en"    column="product_name_en"    />
+            <result property="tc"    column="product_name_tc"    />
+            <result property="de"    column="product_name_de"    />
+            <result property="es"    column="product_name_es"    />
+            <result property="fr"    column="product_name_fr"    />
+            <result property="idn"    column="product_name_idn"    />
+            <result property="jp"    column="product_name_jp"    />
+            <result property="ko"    column="product_name_ko"    />
+            <result property="my"    column="product_name_my"    />
+            <result property="th"    column="product_name_th"    />
+            <result property="vi"    column="product_name_vi"    />
+            <result property="pt"    column="product_name_pt"    />
+            <result property="rus"    column="product_name_rus"    />
+            <result property="blr"    column="product_name_blr"    />
+            <result property="ida"    column="product_name_ida"    />
+            <result property="sa"    column="product_name_sa"    />
+            <result property="ar"    column="product_name_ar"    />
+            <result property="it"    column="product_name_it"    />
+            <result property="tr"    column="product_name_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectLoanProductVo">
+        select a.id, product_name, product_img, min_price, max_price, loan_days, interest_free_days, loan_daily_rate, break_contract_daily_rate,max_loan_count,interest_settlement_method,repayment_method, a.status, a.sort, currency_id,currency_name, create_time, product_name_en, product_name_tc, product_name_de, product_name_es, product_name_fr, product_name_idn, product_name_jp, product_name_ko, product_name_my, product_name_th, product_name_vi, product_name_pt, product_name_rus, product_name_blr, product_name_ida, product_name_sa, product_name_ar, product_name_it, product_name_tr
+        from loan_product a
+                 left join platform_currency b
+                           on a.currency_id = b.id
+    </sql>
+
+    <select id="selectLoanProductList" parameterType="LoanProduct" resultMap="LoanProductResult">
+        <include refid="selectLoanProductVo"/>
+        <where>  
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="productImg != null  and productImg != ''"> and product_img = #{productImg}</if>
+            <if test="minPrice != null "> and min_price = #{minPrice}</if>
+            <if test="maxPrice != null "> and max_price = #{maxPrice}</if>
+            <if test="loanDays != null "> and loan_days = #{loanDays}</if>
+            <if test="interestFreeDays != null "> and interest_free_days = #{interestFreeDays}</if>
+            <if test="loanDailyRate != null "> and loan_daily_rate = #{loanDailyRate}</if>
+            <if test="breakContractDailyRate != null "> and break_contract_daily_rate = #{breakContractDailyRate}</if>
+            <if test="interestSettlementMethod != null "> and interest_settlement_method = #{interestSettlementMethod}</if>
+            <if test="repaymentMethod != null "> and repayment_method = #{repaymentMethod}</if>
+            <if test="status != null "> and a.status = #{status}</if>
+            <if test="sort != null "> and a.sort = #{sort}</if>
+            <if test="currencyId != null "> and currency_id = #{currencyId}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and a.id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and a.id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectLoanProductById" parameterType="Long" resultMap="LoanProductResult">
+        <include refid="selectLoanProductVo"/>
+        where a.id = #{id}
+    </select>
+        
+    <insert id="insertLoanProduct" parameterType="LoanProduct" useGeneratedKeys="true" keyProperty="id">
+        insert into loan_product
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productName != null and productName != ''">product_name,</if>
+            <if test="productImg != null">product_img,</if>
+            <if test="minPrice != null">min_price,</if>
+            <if test="maxPrice != null">max_price,</if>
+            <if test="loanDays != null">loan_days,</if>
+            <if test="interestFreeDays != null">interest_free_days,</if>
+            <if test="loanDailyRate != null">loan_daily_rate,</if>
+            <if test="breakContractDailyRate != null">break_contract_daily_rate,</if>
+            <if test="maxLoanCount != null">max_loan_count,</if>
+            <if test="interestSettlementMethod != null">interest_settlement_method,</if>
+            <if test="repaymentMethod != null">repayment_method,</if>
+            <if test="status != null">status,</if>
+            <if test="sort != null">sort,</if>
+            <if test="currencyId != null">currency_id,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productName != null and productName != ''">#{productName},</if>
+            <if test="productImg != null">#{productImg},</if>
+            <if test="minPrice != null">#{minPrice},</if>
+            <if test="maxPrice != null">#{maxPrice},</if>
+            <if test="loanDays != null">#{loanDays},</if>
+            <if test="interestFreeDays != null">#{interestFreeDays},</if>
+            <if test="loanDailyRate != null">#{loanDailyRate},</if>
+            <if test="breakContractDailyRate != null">#{breakContractDailyRate},</if>
+            <if test="maxLoanCount != null">#{maxLoanCount},</if>
+            <if test="interestSettlementMethod != null">#{interestSettlementMethod},</if>
+            <if test="repaymentMethod != null">#{repaymentMethod},</if>
+            <if test="status != null">#{status},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="currencyId != null">#{currencyId},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLoanProduct" parameterType="LoanProduct">
+        update loan_product
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productName != null and productName != ''">product_name = #{productName},</if>
+            <if test="productImg != null">product_img = #{productImg},</if>
+            <if test="minPrice != null">min_price = #{minPrice},</if>
+            <if test="maxPrice != null">max_price = #{maxPrice},</if>
+            <if test="loanDays != null">loan_days = #{loanDays},</if>
+            <if test="interestFreeDays != null">interest_free_days = #{interestFreeDays},</if>
+            <if test="loanDailyRate != null">loan_daily_rate = #{loanDailyRate},</if>
+            <if test="breakContractDailyRate != null">break_contract_daily_rate = #{breakContractDailyRate},</if>
+            <if test="maxLoanCount != null">max_loan_count = #{maxLoanCount},</if>
+            <if test="interestSettlementMethod != null">interest_settlement_method = #{interestSettlementMethod},</if>
+            <if test="repaymentMethod != null">repayment_method = #{repaymentMethod},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="currencyId != null">currency_id = #{currencyId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="productNameLang.zh != null and productName == null">product_name = #{productNameLang.zh},</if>
+            <if test="productNameLang.en != null">product_name_en = #{productNameLang.en},</if>
+            <if test="productNameLang.tc != null">product_name_tc = #{productNameLang.tc},</if>
+            <if test="productNameLang.de != null">product_name_de = #{productNameLang.de},</if>
+            <if test="productNameLang.es != null">product_name_es = #{productNameLang.es},</if>
+            <if test="productNameLang.fr != null">product_name_fr = #{productNameLang.fr},</if>
+            <if test="productNameLang.idn != null">product_name_idn = #{productNameLang.idn},</if>
+            <if test="productNameLang.jp != null">product_name_jp = #{productNameLang.jp},</if>
+            <if test="productNameLang.ko != null">product_name_ko = #{productNameLang.ko},</if>
+            <if test="productNameLang.my != null">product_name_my = #{productNameLang.my},</if>
+            <if test="productNameLang.th != null">product_name_th = #{productNameLang.th},</if>
+            <if test="productNameLang.vi != null">product_name_vi = #{productNameLang.vi},</if>
+            <if test="productNameLang.pt != null">product_name_pt = #{productNameLang.pt},</if>
+            <if test="productNameLang.rus != null">product_name_rus = #{productNameLang.rus},</if>
+            <if test="productNameLang.blr != null">product_name_blr = #{productNameLang.blr},</if>
+            <if test="productNameLang.ida != null">product_name_ida = #{productNameLang.ida},</if>
+            <if test="productNameLang.sa != null">product_name_sa = #{productNameLang.sa},</if>
+            <if test="productNameLang.ar != null">product_name_ar = #{productNameLang.ar},</if>
+            <if test="productNameLang.it != null">product_name_it = #{productNameLang.it},</if>
+            <if test="productNameLang.tr != null">product_name_tr = #{productNameLang.tr},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLoanProductById" parameterType="Long">
+        delete from loan_product where id = #{id}
+    </delete>
+
+    <delete id="deleteLoanProductByIds" parameterType="String">
+        delete from loan_product where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

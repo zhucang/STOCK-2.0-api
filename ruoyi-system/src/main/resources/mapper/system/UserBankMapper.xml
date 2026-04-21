@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserBankMapper">
+    
+    <resultMap type="UserBank" id="UserBankResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="bankName"    column="bank_name"    />
+        <result property="bankNo"    column="bank_no"    />
+        <result property="bankOpenAddress"    column="bank_open_address"    />
+        <result property="holder"    column="holder"    />
+        <result property="bankImg"    column="bank_img"    />
+        <result property="bankPhone"    column="bank_phone"    />
+        <result property="bankCountry"    column="bank_country"    />
+        <result property="abaCode"    column="aba_code"    />
+        <result property="swift"    column="swift"    />
+        <result property="postCode"    column="post_code"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="userRealAddress"    column="user_real_address"    />
+        <result property="accountType"    column="account_type"    />
+    </resultMap>
+
+    <sql id="selectUserBankVo">
+        select id, user_id, bank_name, bank_no, bank_open_address, holder, bank_img, bank_phone, bank_country, aba_code, swift, post_code, create_time, remark, user_real_address, account_type from user_bank
+    </sql>
+
+    <select id="selectUserBankList" parameterType="UserBank" resultMap="UserBankResult">
+        <include refid="selectUserBankVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="bankName != null  and bankName != ''"> and bank_name like concat('%', #{bankName}, '%')</if>
+            <if test="bankNo != null  and bankNo != ''"> and bank_no = #{bankNo}</if>
+            <if test="bankOpenAddress != null  and bankOpenAddress != ''"> and bank_open_address = #{bankOpenAddress}</if>
+            <if test="holder != null  and holder != ''"> and holder = #{holder}</if>
+            <if test="bankImg != null  and bankImg != ''"> and bank_img = #{bankImg}</if>
+            <if test="bankPhone != null  and bankPhone != ''"> and bank_phone = #{bankPhone}</if>
+            <if test="bankCountry != null  and bankCountry != ''"> and bank_country = #{bankCountry}</if>
+            <if test="abaCode != null  and abaCode != ''"> and aba_code = #{abaCode}</if>
+            <if test="swift != null  and swift != ''"> and swift = #{swift}</if>
+            <if test="postCode != null  and postCode != ''"> and post_code = #{postCode}</if>
+            <if test="userRealAddress != null  and userRealAddress != ''"> and user_real_address = #{userRealAddress}</if>
+            <if test="accountType != null  and accountType != ''"> and account_type = #{accountType}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectUserBankById" parameterType="Long" resultMap="UserBankResult">
+        <include refid="selectUserBankVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="getUserBankCardCountByUserId" resultType="java.lang.Integer">
+        select count(1) from user_bank where user_id = #{userId}
+    </select>
+
+    <insert id="insertUserBank" parameterType="UserBank" useGeneratedKeys="true" keyProperty="id">
+        insert into user_bank
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="bankName != null and bankName != ''">bank_name,</if>
+            <if test="bankNo != null and bankNo != ''">bank_no,</if>
+            <if test="bankOpenAddress != null and bankOpenAddress != ''">bank_open_address,</if>
+            <if test="holder != null and holder != ''">holder,</if>
+            <if test="bankImg != null">bank_img,</if>
+            <if test="bankPhone != null">bank_phone,</if>
+            <if test="bankCountry != null">bank_country,</if>
+            <if test="abaCode != null">aba_code,</if>
+            <if test="swift != null">swift,</if>
+            <if test="postCode != null">post_code,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="userRealAddress != null">user_real_address,</if>
+            <if test="accountType != null">account_type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="bankName != null and bankName != ''">#{bankName},</if>
+            <if test="bankNo != null and bankNo != ''">#{bankNo},</if>
+            <if test="bankOpenAddress != null and bankOpenAddress != ''">#{bankOpenAddress},</if>
+            <if test="holder != null and holder != ''">#{holder},</if>
+            <if test="bankImg != null">#{bankImg},</if>
+            <if test="bankPhone != null">#{bankPhone},</if>
+            <if test="bankCountry != null">#{bankCountry},</if>
+            <if test="abaCode != null">#{abaCode},</if>
+            <if test="swift != null">#{swift},</if>
+            <if test="postCode != null">#{postCode},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="userRealAddress != null">#{userRealAddress},</if>
+            <if test="accountType != null">#{accountType},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserBank" parameterType="UserBank">
+        update user_bank
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="bankName != null and bankName != ''">bank_name = #{bankName},</if>
+            <if test="bankNo != null and bankNo != ''">bank_no = #{bankNo},</if>
+            <if test="bankOpenAddress != null and bankOpenAddress != ''">bank_open_address = #{bankOpenAddress},</if>
+            <if test="holder != null and holder != ''">holder = #{holder},</if>
+            <if test="bankImg != null">bank_img = #{bankImg},</if>
+            <if test="bankPhone != null">bank_phone = #{bankPhone},</if>
+            <if test="bankCountry != null">bank_country = #{bankCountry},</if>
+            <if test="abaCode != null">aba_code = #{abaCode},</if>
+            <if test="swift != null">swift = #{swift},</if>
+            <if test="postCode != null">post_code = #{postCode},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="userRealAddress != null">user_real_address = #{userRealAddress},</if>
+            <if test="accountType != null">account_type = #{accountType},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserBankById" parameterType="Long">
+        delete from user_bank where id = #{id}
+    </delete>
+
+    <delete id="deleteUserBankByIds" parameterType="String">
+        delete from user_bank where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

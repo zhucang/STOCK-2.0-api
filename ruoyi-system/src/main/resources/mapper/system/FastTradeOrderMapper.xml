@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.FastTradeOrderMapper">
+    
+    <resultMap type="FastTradeOrder" id="FastTradeOrderResult">
+        <result property="id"    column="id"    />
+        <result property="productType"    column="product_type"    />
+        <result property="orderCode"    column="order_code"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userAccount"    column="user_account"    />
+        <result property="email"    column="email"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="accountType"    column="account_type"    />
+        <result property="agentId"    column="agent_id"    />
+        <result property="agentName"    column="agent_name"    />
+        <result property="userRemark"    column="user_remark"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="productDesc"    column="product_desc"    />
+        <result property="productName"    column="product_name"    />
+        <result property="orderDirection"    column="order_direction"    />
+        <result property="orderPrice"    column="order_price"    />
+        <result property="orderTime"    column="order_time"    />
+        <result property="fastTradeOrderOptionsId"    column="fast_trade_order_options_id"    />
+        <result property="durationValue"    column="duration_value"    />
+        <result property="durationLabel"    column="duration_label"    />
+        <result property="winProfitRatio"    column="win_profit_ratio"    />
+        <result property="loseProfitRatio"    column="lose_profit_ratio"    />
+        <result property="buyPrice"    column="buy_price"    />
+        <result property="sellPrice"    column="sell_price"    />
+        <result property="orderStatus"    column="order_status"    />
+        <result property="deliverTime"    column="deliver_time"    />
+        <result property="orderProfit"    column="order_profit"    />
+        <result property="currencyId"    column="currency_id"    />
+        <result property="loseMoneyMethod"    column="lose_money_method"    />
+        <result property="orderControlFlag"    column="order_control_flag"    />
+        <result property="handingFee"    column="handing_fee"    />
+        <result property="sqlVersion"    column="sql_version"    />
+    </resultMap>
+
+    <sql id="selectFastTradeOrderVo">
+        select a.id, a.product_type, order_code, user_id,user_account, email, nick_name,account_type,agent_id,agent_name, b.remark user_remark, a.product_code,product_desc,c.product_name, order_direction, order_price, order_time, fast_trade_order_options_id, duration_value, duration_label, win_profit_ratio,lose_profit_ratio, buy_price, sell_price, order_status, deliver_time, order_profit, currency_id, lose_money_method, order_control_flag, a.sql_version,handing_fee
+        from fast_trade_order a
+                 left join user_info b
+                           on a.user_id = b.id
+                 left join
+             (select product_name,product_code,null as product_desc,1 as product_type from stock_product
+              union
+              select product_name,product_code,product_desc,2 as product_type from cryptocurrency_product
+              union
+              select product_name,product_code,null as product_desc,3 as product_type from futures_product
+              union
+              select product_name,product_code,null as product_desc,4 as product_type  from forex_product) as c
+             on a.product_code = c.product_code and a.product_type = c.product_type
+    </sql>
+
+    <select id="selectFastTradeOrderList" parameterType="FastTradeOrder" resultMap="FastTradeOrderResult">
+        <include refid="selectFastTradeOrderVo"/>
+        <where>  
+            <if test="productType != null "> and a.product_type = #{productType}</if>
+            <if test="orderCode != null  and orderCode != ''"> and order_code like concat('%',#{orderCode},'%') </if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="userAccount != null "> and user_account like concat('%',#{userAccount},'%') </if>
+            <if test="nickName != null "> and nick_name like concat('%',#{nickName},'%') </if>
+            <if test="accountType != null "> and account_type = #{accountType}</if>
+            <if test="email != null "> and email like concat('%',#{email},'%')</if>
+            <if test="agentId != null and params.isAllAgentData != null and params.isAllAgentData == 0">
+                and agent_id in (select user_id from agent_team_level_line where sup_user_id = #{agentId} union select #{agentId})
+            </if>
+            <if test="agentId != null and params.isAllAgentData == null">
+                and agent_id = #{agentId}
+            </if>
+            <if test="productCode != null  and productCode != ''"> and a.product_code like concat('%',#{productCode},'%')</if>
+            <if test="productName != null  and productName != ''"> and c.product_name like concat('%',#{productName},'%')</if>
+            <if test="orderDirection != null "> and order_direction = #{orderDirection}</if>
+            <if test="orderTime != null "><![CDATA[ and DATE_FORMAT(order_time, '%Y-%m-%d') =  DATE_FORMAT(#{orderTime}, '%Y-%m-%d') ]]></if>
+            <if test="fastTradeOrderOptionsId != null "> and fast_trade_order_options_id = #{fastTradeOrderOptionsId}</if>
+            <if test="durationValue != null "> and duration_value = #{durationValue}</if>
+            <if test="durationLabel != null "> and duration_label = #{durationLabel}</if>
+            <if test="buyPrice != null "> and buy_price = #{buyPrice}</if>
+            <if test="sellPrice != null "> and sell_price = #{sellPrice}</if>
+            <if test="orderStatus != null "> and order_status = #{orderStatus}</if>
+            <if test="deliverTime !=null ">
+                <![CDATA[and DATE_FORMAT(deliver_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{deliverTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+            <if test="startTime !=null ">
+                <![CDATA[   and DATE_FORMAT(order_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+            <if test="endTime !=null ">
+                <![CDATA[  and DATE_FORMAT(order_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+            <if test="orderProfit != null "> and order_profit = #{orderProfit}</if>
+            <if test="currencyId != null "> and currency_id = #{currencyId}</if>
+            <if test="loseMoneyMethod != null "> and lose_money_method = #{loseMoneyMethod}</if>
+            <if test="orderControlFlag != null "> and order_control_flag = #{orderControlFlag}</if>
+            <if test="handingFee != null "> and handing_fee = #{handingFee}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and a.id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and a.id = 0
+            </if>
+            ${params.dataScope}
+        </where>
+    </select>
+    
+    <select id="selectFastTradeOrderById" parameterType="Long" resultMap="FastTradeOrderResult">
+        <include refid="selectFastTradeOrderVo"/>
+        where a.id = #{id}
+    </select>
+
+    <select id="getOrderNumForPeriod" resultType="java.lang.Integer">
+        select count(1) from fast_trade_order where user_id = #{userId}
+        <![CDATA[ and DATE_FORMAT(order_time, '%Y-%m-%d %H:%i:%s') >= DATE_FORMAT(#{time}, '%Y-%m-%d %H:%i:%s') ]]>
+    </select>
+
+    <select id="getSettlementComingSoonOrder" resultMap="FastTradeOrderResult">
+        select id,order_code,product_type,user_id,product_code,order_direction,order_price,win_profit_ratio,lose_profit_ratio,buy_price,order_status,deliver_time,currency_id,lose_money_method,order_control_flag,sql_version from fast_trade_order where product_type = #{productType} and order_status = 0
+        and DATE_FORMAT(deliver_time, '%Y-%m-%d %H:%i:%s') <![CDATA[ <= ]]> DATE_FORMAT(#{deliverTime}, '%Y-%m-%d %H:%i:%s')
+    </select>
+
+    <select id="getUserFastTradePendingSettleNum" resultType="java.lang.Long">
+        select a.id
+        from fast_trade_order a
+        LEFT JOIN user_info b
+        on a.user_id = b.id
+        where order_status = 0
+        <if test="params.tourists != null and params.tourists != 0">
+            and account_type = 0
+        </if>
+        <if test="params.dataScope != null and params.dataScope != ''">
+            ${params.dataScope}
+        </if>
+    </select>
+
+    <insert id="insertFastTradeOrder" parameterType="FastTradeOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into fast_trade_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productType != null">product_type,</if>
+            <if test="orderCode != null and orderCode != ''">order_code,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="productCode != null and productCode != ''">product_code,</if>
+            <if test="productName != null and productName != ''">product_name,</if>
+            <if test="orderDirection != null">order_direction,</if>
+            <if test="orderPrice != null">order_price,</if>
+            <if test="orderTime != null">order_time,</if>
+            <if test="fastTradeOrderOptionsId != null">fast_trade_order_options_id,</if>
+            <if test="durationValue != null">duration_value,</if>
+            <if test="durationLabel != null">duration_label,</if>
+            <if test="winProfitRatio != null">win_profit_ratio,</if>
+            <if test="loseProfitRatio != null">lose_profit_ratio,</if>
+            <if test="buyPrice != null">buy_price,</if>
+            <if test="sellPrice != null">sell_price,</if>
+            <if test="orderStatus != null">order_status,</if>
+            <if test="deliverTime != null">deliver_time,</if>
+            <if test="orderProfit != null">order_profit,</if>
+            <if test="currencyId != null">currency_id,</if>
+            <if test="loseMoneyMethod != null">lose_money_method,</if>
+            <if test="orderControlFlag != null">order_control_flag,</if>
+            <if test="handingFee != null">handing_fee,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productType != null">#{productType},</if>
+            <if test="orderCode != null and orderCode != ''">#{orderCode},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="productCode != null and productCode != ''">#{productCode},</if>
+            <if test="productName != null and productName != ''">#{productName},</if>
+            <if test="orderDirection != null">#{orderDirection},</if>
+            <if test="orderPrice != null">#{orderPrice},</if>
+            <if test="orderTime != null">#{orderTime},</if>
+            <if test="fastTradeOrderOptionsId != null">#{fastTradeOrderOptionsId},</if>
+            <if test="durationValue != null">#{durationValue},</if>
+            <if test="durationLabel != null">#{durationLabel},</if>
+            <if test="winProfitRatio != null">#{winProfitRatio},</if>
+            <if test="loseProfitRatio != null">#{loseProfitRatio},</if>
+            <if test="buyPrice != null">#{buyPrice},</if>
+            <if test="sellPrice != null">#{sellPrice},</if>
+            <if test="orderStatus != null">#{orderStatus},</if>
+            <if test="deliverTime != null">#{deliverTime},</if>
+            <if test="orderProfit != null">#{orderProfit},</if>
+            <if test="currencyId != null">#{currencyId},</if>
+            <if test="loseMoneyMethod != null">#{loseMoneyMethod},</if>
+            <if test="orderControlFlag != null">#{orderControlFlag},</if>
+            <if test="handingFee != null">#{handingFee},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFastTradeOrder" parameterType="FastTradeOrder">
+        update fast_trade_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productType != null">product_type = #{productType},</if>
+            <if test="orderCode != null and orderCode != ''">order_code = #{orderCode},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="productCode != null and productCode != ''">product_code = #{productCode},</if>
+            <if test="productName != null and productName != ''">product_name = #{productName},</if>
+            <if test="orderDirection != null">order_direction = #{orderDirection},</if>
+            <if test="orderPrice != null">order_price = #{orderPrice},</if>
+            <if test="orderTime != null">order_time = #{orderTime},</if>
+            <if test="fastTradeOrderOptionsId != null">fast_trade_order_options_id = #{fastTradeOrderOptionsId},</if>
+            <if test="durationValue != null">duration_value = #{durationValue},</if>
+            <if test="durationLabel != null">duration_label = #{durationLabel},</if>
+            <if test="winProfitRatio != null">win_profit_ratio = #{winProfitRatio},</if>
+            <if test="loseProfitRatio != null">lose_profit_ratio = #{loseProfitRatio},</if>
+            <if test="buyPrice != null">buy_price = #{buyPrice},</if>
+            <if test="sellPrice != null">sell_price = #{sellPrice},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="deliverTime != null">deliver_time = #{deliverTime},</if>
+            <if test="orderProfit != null">order_profit = #{orderProfit},</if>
+            <if test="currencyId != null">currency_id = #{currencyId},</if>
+            <if test="loseMoneyMethod != null">lose_money_method = #{loseMoneyMethod},</if>
+            <if test="orderControlFlag != null">order_control_flag = #{orderControlFlag},</if>
+            <if test="handingFee != null">handing_fee = #{handingFee},</if>
+            <if test="sqlVersion != null">sql_version = sql_version + 1,</if>
+        </trim>
+        where id = #{id}
+        <if test="sqlVersion != null">and sql_version = #{sqlVersion}</if>
+    </update>
+
+    <delete id="deleteFastTradeOrderById" parameterType="Long">
+        delete from fast_trade_order where id = #{id}
+    </delete>
+
+    <delete id="deleteFastTradeOrderByIds" parameterType="String">
+        delete from fast_trade_order where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StakingOrderInterestRecordMapper">
+    
+    <resultMap type="StakingOrderInterestRecord" id="StakingOrderInterestRecordResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="stakingOrderId"    column="staking_order_id"    />
+        <result property="stakingPoolAmount"    column="staking_pool_amount"    />
+        <result property="dailyIncomeRate"    column="daily_income_rate"    />
+        <result property="payTime"    column="pay_time"    />
+        <result property="payAmount"    column="pay_amount"    />
+    </resultMap>
+
+    <sql id="selectStakingOrderInterestRecordVo">
+        select id, user_id, staking_order_id, staking_pool_amount, daily_income_rate, pay_time, pay_amount from staking_order_interest_record
+    </sql>
+
+    <select id="selectStakingOrderInterestRecordList" parameterType="StakingOrderInterestRecord" resultMap="StakingOrderInterestRecordResult">
+        <include refid="selectStakingOrderInterestRecordVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="stakingOrderId != null "> and staking_order_id = #{stakingOrderId}</if>
+            <if test="dailyIncomeRate != null "> and daily_income_rate = #{dailyIncomeRate}</if>
+            <if test="payTime != null "> and pay_time = #{payTime}</if>
+            <if test="payAmount != null "> and pay_amount = #{payAmount}</if>
+        </where>
+    </select>
+    
+    <select id="selectStakingOrderInterestRecordById" parameterType="Long" resultMap="StakingOrderInterestRecordResult">
+        <include refid="selectStakingOrderInterestRecordVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertStakingOrderInterestRecord" parameterType="StakingOrderInterestRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into staking_order_interest_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="stakingOrderId != null">staking_order_id,</if>
+            <if test="stakingPoolAmount != null">staking_pool_amount,</if>
+            <if test="dailyIncomeRate != null">daily_income_rate,</if>
+            <if test="payTime != null">pay_time,</if>
+            <if test="payAmount != null">pay_amount,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="stakingOrderId != null">#{stakingOrderId},</if>
+            <if test="stakingPoolAmount != null">#{stakingPoolAmount},</if>
+            <if test="dailyIncomeRate != null">#{dailyIncomeRate},</if>
+            <if test="payTime != null">#{payTime},</if>
+            <if test="payAmount != null">#{payAmount},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStakingOrderInterestRecord" parameterType="StakingOrderInterestRecord">
+        update staking_order_interest_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="stakingOrderId != null">staking_order_id = #{stakingOrderId},</if>
+            <if test="dailyIncomeRate != null">daily_income_rate = #{dailyIncomeRate},</if>
+            <if test="payTime != null">pay_time = #{payTime},</if>
+            <if test="payAmount != null">pay_amount = #{payAmount},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteStakingOrderInterestRecordById" parameterType="Long">
+        delete from staking_order_interest_record where id = #{id}
+    </delete>
+
+    <delete id="deleteStakingOrderInterestRecordByIds" parameterType="String">
+        delete from staking_order_interest_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

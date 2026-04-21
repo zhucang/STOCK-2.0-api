@@ -1,0 +1,1 @@
+insert into `stock`.`switch_set` (id,switch_name,status,`type`,sort) select 97,'后台提醒是否统计游客',1,1,97 from switch_set where not exists (select id from switch_set where id = 97)limit 1;

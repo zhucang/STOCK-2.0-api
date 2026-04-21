@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.NginxConfigMapper">
+    
+    <resultMap type="NginxConfig" id="NginxConfigResult">
+        <result property="id"    column="id"    />
+        <result property="serverName"    column="server_name"    />
+        <result property="configType"    column="config_type"    />
+        <result property="configContent"    column="config_content"    />
+    </resultMap>
+
+    <sql id="selectNginxConfigVo">
+        select id, server_name, config_type, config_content from nginx_config
+    </sql>
+
+    <select id="selectNginxConfigList" parameterType="NginxConfig" resultMap="NginxConfigResult">
+        <include refid="selectNginxConfigVo"/>
+        <where>  
+            <if test="serverName != null  and serverName != ''"> and server_name like concat('%', #{serverName}, '%')</if>
+            <if test="configType != null "> and config_type = #{configType}</if>
+            <if test="configContent != null  and configContent != ''"> and config_content = #{configContent}</if>
+        </where>
+    </select>
+    
+    <select id="selectNginxConfigById" parameterType="Long" resultMap="NginxConfigResult">
+        <include refid="selectNginxConfigVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertNginxConfig" parameterType="NginxConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into nginx_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="serverName != null and serverName != ''">server_name,</if>
+            <if test="configType != null">config_type,</if>
+            <if test="configContent != null and configContent != ''">config_content,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="serverName != null and serverName != ''">#{serverName},</if>
+            <if test="configType != null">#{configType},</if>
+            <if test="configContent != null and configContent != ''">#{configContent},</if>
+         </trim>
+    </insert>
+
+    <update id="updateNginxConfig" parameterType="NginxConfig">
+        update nginx_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="serverName != null and serverName != ''">server_name = #{serverName},</if>
+            <if test="configType != null">config_type = #{configType},</if>
+            <if test="configContent != null and configContent != ''">config_content = #{configContent},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteNginxConfigById" parameterType="Long">
+        delete from nginx_config where id = #{id}
+    </delete>
+
+    <delete id="deleteNginxConfigByIds" parameterType="String">
+        delete from nginx_config where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

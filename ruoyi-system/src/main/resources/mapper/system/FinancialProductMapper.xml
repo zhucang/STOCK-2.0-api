@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.FinancialProductMapper">
+    
+    <resultMap type="FinancialProduct" id="FinancialProductResult">
+        <result property="id"    column="id"    />
+        <result property="financialName"    column="financial_name"    />
+        <result property="financialImg"    column="financial_img"    />
+        <result property="minPrice"    column="min_price"    />
+        <result property="maxPrice"    column="max_price"    />
+        <result property="financialTime"    column="financial_time"    />
+        <result property="floatDailyIncomeMinRate"    column="float_daily_income_min_rate"    />
+        <result property="floatDailyIncomeMaxRate"    column="float_daily_income_max_rate"    />
+        <result property="fixedIncomeRate"    column="fixed_income_rate"    />
+        <result property="status"    column="status"    />
+        <result property="sort"    column="sort"    />
+        <result property="breakContractRate"    column="break_contract_rate"    />
+        <result property="userAmountLimit"    column="user_amount_limit"    />
+        <result property="renewVisible"    column="renew_visible"    />
+        <result property="settleMethod"    column="settle_method"    />
+        <result property="autoApprove"    column="auto_approve"    />
+        <result property="currencyId"    column="currency_id"    />
+        <result property="currencyName"    column="currency_name"    />
+        <result property="userBuyLimit"    column="user_buy_limit"    />
+        <result property="vipLevelLimit"    column="vip_level_limit"    />
+        <result property="openQuantity"    column="open_quantity"    />
+        <result property="remainingQuantity"    column="remaining_quantity"    />
+        <result property="sqlVersion"    column="sql_version"    />
+        <association property="financialNameLang" javaType="langMgr">
+            <result property="zh"    column="financial_name"    />
+            <result property="en"    column="financial_name_en"    />
+            <result property="tc"    column="financial_name_tc"    />
+            <result property="de"    column="financial_name_de"    />
+            <result property="es"    column="financial_name_es"    />
+            <result property="fr"    column="financial_name_fr"    />
+            <result property="idn"    column="financial_name_idn"    />
+            <result property="jp"    column="financial_name_jp"    />
+            <result property="ko"    column="financial_name_ko"    />
+            <result property="my"    column="financial_name_my"    />
+            <result property="th"    column="financial_name_th"    />
+            <result property="vi"    column="financial_name_vi"    />
+            <result property="pt"    column="financial_name_pt"    />
+            <result property="rus"    column="financial_name_rus"    />
+            <result property="blr"    column="financial_name_blr"    />
+            <result property="ida"    column="financial_name_ida"    />
+            <result property="sa"    column="financial_name_sa"    />
+            <result property="ar"    column="financial_name_ar"    />
+            <result property="it"    column="financial_name_it"    />
+            <result property="tr"    column="financial_name_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectFinancialProductVo">
+        select a.id, financial_name, financial_img, min_price, max_price, financial_time, float_daily_income_min_rate, float_daily_income_max_rate, fixed_income_rate, a.status, a.sort, break_contract_rate, user_amount_limit,settle_method, renew_visible, auto_approve, currency_id,currency_name, user_buy_limit, vip_level_limit,open_quantity,remaining_quantity,sql_version, financial_name_en, financial_name_tc, financial_name_de, financial_name_es, financial_name_fr, financial_name_idn, financial_name_jp, financial_name_ko, financial_name_my, financial_name_th, financial_name_vi, financial_name_pt, financial_name_rus, financial_name_blr, financial_name_ida, financial_name_sa, financial_name_ar, financial_name_it, financial_name_tr
+        from financial_product a
+                 left join platform_currency b
+                           on a.currency_id = b.id
+    </sql>
+
+    <select id="selectFinancialProductList" parameterType="FinancialProduct" resultMap="FinancialProductResult">
+        <include refid="selectFinancialProductVo"/>
+        <where>  
+            <if test="financialName != null  and financialName != ''"> and financial_name like concat('%', #{financialName}, '%')</if>
+            <if test="financialImg != null  and financialImg != ''"> and financial_img = #{financialImg}</if>
+            <if test="minPrice != null "> and min_price = #{minPrice}</if>
+            <if test="maxPrice != null "> and max_price = #{maxPrice}</if>
+            <if test="financialTime != null "> and financial_time = #{financialTime}</if>
+            <if test="floatDailyIncomeMinRate != null "> and float_daily_income_min_rate = #{floatDailyIncomeMinRate}</if>
+            <if test="floatDailyIncomeMaxRate != null "> and float_daily_income_max_rate = #{floatDailyIncomeMaxRate}</if>
+            <if test="fixedIncomeRate != null "> and fixed_income_rate = #{fixedIncomeRate}</if>
+            <if test="status != null "> and a.status = #{status}</if>
+            <if test="sort != null "> and a.sort = #{sort}</if>
+            <if test="breakContractRate != null "> and break_contract_rate = #{breakContractRate}</if>
+            <if test="userAmountLimit != null "> and user_amount_limit = #{userAmountLimit}</if>
+            <if test="renewVisible != null "> and renew_visible = #{renewVisible}</if>
+            <if test="settleMethod != null "> and settle_method = #{settleMethod}</if>
+            <if test="autoApprove != null "> and auto_approve = #{autoApprove}</if>
+            <if test="currencyId != null "> and currency_id = #{currencyId}</if>
+            <if test="vipLevelLimit != null "> and vip_level_limit = #{vipLevelLimit}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and a.id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and a.id = 0
+            </if>
+            and is_del = 0
+        </where>
+    </select>
+    
+    <select id="selectFinancialProductById" parameterType="Long" resultMap="FinancialProductResult">
+        <include refid="selectFinancialProductVo"/>
+        where a.id = #{id}
+    </select>
+        
+    <insert id="insertFinancialProduct" parameterType="FinancialProduct" useGeneratedKeys="true" keyProperty="id">
+        insert into financial_product
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="financialName != null">financial_name,</if>
+            <if test="financialImg != null">financial_img,</if>
+            <if test="minPrice != null">min_price,</if>
+            <if test="maxPrice != null">max_price,</if>
+            <if test="financialTime != null">financial_time,</if>
+            <if test="floatDailyIncomeMinRate != null">float_daily_income_min_rate,</if>
+            <if test="floatDailyIncomeMaxRate != null">float_daily_income_max_rate,</if>
+            <if test="fixedIncomeRate != null">fixed_income_rate,</if>
+            <if test="status != null">status,</if>
+            <if test="sort != null">sort,</if>
+            <if test="breakContractRate != null">break_contract_rate,</if>
+            <if test="userAmountLimit != null">user_amount_limit,</if>
+            <if test="settleMethod != null">settle_method,</if>
+            <if test="renewVisible != null">renew_visible,</if>
+            <if test="autoApprove != null">auto_approve,</if>
+            <if test="currencyId != null">currency_id,</if>
+            <if test="userBuyLimit != null">user_buy_limit,</if>
+            <if test="vipLevelLimit != null">vip_level_limit,</if>
+            <if test="openQuantity != null">open_quantity,</if>
+            <if test="remainingQuantity != null">remaining_quantity,</if>
+            <if test="sqlVersion != null">sql_version,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="financialName != null">#{financialName},</if>
+            <if test="financialImg != null">#{financialImg},</if>
+            <if test="minPrice != null">#{minPrice},</if>
+            <if test="maxPrice != null">#{maxPrice},</if>
+            <if test="financialTime != null">#{financialTime},</if>
+            <if test="floatDailyIncomeMinRate != null">#{floatDailyIncomeMinRate},</if>
+            <if test="floatDailyIncomeMaxRate != null">#{floatDailyIncomeMaxRate},</if>
+            <if test="fixedIncomeRate != null">#{fixedIncomeRate},</if>
+            <if test="status != null">#{status},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="breakContractRate != null">#{breakContractRate},</if>
+            <if test="userAmountLimit != null">#{userAmountLimit},</if>
+            <if test="settleMethod != null">#{settleMethod},</if>
+            <if test="renewVisible != null">#{renewVisible},</if>
+            <if test="autoApprove != null">#{autoApprove},</if>
+            <if test="currencyId != null">#{currencyId},</if>
+            <if test="userBuyLimit != null">#{userBuyLimit},</if>
+            <if test="vipLevelLimit != null">#{vipLevelLimit},</if>
+            <if test="openQuantity != null">#{openQuantity},</if>
+            <if test="remainingQuantity != null">#{remainingQuantity},</if>
+            <if test="sqlVersion != null">#{sqlVersion},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFinancialProduct" parameterType="FinancialProduct">
+        update financial_product
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="financialName != null">financial_name = #{financialName},</if>
+            <if test="financialImg != null">financial_img = #{financialImg},</if>
+            <if test="minPrice != null">min_price = #{minPrice},</if>
+            <if test="maxPrice != null">max_price = #{maxPrice},</if>
+            <if test="financialTime != null">financial_time = #{financialTime},</if>
+            <if test="floatDailyIncomeMinRate != null">float_daily_income_min_rate = #{floatDailyIncomeMinRate},</if>
+            <if test="floatDailyIncomeMaxRate != null">float_daily_income_max_rate = #{floatDailyIncomeMaxRate},</if>
+            <if test="fixedIncomeRate != null">fixed_income_rate = #{fixedIncomeRate},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="breakContractRate != null">break_contract_rate = #{breakContractRate},</if>
+            <if test="userAmountLimit != null">user_amount_limit = #{userAmountLimit},</if>
+            <if test="settleMethod != null">settle_method = #{settleMethod},</if>
+            <if test="renewVisible != null">renew_visible = #{renewVisible},</if>
+            <if test="autoApprove != null">auto_approve = #{autoApprove},</if>
+            <if test="currencyId != null">currency_id = #{currencyId},</if>
+            <if test="userBuyLimit != null">user_buy_limit = #{userBuyLimit},</if>
+            <if test="vipLevelLimit != null">vip_level_limit = #{vipLevelLimit},</if>
+            open_quantity = #{openQuantity},
+            remaining_quantity = #{remainingQuantity},
+            <if test="sqlVersion != null">sql_version = sql_version + 1,</if>
+            <if test="financialNameLang.zh != null and financialName == null">financial_name = #{financialNameLang.zh},</if>
+            <if test="financialNameLang.en != null">financial_name_en = #{financialNameLang.en},</if>
+            <if test="financialNameLang.tc != null">financial_name_tc = #{financialNameLang.tc},</if>
+            <if test="financialNameLang.de != null">financial_name_de = #{financialNameLang.de},</if>
+            <if test="financialNameLang.es != null">financial_name_es = #{financialNameLang.es},</if>
+            <if test="financialNameLang.fr != null">financial_name_fr = #{financialNameLang.fr},</if>
+            <if test="financialNameLang.idn != null">financial_name_idn = #{financialNameLang.idn},</if>
+            <if test="financialNameLang.jp != null">financial_name_jp = #{financialNameLang.jp},</if>
+            <if test="financialNameLang.ko != null">financial_name_ko = #{financialNameLang.ko},</if>
+            <if test="financialNameLang.my != null">financial_name_my = #{financialNameLang.my},</if>
+            <if test="financialNameLang.th != null">financial_name_th = #{financialNameLang.th},</if>
+            <if test="financialNameLang.vi != null">financial_name_vi = #{financialNameLang.vi},</if>
+            <if test="financialNameLang.pt != null">financial_name_pt = #{financialNameLang.pt},</if>
+            <if test="financialNameLang.rus != null">financial_name_rus = #{financialNameLang.rus},</if>
+            <if test="financialNameLang.blr != null">financial_name_blr = #{financialNameLang.blr},</if>
+            <if test="financialNameLang.ida != null">financial_name_ida = #{financialNameLang.ida},</if>
+            <if test="financialNameLang.sa != null">financial_name_sa = #{financialNameLang.sa},</if>
+            <if test="financialNameLang.ar != null">financial_name_ar = #{financialNameLang.ar},</if>
+            <if test="financialNameLang.it != null">financial_name_it = #{financialNameLang.it},</if>
+            <if test="financialNameLang.tr != null">financial_name_tr = #{financialNameLang.tr},</if>
+        </trim>
+        where id = #{id}
+        <if test="sqlVersion != null">and sql_version = #{sqlVersion}</if>
+    </update>
+
+    <delete id="deleteFinancialProductById" parameterType="Long">
+        update financial_product set is_del = 1 where id = #{id}
+    </delete>
+
+    <delete id="deleteFinancialProductByIds" parameterType="String">
+        update financial_product set is_del = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

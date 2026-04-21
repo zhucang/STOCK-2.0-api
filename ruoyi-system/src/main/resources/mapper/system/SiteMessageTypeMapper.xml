@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SiteMessageTypeMapper">
+    
+    <resultMap type="SiteMessageType" id="SiteMessageTypeResult">
+        <result property="siteMessageTypeId"    column="site_message_type_id"    />
+        <result property="siteMessageTypeName"    column="site_message_type_name"    />
+        <result property="siteMessageTypeNameEn"    column="site_message_type_name_en"    />
+        <result property="siteMessageTypeNameTc"    column="site_message_type_name_tc"    />
+        <result property="siteMessageTypeNameDe"    column="site_message_type_name_de"    />
+        <result property="siteMessageTypeNameEs"    column="site_message_type_name_es"    />
+        <result property="siteMessageTypeNameFr"    column="site_message_type_name_fr"    />
+        <result property="siteMessageTypeNameIdn"    column="site_message_type_name_idn"    />
+        <result property="siteMessageTypeNameJp"    column="site_message_type_name_jp"    />
+        <result property="siteMessageTypeNameKo"    column="site_message_type_name_ko"    />
+        <result property="siteMessageTypeNameMy"    column="site_message_type_name_my"    />
+        <result property="siteMessageTypeNameTh"    column="site_message_type_name_th"    />
+        <result property="siteMessageTypeNameVi"    column="site_message_type_name_vi"    />
+        <result property="siteMessageTypeNamePt"    column="site_message_type_name_pt"    />
+        <result property="siteMessageTypeNameRus"    column="site_message_type_name_rus"    />
+        <result property="siteMessageTypeNameBlr"    column="site_message_type_name_blr"    />
+        <result property="siteMessageTypeNameIda"    column="site_message_type_name_ida"    />
+        <result property="siteMessageTypeNameSa"    column="site_message_type_name_sa"    />
+        <result property="siteMessageTypeNameAr"    column="site_message_type_name_ar"    />
+        <result property="siteMessageTypeNameIt"    column="site_message_type_name_it"    />
+        <result property="siteMessageTypeNameTr"    column="site_message_type_name_tr"    />
+    </resultMap>
+
+    <sql id="selectSiteMessageTypeVo">
+        select site_message_type_id, site_message_type_name, site_message_type_name_en, site_message_type_name_tc, site_message_type_name_de, site_message_type_name_es, site_message_type_name_fr, site_message_type_name_idn, site_message_type_name_jp, site_message_type_name_ko, site_message_type_name_my, site_message_type_name_th, site_message_type_name_vi, site_message_type_name_pt, site_message_type_name_rus, site_message_type_name_blr, site_message_type_name_ida, site_message_type_name_sa, site_message_type_name_ar, site_message_type_name_it, site_message_type_name_tr from site_message_type
+    </sql>
+
+    <select id="selectSiteMessageTypeList" parameterType="SiteMessageType" resultMap="SiteMessageTypeResult">
+        <include refid="selectSiteMessageTypeVo"/>
+        <where>  
+            <if test="siteMessageTypeName != null  and siteMessageTypeName != ''"> and site_message_type_name like concat('%', #{siteMessageTypeName}, '%')</if>
+            <if test="siteMessageTypeNameEn != null  and siteMessageTypeNameEn != ''"> and site_message_type_name_en = #{siteMessageTypeNameEn}</if>
+            <if test="siteMessageTypeNameTc != null  and siteMessageTypeNameTc != ''"> and site_message_type_name_tc = #{siteMessageTypeNameTc}</if>
+            <if test="siteMessageTypeNameDe != null  and siteMessageTypeNameDe != ''"> and site_message_type_name_de = #{siteMessageTypeNameDe}</if>
+            <if test="siteMessageTypeNameEs != null  and siteMessageTypeNameEs != ''"> and site_message_type_name_es = #{siteMessageTypeNameEs}</if>
+            <if test="siteMessageTypeNameFr != null  and siteMessageTypeNameFr != ''"> and site_message_type_name_fr = #{siteMessageTypeNameFr}</if>
+            <if test="siteMessageTypeNameIdn != null  and siteMessageTypeNameIdn != ''"> and site_message_type_name_idn = #{siteMessageTypeNameIdn}</if>
+            <if test="siteMessageTypeNameJp != null  and siteMessageTypeNameJp != ''"> and site_message_type_name_jp = #{siteMessageTypeNameJp}</if>
+            <if test="siteMessageTypeNameKo != null  and siteMessageTypeNameKo != ''"> and site_message_type_name_ko = #{siteMessageTypeNameKo}</if>
+            <if test="siteMessageTypeNameMy != null  and siteMessageTypeNameMy != ''"> and site_message_type_name_my = #{siteMessageTypeNameMy}</if>
+            <if test="siteMessageTypeNameTh != null  and siteMessageTypeNameTh != ''"> and site_message_type_name_th = #{siteMessageTypeNameTh}</if>
+            <if test="siteMessageTypeNameVi != null  and siteMessageTypeNameVi != ''"> and site_message_type_name_vi = #{siteMessageTypeNameVi}</if>
+            <if test="siteMessageTypeNamePt != null  and siteMessageTypeNamePt != ''"> and site_message_type_name_pt = #{siteMessageTypeNamePt}</if>
+            <if test="siteMessageTypeNameRus != null  and siteMessageTypeNameRus != ''"> and site_message_type_name_rus = #{siteMessageTypeNameRus}</if>
+            <if test="siteMessageTypeNameBlr != null  and siteMessageTypeNameBlr != ''"> and site_message_type_name_blr = #{siteMessageTypeNameBlr}</if>
+            <if test="siteMessageTypeNameIda != null  and siteMessageTypeNameIda != ''"> and site_message_type_name_ida = #{siteMessageTypeNameIda}</if>
+            <if test="siteMessageTypeNameSa != null  and siteMessageTypeNameSa != ''"> and site_message_type_name_sa = #{siteMessageTypeNameSa}</if>
+            <if test="siteMessageTypeNameAr != null  and siteMessageTypeNameAr != ''"> and site_message_type_name_ar = #{siteMessageTypeNameAr}</if>
+            <if test="siteMessageTypeNameIt != null  and siteMessageTypeNameIt != ''"> and site_message_type_name_it = #{siteMessageTypeNameIt}</if>
+            <if test="siteMessageTypeNameTr != null  and siteMessageTypeNameTr != ''"> and site_message_type_name_tr = #{siteMessageTypeNameTr}</if>
+        </where>
+    </select>
+    
+    <select id="selectSiteMessageTypeBySiteMessageTypeId" parameterType="Long" resultMap="SiteMessageTypeResult">
+        <include refid="selectSiteMessageTypeVo"/>
+        where site_message_type_id = #{siteMessageTypeId}
+    </select>
+        
+    <insert id="insertSiteMessageType" parameterType="SiteMessageType" useGeneratedKeys="true" keyProperty="siteMessageTypeId">
+        insert into site_message_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteMessageTypeName != null">site_message_type_name,</if>
+            <if test="siteMessageTypeNameEn != null">site_message_type_name_en,</if>
+            <if test="siteMessageTypeNameTc != null">site_message_type_name_tc,</if>
+            <if test="siteMessageTypeNameDe != null">site_message_type_name_de,</if>
+            <if test="siteMessageTypeNameEs != null">site_message_type_name_es,</if>
+            <if test="siteMessageTypeNameFr != null">site_message_type_name_fr,</if>
+            <if test="siteMessageTypeNameIdn != null">site_message_type_name_idn,</if>
+            <if test="siteMessageTypeNameJp != null">site_message_type_name_jp,</if>
+            <if test="siteMessageTypeNameKo != null">site_message_type_name_ko,</if>
+            <if test="siteMessageTypeNameMy != null">site_message_type_name_my,</if>
+            <if test="siteMessageTypeNameTh != null">site_message_type_name_th,</if>
+            <if test="siteMessageTypeNameVi != null">site_message_type_name_vi,</if>
+            <if test="siteMessageTypeNamePt != null">site_message_type_name_pt,</if>
+            <if test="siteMessageTypeNameRus != null">site_message_type_name_rus,</if>
+            <if test="siteMessageTypeNameBlr != null">site_message_type_name_blr,</if>
+            <if test="siteMessageTypeNameIda != null">site_message_type_name_ida,</if>
+            <if test="siteMessageTypeNameSa != null">site_message_type_name_sa,</if>
+            <if test="siteMessageTypeNameAr != null">site_message_type_name_ar,</if>
+            <if test="siteMessageTypeNameIt != null">site_message_type_name_it,</if>
+            <if test="siteMessageTypeNameTr != null">site_message_type_name_tr,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteMessageTypeName != null">#{siteMessageTypeName},</if>
+            <if test="siteMessageTypeNameEn != null">#{siteMessageTypeNameEn},</if>
+            <if test="siteMessageTypeNameTc != null">#{siteMessageTypeNameTc},</if>
+            <if test="siteMessageTypeNameDe != null">#{siteMessageTypeNameDe},</if>
+            <if test="siteMessageTypeNameEs != null">#{siteMessageTypeNameEs},</if>
+            <if test="siteMessageTypeNameFr != null">#{siteMessageTypeNameFr},</if>
+            <if test="siteMessageTypeNameIdn != null">#{siteMessageTypeNameIdn},</if>
+            <if test="siteMessageTypeNameJp != null">#{siteMessageTypeNameJp},</if>
+            <if test="siteMessageTypeNameKo != null">#{siteMessageTypeNameKo},</if>
+            <if test="siteMessageTypeNameMy != null">#{siteMessageTypeNameMy},</if>
+            <if test="siteMessageTypeNameTh != null">#{siteMessageTypeNameTh},</if>
+            <if test="siteMessageTypeNameVi != null">#{siteMessageTypeNameVi},</if>
+            <if test="siteMessageTypeNamePt != null">#{siteMessageTypeNamePt},</if>
+            <if test="siteMessageTypeNameRus != null">#{siteMessageTypeNameRus},</if>
+            <if test="siteMessageTypeNameBlr != null">#{siteMessageTypeNameBlr},</if>
+            <if test="siteMessageTypeNameIda != null">#{siteMessageTypeNameIda},</if>
+            <if test="siteMessageTypeNameSa != null">#{siteMessageTypeNameSa},</if>
+            <if test="siteMessageTypeNameAr != null">#{siteMessageTypeNameAr},</if>
+            <if test="siteMessageTypeNameIt != null">#{siteMessageTypeNameIt},</if>
+            <if test="siteMessageTypeNameTr != null">#{siteMessageTypeNameTr},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSiteMessageType" parameterType="SiteMessageType">
+        update site_message_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="siteMessageTypeName != null">site_message_type_name = #{siteMessageTypeName},</if>
+            <if test="siteMessageTypeNameEn != null">site_message_type_name_en = #{siteMessageTypeNameEn},</if>
+            <if test="siteMessageTypeNameTc != null">site_message_type_name_tc = #{siteMessageTypeNameTc},</if>
+            <if test="siteMessageTypeNameDe != null">site_message_type_name_de = #{siteMessageTypeNameDe},</if>
+            <if test="siteMessageTypeNameEs != null">site_message_type_name_es = #{siteMessageTypeNameEs},</if>
+            <if test="siteMessageTypeNameFr != null">site_message_type_name_fr = #{siteMessageTypeNameFr},</if>
+            <if test="siteMessageTypeNameIdn != null">site_message_type_name_idn = #{siteMessageTypeNameIdn},</if>
+            <if test="siteMessageTypeNameJp != null">site_message_type_name_jp = #{siteMessageTypeNameJp},</if>
+            <if test="siteMessageTypeNameKo != null">site_message_type_name_ko = #{siteMessageTypeNameKo},</if>
+            <if test="siteMessageTypeNameMy != null">site_message_type_name_my = #{siteMessageTypeNameMy},</if>
+            <if test="siteMessageTypeNameTh != null">site_message_type_name_th = #{siteMessageTypeNameTh},</if>
+            <if test="siteMessageTypeNameVi != null">site_message_type_name_vi = #{siteMessageTypeNameVi},</if>
+            <if test="siteMessageTypeNamePt != null">site_message_type_name_pt = #{siteMessageTypeNamePt},</if>
+            <if test="siteMessageTypeNameRus != null">site_message_type_name_rus = #{siteMessageTypeNameRus},</if>
+            <if test="siteMessageTypeNameBlr != null">site_message_type_name_blr = #{siteMessageTypeNameBlr},</if>
+            <if test="siteMessageTypeNameIda != null">site_message_type_name_ida = #{siteMessageTypeNameIda},</if>
+            <if test="siteMessageTypeNameSa != null">site_message_type_name_sa = #{siteMessageTypeNameSa},</if>
+            <if test="siteMessageTypeNameAr != null">site_message_type_name_ar = #{siteMessageTypeNameAr},</if>
+            <if test="siteMessageTypeNameIt != null">site_message_type_name_it = #{siteMessageTypeNameIt},</if>
+            <if test="siteMessageTypeNameTr != null">site_message_type_name_tr = #{siteMessageTypeNameTr},</if>
+        </trim>
+        where site_message_type_id = #{siteMessageTypeId}
+    </update>
+
+    <delete id="deleteSiteMessageTypeBySiteMessageTypeId" parameterType="Long">
+        delete from site_message_type where site_message_type_id = #{siteMessageTypeId}
+    </delete>
+
+    <delete id="deleteSiteMessageTypeBySiteMessageTypeIds" parameterType="String">
+        delete from site_message_type where site_message_type_id in 
+        <foreach item="siteMessageTypeId" collection="array" open="(" separator="," close=")">
+            #{siteMessageTypeId}
+        </foreach>
+    </delete>
+</mapper>

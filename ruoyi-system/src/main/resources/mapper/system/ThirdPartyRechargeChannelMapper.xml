@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ThirdPartyRechargeChannelMapper">
+    
+    <resultMap type="ThirdPartyRechargeChannel" id="ThirdPartyRechargeChannelResult">
+        <result property="id"    column="id"    />
+        <result property="channelName"    column="channel_name"    />
+        <result property="channelImg"    column="channel_img"    />
+        <result property="jumpUrl"    column="jump_url"    />
+        <result property="sort"    column="sort"    />
+        <association property="channelNameLang" javaType="langMgr">
+            <result property="zh"    column="channel_name"    />
+            <result property="en"    column="channel_name_en"    />
+            <result property="tc"    column="channel_name_tc"    />
+            <result property="de"    column="channel_name_de"    />
+            <result property="es"    column="channel_name_es"    />
+            <result property="fr"    column="channel_name_fr"    />
+            <result property="idn"    column="channel_name_idn"    />
+            <result property="jp"    column="channel_name_jp"    />
+            <result property="ko"    column="channel_name_ko"    />
+            <result property="my"    column="channel_name_my"    />
+            <result property="th"    column="channel_name_th"    />
+            <result property="vi"    column="channel_name_vi"    />
+            <result property="pt"    column="channel_name_pt"    />
+            <result property="rus"    column="channel_name_rus"    />
+            <result property="blr"    column="channel_name_blr"    />
+            <result property="ida"    column="channel_name_ida"    />
+            <result property="sa"    column="channel_name_sa"    />
+            <result property="ar"    column="channel_name_ar"    />
+            <result property="it"    column="channel_name_it"    />
+            <result property="tr"    column="channel_name_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectThirdPartyRechargeChannelVo">
+        select id, channel_name, channel_img, jump_url, sort, channel_name_en, channel_name_tc, channel_name_de, channel_name_es, channel_name_fr, channel_name_idn, channel_name_jp, channel_name_ko, channel_name_my, channel_name_th, channel_name_vi, channel_name_pt, channel_name_rus, channel_name_blr, channel_name_ida, channel_name_sa, channel_name_ar, channel_name_it, channel_name_tr from third_party_recharge_channel
+    </sql>
+
+    <select id="selectThirdPartyRechargeChannelList" parameterType="ThirdPartyRechargeChannel" resultMap="ThirdPartyRechargeChannelResult">
+        <include refid="selectThirdPartyRechargeChannelVo"/>
+        <where>  
+            <if test="channelName != null  and channelName != ''"> and channel_name like concat('%', #{channelName}, '%')</if>
+            <if test="channelImg != null  and channelImg != ''"> and channel_img = #{channelImg}</if>
+            <if test="jumpUrl != null  and jumpUrl != ''"> and jump_url = #{jumpUrl}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectThirdPartyRechargeChannelById" parameterType="Long" resultMap="ThirdPartyRechargeChannelResult">
+        <include refid="selectThirdPartyRechargeChannelVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertThirdPartyRechargeChannel" parameterType="ThirdPartyRechargeChannel" useGeneratedKeys="true" keyProperty="id">
+        insert into third_party_recharge_channel
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="channelName != null">channel_name,</if>
+            <if test="channelImg != null">channel_img,</if>
+            <if test="jumpUrl != null">jump_url,</if>
+            <if test="sort != null">sort,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="channelName != null">#{channelName},</if>
+            <if test="channelImg != null">#{channelImg},</if>
+            <if test="jumpUrl != null">#{jumpUrl},</if>
+            <if test="sort != null">#{sort},</if>
+         </trim>
+    </insert>
+
+    <update id="updateThirdPartyRechargeChannel" parameterType="ThirdPartyRechargeChannel">
+        update third_party_recharge_channel
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="channelName != null">channel_name = #{channelName},</if>
+            <if test="channelImg != null">channel_img = #{channelImg},</if>
+            <if test="jumpUrl != null">jump_url = #{jumpUrl},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="channelNameLang.zh != null and channelName == null">channel_name = #{channelNameLang.zh},</if>
+            <if test="channelNameLang.en != null">channel_name_en = #{channelNameLang.en},</if>
+            <if test="channelNameLang.tc != null">channel_name_tc = #{channelNameLang.tc},</if>
+            <if test="channelNameLang.de != null">channel_name_de = #{channelNameLang.de},</if>
+            <if test="channelNameLang.es != null">channel_name_es = #{channelNameLang.es},</if>
+            <if test="channelNameLang.fr != null">channel_name_fr = #{channelNameLang.fr},</if>
+            <if test="channelNameLang.idn != null">channel_name_idn = #{channelNameLang.idn},</if>
+            <if test="channelNameLang.jp != null">channel_name_jp = #{channelNameLang.jp},</if>
+            <if test="channelNameLang.ko != null">channel_name_ko = #{channelNameLang.ko},</if>
+            <if test="channelNameLang.my != null">channel_name_my = #{channelNameLang.my},</if>
+            <if test="channelNameLang.th != null">channel_name_th = #{channelNameLang.th},</if>
+            <if test="channelNameLang.vi != null">channel_name_vi = #{channelNameLang.vi},</if>
+            <if test="channelNameLang.pt != null">channel_name_pt = #{channelNameLang.pt},</if>
+            <if test="channelNameLang.rus != null">channel_name_rus = #{channelNameLang.rus},</if>
+            <if test="channelNameLang.blr != null">channel_name_blr = #{channelNameLang.blr},</if>
+            <if test="channelNameLang.ida != null">channel_name_ida = #{channelNameLang.ida},</if>
+            <if test="channelNameLang.sa != null">channel_name_sa = #{channelNameLang.sa},</if>
+            <if test="channelNameLang.ar != null">channel_name_ar = #{channelNameLang.ar},</if>
+            <if test="channelNameLang.it != null">channel_name_it = #{channelNameLang.it},</if>
+            <if test="channelNameLang.tr != null">channel_name_tr = #{channelNameLang.tr},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteThirdPartyRechargeChannelById" parameterType="Long">
+        delete from third_party_recharge_channel where id = #{id}
+    </delete>
+
+    <delete id="deleteThirdPartyRechargeChannelByIds" parameterType="String">
+        delete from third_party_recharge_channel where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

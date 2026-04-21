@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ClientVersionMapper">
+    
+    <resultMap type="ClientVersion" id="ClientVersionResult">
+        <result property="id"    column="id"    />
+        <result property="clientTemplateId"    column="client_template_id"    />
+        <result property="templateName"    column="template_name"    />
+        <result property="fileStoragePath"    column="file_storage_path"    />
+        <result property="compressedPackageNameH5"    column="compressed_package_name_h5"    />
+        <result property="compressedPackageNameApp"    column="compressed_package_name_app"    />
+        <result property="remark"    column="remark"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="version"    column="version"    />
+    </resultMap>
+
+    <sql id="selectClientVersionVo">
+        select a.id, client_template_id,template_name, compressed_package_name_h5, compressed_package_name_app, remark, create_time, version,file_storage_path
+        from client_version a
+                 left join client_template b
+                           on a.client_template_id = b.id
+    </sql>
+
+    <select id="selectClientVersionList" parameterType="ClientVersion" resultMap="ClientVersionResult">
+        <include refid="selectClientVersionVo"/>
+        <where>  
+            <if test="clientTemplateId != null "> and client_template_id = #{clientTemplateId}</if>
+            <if test="compressedPackageNameH5 != null  and compressedPackageNameH5 != ''"> and compressed_package_name_h5 = #{compressedPackageNameH5}</if>
+            <if test="compressedPackageNameApp != null  and compressedPackageNameApp != ''"> and compressed_package_name_app = #{compressedPackageNameApp}</if>
+            <if test="version != null "> and version = #{version}</if>
+        </where>
+    </select>
+    
+    <select id="selectClientVersionById" parameterType="Long" resultMap="ClientVersionResult">
+        <include refid="selectClientVersionVo"/>
+        where a.id = #{id}
+    </select>
+        
+    <insert id="insertClientVersion" parameterType="ClientVersion" useGeneratedKeys="true" keyProperty="id">
+        insert into client_version
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="clientTemplateId != null">client_template_id,</if>
+            <if test="compressedPackageNameH5 != null">compressed_package_name_h5,</if>
+            <if test="compressedPackageNameApp != null">compressed_package_name_app,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createTime != null">create_time,</if>
+            version,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="clientTemplateId != null">#{clientTemplateId},</if>
+            <if test="compressedPackageNameH5 != null">#{compressedPackageNameH5},</if>
+            <if test="compressedPackageNameApp != null">#{compressedPackageNameApp},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createTime != null">#{createTime},</if>
+            (select IFNULL(max(version)+1,1) from client_version cv where client_template_id = #{clientTemplateId}),
+         </trim>
+    </insert>
+
+    <update id="updateClientVersion" parameterType="ClientVersion">
+        update client_version
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="clientTemplateId != null">client_template_id = #{clientTemplateId},</if>
+            <if test="compressedPackageNameH5 != null">compressed_package_name_h5 = #{compressedPackageNameH5},</if>
+            <if test="compressedPackageNameApp != null">compressed_package_name_app = #{compressedPackageNameApp},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteClientVersionById" parameterType="Long">
+        delete from client_version where id = #{id}
+    </delete>
+
+    <delete id="deleteClientVersionByIds" parameterType="String">
+        delete from client_version where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

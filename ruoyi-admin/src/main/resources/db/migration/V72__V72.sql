@@ -1,0 +1,1 @@
+insert into `stock`.`lang_mgr` (lang_key,zh) select 'hint_83','可用币币资产不足' from lang_mgr where not exists (select lang_key from lang_mgr where lang_key = 'hint_83') limit 1;

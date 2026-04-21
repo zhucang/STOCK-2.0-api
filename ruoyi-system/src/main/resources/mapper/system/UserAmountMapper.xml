@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserAmountMapper">
+    
+    <resultMap type="UserAmount" id="UserAmountResult">
+        <result property="id"    column="id"    />
+        <result property="amount"    column="amount"    />
+        <result property="currencyId"    column="currency_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="frozenAmount"    column="frozen_amount"    />
+        <result property="flexibleInvestmentFunds"    column="flexible_investment_funds"    />
+        <result property="sqlVersion"    column="sql_version"    />
+    </resultMap>
+
+    <sql id="selectUserAmountVo">
+        select id, amount, currency_id, user_id, frozen_amount, flexible_investment_funds, sql_version from user_amount
+    </sql>
+
+    <select id="selectUserAmountList" parameterType="UserAmount" resultMap="UserAmountResult">
+        <include refid="selectUserAmountVo"/>
+        <where>  
+            <if test="amount != null "> and amount = #{amount}</if>
+            <if test="currencyId != null "> and currency_id = #{currencyId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="frozenAmount != null "> and frozen_amount = #{frozenAmount}</if>
+            <if test="params.haveFlexibleInvestmentFunds != null "> and flexible_investment_funds > 0</if>
+        </where>
+    </select>
+    
+    <select id="selectUserAmountById" parameterType="Long" resultMap="UserAmountResult">
+        <include refid="selectUserAmountVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="getUserAmount" resultMap="UserAmountResult">
+        <include refid="selectUserAmountVo"/>
+        where user_id = #{userId} and currency_id = #{currencyId}
+    </select>
+        
+    <insert id="insertUserAmount" parameterType="UserAmount" useGeneratedKeys="true" keyProperty="id">
+        insert into user_amount
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="amount != null">amount,</if>
+            <if test="currencyId != null">currency_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="frozenAmount != null">frozen_amount,</if>
+            <if test="flexibleInvestmentFunds != null">flexible_investment_funds,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="amount != null">#{amount},</if>
+            <if test="currencyId != null">#{currencyId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="frozenAmount != null">#{frozenAmount},</if>
+            <if test="flexibleInvestmentFunds != null">#{flexibleInvestmentFunds},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserAmount" parameterType="UserAmount">
+        update user_amount
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="currencyId != null">currency_id = #{currencyId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="frozenAmount != null">frozen_amount = #{frozenAmount},</if>
+            <if test="flexibleInvestmentFunds != null">flexible_investment_funds = #{flexibleInvestmentFunds},</if>
+            <if test="sqlVersion != null">sql_version = sql_version + 1,</if>
+        </trim>
+        where id = #{id}
+        <if test="sqlVersion != null">and sql_version = #{sqlVersion}</if>
+    </update>
+
+    <delete id="deleteUserAmountById" parameterType="Long">
+        delete from user_amount where id = #{id}
+    </delete>
+
+    <delete id="deleteUserAmountByIds" parameterType="String">
+        delete from user_amount where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

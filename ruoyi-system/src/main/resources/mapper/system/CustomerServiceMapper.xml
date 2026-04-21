@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CustomerServiceMapper">
+    
+    <resultMap type="CustomerService" id="CustomerServiceResult">
+        <result property="id"    column="id"    />
+        <result property="customerServiceName"    column="customer_service_name"    />
+        <result property="customerServiceLine"    column="customer_service_line"    />
+        <result property="customerServiceImg"    column="customer_service_img"    />
+        <result property="status"    column="status"    />
+        <result property="isJump"    column="is_jump"    />
+        <result property="webOrOnline"    column="web_or_online"    />
+        <association property="customerServiceNameLang" javaType="langMgr">
+            <result property="zh"    column="customer_service_name"    />
+            <result property="en"    column="customer_service_name_en"    />
+            <result property="tc"    column="customer_service_name_tc"    />
+            <result property="de"    column="customer_service_name_de"    />
+            <result property="es"    column="customer_service_name_es"    />
+            <result property="fr"    column="customer_service_name_fr"    />
+            <result property="idn"    column="customer_service_name_idn"    />
+            <result property="jp"    column="customer_service_name_jp"    />
+            <result property="ko"    column="customer_service_name_ko"    />
+            <result property="my"    column="customer_service_name_my"    />
+            <result property="th"    column="customer_service_name_th"    />
+            <result property="vi"    column="customer_service_name_vi"    />
+            <result property="pt"    column="customer_service_name_pt"    />
+            <result property="rus"    column="customer_service_name_rus"    />
+            <result property="blr"    column="customer_service_name_blr"    />
+            <result property="ida"    column="customer_service_name_ida"    />
+            <result property="sa"    column="customer_service_name_sa"    />
+            <result property="ar"    column="customer_service_name_ar"    />
+            <result property="it"    column="customer_service_name_it"    />
+            <result property="tr"    column="customer_service_name_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectCustomerServiceVo">
+        select id, customer_service_name, customer_service_line,customer_service_img, status, is_jump, web_or_online, customer_service_name_en, customer_service_name_tc, customer_service_name_de, customer_service_name_es, customer_service_name_fr, customer_service_name_idn, customer_service_name_jp, customer_service_name_ko, customer_service_name_my, customer_service_name_th, customer_service_name_vi, customer_service_name_pt, customer_service_name_rus, customer_service_name_blr, customer_service_name_ida, customer_service_name_sa, customer_service_name_ar, customer_service_name_it, customer_service_name_tr from customer_service
+    </sql>
+
+    <select id="selectCustomerServiceList" parameterType="CustomerService" resultMap="CustomerServiceResult">
+        <include refid="selectCustomerServiceVo"/>
+        <where>  
+            <if test="customerServiceName != null  and customerServiceName != ''"> and customer_service_name like concat('%', #{customerServiceName}, '%')</if>
+            <if test="customerServiceLine != null  and customerServiceLine != ''"> and customer_service_line = #{customerServiceLine}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="isJump != null "> and is_jump = #{isJump}</if>
+            <if test="webOrOnline != null "> and web_or_online = #{webOrOnline}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectCustomerServiceById" parameterType="Long" resultMap="CustomerServiceResult">
+        <include refid="selectCustomerServiceVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertCustomerService" parameterType="CustomerService" useGeneratedKeys="true" keyProperty="id">
+        insert into customer_service
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="customerServiceName != null">customer_service_name,</if>
+            <if test="customerServiceLine != null">customer_service_line,</if>
+            <if test="customerServiceImg != null">customer_service_img,</if>
+            <if test="status != null">status,</if>
+            <if test="isJump != null">is_jump,</if>
+            <if test="webOrOnline != null">web_or_online,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="customerServiceName != null">#{customerServiceName},</if>
+            <if test="customerServiceLine != null">#{customerServiceLine},</if>
+            <if test="customerServiceImg != null">#{customerServiceImg},</if>
+            <if test="status != null">#{status},</if>
+            <if test="isJump != null">#{isJump},</if>
+            <if test="webOrOnline != null">#{webOrOnline},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCustomerService" parameterType="CustomerService">
+        update customer_service
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="customerServiceName != null">customer_service_name = #{customerServiceName},</if>
+            <if test="customerServiceLine != null">customer_service_line = #{customerServiceLine},</if>
+            <if test="customerServiceImg != null">customer_service_img = #{customerServiceImg},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="isJump != null">is_jump = #{isJump},</if>
+            <if test="webOrOnline != null">web_or_online = #{webOrOnline},</if>
+            <if test="customerServiceNameLang.zh != null and customerServiceName == null">customer_service_name = #{customerServiceNameLang.zh},</if>
+            <if test="customerServiceNameLang.en != null">customer_service_name_en = #{customerServiceNameLang.en},</if>
+            <if test="customerServiceNameLang.tc != null">customer_service_name_tc = #{customerServiceNameLang.tc},</if>
+            <if test="customerServiceNameLang.de != null">customer_service_name_de = #{customerServiceNameLang.de},</if>
+            <if test="customerServiceNameLang.es != null">customer_service_name_es = #{customerServiceNameLang.es},</if>
+            <if test="customerServiceNameLang.fr != null">customer_service_name_fr = #{customerServiceNameLang.fr},</if>
+            <if test="customerServiceNameLang.idn != null">customer_service_name_idn = #{customerServiceNameLang.idn},</if>
+            <if test="customerServiceNameLang.jp != null">customer_service_name_jp = #{customerServiceNameLang.jp},</if>
+            <if test="customerServiceNameLang.ko != null">customer_service_name_ko = #{customerServiceNameLang.ko},</if>
+            <if test="customerServiceNameLang.my != null">customer_service_name_my = #{customerServiceNameLang.my},</if>
+            <if test="customerServiceNameLang.th != null">customer_service_name_th = #{customerServiceNameLang.th},</if>
+            <if test="customerServiceNameLang.vi != null">customer_service_name_vi = #{customerServiceNameLang.vi},</if>
+            <if test="customerServiceNameLang.pt != null">customer_service_name_pt = #{customerServiceNameLang.pt},</if>
+            <if test="customerServiceNameLang.rus != null">customer_service_name_rus = #{customerServiceNameLang.rus},</if>
+            <if test="customerServiceNameLang.blr != null">customer_service_name_blr = #{customerServiceNameLang.blr},</if>
+            <if test="customerServiceNameLang.ida != null">customer_service_name_ida = #{customerServiceNameLang.ida},</if>
+            <if test="customerServiceNameLang.sa != null">customer_service_name_sa = #{customerServiceNameLang.sa},</if>
+            <if test="customerServiceNameLang.ar != null">customer_service_name_ar = #{customerServiceNameLang.ar},</if>
+            <if test="customerServiceNameLang.it != null">customer_service_name_it = #{customerServiceNameLang.it},</if>
+            <if test="customerServiceNameLang.tr != null">customer_service_name_tr = #{customerServiceNameLang.tr},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCustomerServiceById" parameterType="Long">
+        delete from customer_service where id = #{id}
+    </delete>
+
+    <delete id="deleteCustomerServiceByIds" parameterType="String">
+        delete from customer_service where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

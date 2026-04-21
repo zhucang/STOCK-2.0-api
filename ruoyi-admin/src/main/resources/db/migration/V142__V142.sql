@@ -1,0 +1,1 @@
+insert into `stock`.`other_value` (other_key,`name`,other_value,remark,visible_flag) select 'user_inviteCode_number','邀请码个数','7',null,0 from other_value where not exists (select other_key from other_value where other_key = 'user_inviteCode_number')limit 1;

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.AppConfigMapper">
+    
+    <resultMap type="AppConfig" id="AppConfigResult">
+        <result property="id"    column="id"    />
+        <result property="pagePath"    column="page_path"    />
+        <result property="desc"    column="desc"    />
+        <result property="module"    column="module"    />
+        <result property="imgUrl"    column="img_url"    />
+        <result property="imgUrl2"    column="img_url2"    />
+        <result property="hintTxt"    column="hint_txt"    />
+        <result property="viewType"    column="view_type"    />
+        <result property="isVisible"    column="is_visible"    />
+        <result property="isRequire"    column="is_require"    />
+        <result property="isPassword"    column="is_password"    />
+        <result property="patternType"    column="pattern_type"    />
+        <result property="callFun"    column="call_fun"    />
+        <result property="objName"    column="obj_name"    />
+        <result property="objPropertyName"    column="obj_property_name"    />
+        <result property="sort"    column="sort"    />
+        <result property="strRight"    column="str_right"    />
+        <result property="clientVersion"    column="client_version"    />
+    </resultMap>
+
+    <sql id="selectAppConfigVo">
+        select id, page_path, `desc`, `module`, img_url, img_url2, hint_txt, view_type, is_visible, is_require, is_password, pattern_type, call_fun, obj_name, obj_property_name, sort, str_right,client_version from app_config
+    </sql>
+
+    <select id="selectAppConfigList" parameterType="AppConfig" resultMap="AppConfigResult">
+        <include refid="selectAppConfigVo"/>
+        <where>  
+            <if test="pagePath != null  and pagePath != ''"> and page_path like concat('%',#{pagePath},'%')</if>
+            <if test="desc != null  and desc != ''"> and `desc` like concat('%',#{desc},'%')</if>
+            <if test="module != null  and module != ''"> and `module` like concat('%',#{module},'%')</if>
+            <if test="imgUrl != null  and imgUrl != ''"> and img_url = #{imgUrl}</if>
+            <if test="hintTxt != null  and hintTxt != ''"> and hint_txt like concat('%',#{hintTxt},'%')</if>
+            <if test="viewType != null "> and view_type = #{viewType}</if>
+            <if test="isVisible != null "> and is_visible = #{isVisible}</if>
+            <if test="isRequire != null "> and is_require = #{isRequire}</if>
+            <if test="isPassword != null "> and is_password = #{isPassword}</if>
+            <if test="patternType != null  and patternType != ''"> and pattern_type = #{patternType}</if>
+            <if test="callFun != null  and callFun != ''"> and call_fun = #{callFun}</if>
+            <if test="objName != null  and objName != ''"> and obj_name like concat('%', #{objName}, '%')</if>
+            <if test="objPropertyName != null  and objPropertyName != ''"> and obj_property_name like concat('%', #{objPropertyName}, '%')</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="strRight != null  and strRight != ''"> and str_right = #{strRight}</if>
+            <if test="params.pagePath != null"> and page_path = #{params.pagePath}</if>
+            <if test="clientVersion != null"> and (client_version = #{clientVersion} or client_version is null or client_version = '')</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectAppConfigById" parameterType="Long" resultMap="AppConfigResult">
+        <include refid="selectAppConfigVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertAppConfig" parameterType="AppConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into app_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pagePath != null">page_path,</if>
+            <if test="desc != null">`desc`,</if>
+            <if test="module != null">`module`,</if>
+            <if test="imgUrl != null">img_url,</if>
+            <if test="imgUrl2 != null">img_url2,</if>
+            <if test="hintTxt != null">hint_txt,</if>
+            <if test="viewType != null">view_type,</if>
+            <if test="isVisible != null">is_visible,</if>
+            <if test="isRequire != null">is_require,</if>
+            <if test="isPassword != null">is_password,</if>
+            <if test="patternType != null">pattern_type,</if>
+            <if test="callFun != null">call_fun,</if>
+            <if test="objName != null">obj_name,</if>
+            <if test="objPropertyName != null">obj_property_name,</if>
+            <if test="sort != null">sort,</if>
+            <if test="strRight != null">str_right,</if>
+            <if test="clientVersion != null">client_version,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pagePath != null">#{pagePath},</if>
+            <if test="desc != null">#{desc},</if>
+            <if test="module != null">#{module},</if>
+            <if test="imgUrl != null">#{imgUrl},</if>
+            <if test="imgUrl2 != null">#{imgUrl2},</if>
+            <if test="hintTxt != null">#{hintTxt},</if>
+            <if test="viewType != null">#{viewType},</if>
+            <if test="isVisible != null">#{isVisible},</if>
+            <if test="isRequire != null">#{isRequire},</if>
+            <if test="isPassword != null">#{isPassword},</if>
+            <if test="patternType != null">#{patternType},</if>
+            <if test="callFun != null">#{callFun},</if>
+            <if test="objName != null">#{objName},</if>
+            <if test="objPropertyName != null">#{objPropertyName},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="strRight != null">#{strRight},</if>
+            <if test="clientVersion != null">#{clientVersion},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertAppConfigs">
+        insert into app_config(id, page_path, `desc`, `module`, img_url, img_url2, hint_txt, view_type, is_visible, is_require, is_password, pattern_type, call_fun, obj_name, obj_property_name, sort, str_right, client_version)
+        <foreach collection="appConfigs" index="index" open="values(" separator="),(" close=")" item="item">
+            #{item.id},#{item.pagePath},#{item.desc},#{item.module},#{item.imgUrl},#{item.imgUrl2},#{item.hintTxt},#{item.viewType},#{item.isVisible},#{item.isRequire},#{item.isPassword},#{item.patternType},#{item.callFun},#{item.objName},#{item.objPropertyName},#{item.sort},#{item.strRight},#{item.clientVersion}
+        </foreach>
+    </insert>
+
+    <update id="updateAppConfig" parameterType="AppConfig">
+        update app_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="pagePath != null">page_path = #{pagePath},</if>
+            <if test="desc != null">`desc` = #{desc},</if>
+            <if test="module != null">`module` = #{module},</if>
+            <if test="imgUrl != null">img_url = #{imgUrl},</if>
+            <if test="imgUrl2 != null">img_url2 = #{imgUrl2},</if>
+            <if test="hintTxt != null">hint_txt = #{hintTxt},</if>
+            <if test="viewType != null">view_type = #{viewType},</if>
+            <if test="isVisible != null">is_visible = #{isVisible},</if>
+            <if test="isRequire != null">is_require = #{isRequire},</if>
+            <if test="isPassword != null">is_password = #{isPassword},</if>
+            <if test="patternType != null">pattern_type = #{patternType},</if>
+            <if test="callFun != null">call_fun = #{callFun},</if>
+            <if test="objName != null">obj_name = #{objName},</if>
+            <if test="objPropertyName != null">obj_property_name = #{objPropertyName},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="strRight != null">str_right = #{strRight},</if>
+            <if test="clientVersion != null">client_version = #{clientVersion},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAppConfigById" parameterType="Long">
+        delete from app_config where id = #{id}
+    </delete>
+
+    <delete id="deleteAppConfigByIds" parameterType="String">
+        delete from app_config where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

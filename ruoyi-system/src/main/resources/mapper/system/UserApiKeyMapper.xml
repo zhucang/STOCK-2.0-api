@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserApiKeyMapper">
+    
+    <resultMap type="UserApiKey" id="UserApiKeyResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="appId"    column="app_id"    />
+        <result property="apiKey"    column="api_key"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectUserApiKeyVo">
+        select id, user_id, app_id, api_key, create_time from user_api_key
+    </sql>
+
+    <select id="selectUserApiKeyList" parameterType="UserApiKey" resultMap="UserApiKeyResult">
+        <include refid="selectUserApiKeyVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="appId != null "> and app_id = #{appId}</if>
+            <if test="apiKey != null  and apiKey != ''"> and api_key = #{apiKey}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserApiKeyById" parameterType="Long" resultMap="UserApiKeyResult">
+        <include refid="selectUserApiKeyVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectUserIdByApiKey" resultType="java.lang.Long">
+        select user_id from user_api_key where app_id = #{appId} and api_key = #{apiKey}
+    </select>
+
+    <insert id="insertUserApiKey" parameterType="UserApiKey" useGeneratedKeys="true" keyProperty="id">
+        insert into user_api_key
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="appId != null">app_id,</if>
+            <if test="apiKey != null and apiKey != ''">api_key,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="appId != null">#{appId},</if>
+            <if test="apiKey != null and apiKey != ''">#{apiKey},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserApiKey" parameterType="UserApiKey">
+        update user_api_key
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="appId != null">app_id = #{appId},</if>
+            <if test="apiKey != null and apiKey != ''">api_key = #{apiKey},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserApiKeyById" parameterType="Long">
+        delete from user_api_key where id = #{id}
+    </delete>
+
+    <delete id="deleteUserApiKeyByIds" parameterType="String">
+        delete from user_api_key where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

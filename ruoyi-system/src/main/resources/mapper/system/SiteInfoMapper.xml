@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SiteInfoMapper">
+    
+    <resultMap type="SiteInfo" id="SiteInfoResult">
+        <result property="id"    column="id"    />
+        <result property="siteName"    column="site_name"    />
+        <result property="siteLogo"    column="site_logo"    />
+        <result property="appLogo"    column="app_logo"    />
+        <result property="iosDownloadUrl"    column="ios_download_url"    />
+        <result property="androidDownloadUrl"    column="android_download_url"    />
+        <result property="androidApkDownloadUrl"    column="android_apk_download_url"    />
+        <result property="appUrl"    column="app_url"    />
+        <result property="websiteUrl"    column="website_url"    />
+    </resultMap>
+
+    <sql id="selectSiteInfoVo">
+        select id, site_name, site_logo,app_logo, ios_download_url, android_download_url,android_apk_download_url, app_url,website_url from site_info
+    </sql>
+
+    <select id="selectSiteInfoList" parameterType="SiteInfo" resultMap="SiteInfoResult">
+        <include refid="selectSiteInfoVo"/>
+        <where>  
+            <if test="siteName != null  and siteName != ''"> and site_name like concat('%', #{siteName}, '%')</if>
+            <if test="siteLogo != null  and siteLogo != ''"> and site_logo = #{siteLogo}</if>
+            <if test="iosDownloadUrl != null  and iosDownloadUrl != ''"> and ios_download_url = #{iosDownloadUrl}</if>
+            <if test="androidDownloadUrl != null  and androidDownloadUrl != ''"> and android_download_url = #{androidDownloadUrl}</if>
+            <if test="appUrl != null  and appUrl != ''"> and app_url = #{appUrl}</if>
+        </where>
+    </select>
+    
+    <select id="selectSiteInfoById" parameterType="Long" resultMap="SiteInfoResult">
+        <include refid="selectSiteInfoVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSiteInfo" parameterType="SiteInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into site_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="siteName != null">site_name,</if>
+            <if test="siteLogo != null">site_logo,</if>
+            <if test="iosDownloadUrl != null">ios_download_url,</if>
+            <if test="androidDownloadUrl != null">android_download_url,</if>
+            <if test="androidApkDownloadUrl != null">android_apk_download_url,</if>
+            <if test="appUrl != null">app_url,</if>
+            <if test="websiteUrl != null">website_url,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="siteName != null">#{siteName},</if>
+            <if test="siteLogo != null">#{siteLogo},</if>
+            <if test="iosDownloadUrl != null">#{iosDownloadUrl},</if>
+            <if test="androidDownloadUrl != null">#{androidDownloadUrl},</if>
+            <if test="androidApkDownloadUrl != null">#{androidApkDownloadUrl},</if>
+            <if test="appUrl != null">#{appUrl},</if>
+            <if test="websiteUrl != null">#{websiteUrl},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSiteInfo" parameterType="SiteInfo">
+        update site_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="siteName != null">site_name = #{siteName},</if>
+            <if test="siteLogo != null">site_logo = #{siteLogo},</if>
+            <if test="appLogo != null">app_logo = #{appLogo},</if>
+            <if test="iosDownloadUrl != null">ios_download_url = #{iosDownloadUrl},</if>
+            <if test="androidDownloadUrl != null">android_download_url = #{androidDownloadUrl},</if>
+            <if test="androidApkDownloadUrl != null">android_apk_download_url = #{androidApkDownloadUrl},</if>
+            <if test="appUrl != null">app_url = #{appUrl},</if>
+            <if test="websiteUrl != null">website_url = #{websiteUrl},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSiteInfoById" parameterType="Long">
+        delete from site_info where id = #{id}
+    </delete>
+
+    <delete id="deleteSiteInfoByIds" parameterType="String">
+        delete from site_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

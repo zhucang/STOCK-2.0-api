@@ -1,0 +1,2 @@
+insert into `stock`.`switch_set` (id,switch_name,status,`type`,sort) select 98,'用户注册是否显示区号',0,1,98 from switch_set where not exists (select id from switch_set where id = 98)limit 1;
+insert into `stock`.`switch_set` (id,switch_name,status,`type`,sort) select 99,'app是否展示站内信',0,1,99 from switch_set where not exists (select id from switch_set where id = 99)limit 1;

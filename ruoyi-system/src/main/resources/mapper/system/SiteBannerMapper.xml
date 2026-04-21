@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SiteBannerMapper">
+    
+    <resultMap type="SiteBanner" id="SiteBannerResult">
+        <result property="id"    column="id"    />
+        <result property="bannerImg"    column="banner_img"    />
+        <result property="bannerTitle"    column="banner_title"    />
+        <result property="bannerContent"    column="banner_content"    />
+        <result property="sort"    column="sort"    />
+        <result property="showTime"    column="show_time"    />
+        <result property="createTime"    column="create_time"    />
+        <association property="bannerImgLang" javaType="langMgr">
+            <result property="zh"    column="banner_img"    />
+            <result property="en"    column="banner_img_en"    />
+            <result property="tc"    column="banner_img_tc"    />
+            <result property="de"    column="banner_img_de"    />
+            <result property="es"    column="banner_img_es"    />
+            <result property="fr"    column="banner_img_fr"    />
+            <result property="idn"    column="banner_img_idn"    />
+            <result property="jp"    column="banner_img_jp"    />
+            <result property="ko"    column="banner_img_ko"    />
+            <result property="my"    column="banner_img_my"    />
+            <result property="th"    column="banner_img_th"    />
+            <result property="vi"    column="banner_img_vi"    />
+            <result property="pt"    column="banner_img_pt"    />
+            <result property="rus"    column="banner_img_rus"    />
+            <result property="blr"    column="banner_img_blr"    />
+            <result property="ida"    column="banner_img_ida"    />
+            <result property="sa"    column="banner_img_sa"    />
+            <result property="ar"    column="banner_img_ar"    />
+            <result property="it"    column="banner_img_it"    />
+            <result property="tr"    column="banner_img_tr"    />
+        </association>
+        <association property="bannerTitleLang" javaType="langMgr">
+            <result property="zh"    column="banner_title"    />
+            <result property="en"    column="banner_title_en"    />
+            <result property="tc"    column="banner_title_tc"    />
+            <result property="de"    column="banner_title_de"    />
+            <result property="es"    column="banner_title_es"    />
+            <result property="fr"    column="banner_title_fr"    />
+            <result property="idn"    column="banner_title_idn"    />
+            <result property="jp"    column="banner_title_jp"    />
+            <result property="ko"    column="banner_title_ko"    />
+            <result property="my"    column="banner_title_my"    />
+            <result property="th"    column="banner_title_th"    />
+            <result property="vi"    column="banner_title_vi"    />
+            <result property="pt"    column="banner_title_pt"    />
+            <result property="rus"    column="banner_title_rus"    />
+            <result property="blr"    column="banner_title_blr"    />
+            <result property="ida"    column="banner_title_ida"    />
+            <result property="sa"    column="banner_title_sa"    />
+            <result property="ar"    column="banner_title_ar"    />
+            <result property="it"    column="banner_title_it"    />
+            <result property="tr"    column="banner_title_tr"    />
+        </association>
+        <association property="bannerContentLang" javaType="langMgr">
+            <result property="zh"    column="banner_content"    />
+            <result property="en"    column="banner_content_en"    />
+            <result property="tc"    column="banner_content_tc"    />
+            <result property="de"    column="banner_content_de"    />
+            <result property="es"    column="banner_content_es"    />
+            <result property="fr"    column="banner_content_fr"    />
+            <result property="idn"    column="banner_content_idn"    />
+            <result property="jp"    column="banner_content_jp"    />
+            <result property="ko"    column="banner_content_ko"    />
+            <result property="my"    column="banner_content_my"    />
+            <result property="th"    column="banner_content_th"    />
+            <result property="vi"    column="banner_content_vi"    />
+            <result property="pt"    column="banner_content_pt"    />
+            <result property="rus"    column="banner_content_rus"    />
+            <result property="blr"    column="banner_content_blr"    />
+            <result property="ida"    column="banner_content_ida"    />
+            <result property="sa"    column="banner_content_sa"    />
+            <result property="ar"    column="banner_content_ar"    />
+            <result property="it"    column="banner_content_it"    />
+            <result property="tr"    column="banner_content_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectSiteBannerVo">
+        select id, banner_img,banner_title,banner_content, sort, show_time, create_time, banner_img_en, banner_img_tc, banner_img_de, banner_img_es, banner_img_fr, banner_img_idn, banner_img_jp, banner_img_ko, banner_img_my, banner_img_th, banner_img_vi, banner_img_pt, banner_img_rus, banner_img_blr, banner_img_ida, banner_img_sa, banner_img_ar, banner_img_it, banner_img_tr, banner_title_en, banner_title_tc, banner_title_de, banner_title_es, banner_title_fr, banner_title_idn, banner_title_jp, banner_title_ko, banner_title_my, banner_title_th, banner_title_vi, banner_title_pt, banner_title_rus, banner_title_blr, banner_title_ida, banner_title_sa, banner_title_ar, banner_title_it, banner_title_tr, banner_content_en, banner_content_tc, banner_content_de, banner_content_es, banner_content_fr, banner_content_idn, banner_content_jp, banner_content_ko, banner_content_my, banner_content_th, banner_content_vi, banner_content_pt, banner_content_rus, banner_content_blr, banner_content_ida, banner_content_sa, banner_content_ar, banner_content_it, banner_content_tr from site_banner
+    </sql>
+
+    <select id="selectSiteBannerList" parameterType="SiteBanner" resultMap="SiteBannerResult">
+        <include refid="selectSiteBannerVo"/>
+        <where>  
+            <if test="bannerImg != null  and bannerImg != ''"> and banner_img = #{bannerImg}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+        </where>
+    </select>
+    
+    <select id="selectSiteBannerById" parameterType="Long" resultMap="SiteBannerResult">
+        <include refid="selectSiteBannerVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSiteBanner" parameterType="SiteBanner" useGeneratedKeys="true" keyProperty="id">
+        insert into site_banner
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bannerImg != null">banner_img,</if>
+            <if test="bannerTitle != null">banner_title,</if>
+            <if test="bannerContent != null">banner_content,</if>
+            <if test="sort != null">sort,</if>
+            <if test="showTime != null">show_time,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="bannerImg != null">banner_img_en,</if>
+            <if test="bannerImg != null">banner_img_tc,</if>
+            <if test="bannerImg != null">banner_img_de,</if>
+            <if test="bannerImg != null">banner_img_es,</if>
+            <if test="bannerImg != null">banner_img_fr,</if>
+            <if test="bannerImg != null">banner_img_idn,</if>
+            <if test="bannerImg != null">banner_img_jp,</if>
+            <if test="bannerImg != null">banner_img_ko,</if>
+            <if test="bannerImg != null">banner_img_my,</if>
+            <if test="bannerImg != null">banner_img_th,</if>
+            <if test="bannerImg != null">banner_img_vi,</if>
+            <if test="bannerImg != null">banner_img_pt,</if>
+            <if test="bannerImg != null">banner_img_rus,</if>
+            <if test="bannerImg != null">banner_img_blr,</if>
+            <if test="bannerImg != null">banner_img_ida,</if>
+            <if test="bannerImg != null">banner_img_sa,</if>
+            <if test="bannerImg != null">banner_img_ar,</if>
+            <if test="bannerImg != null">banner_img_it,</if>
+            <if test="bannerImg != null">banner_img_tr,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bannerImg != null">#{bannerImg},</if>
+            <if test="bannerTitle != null">#{bannerTitle},</if>
+            <if test="bannerContent != null">#{bannerContent},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="showTime != null">#{showTime},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="bannerImg != null">#{bannerImg},</if>
+            <if test="bannerImg != null">#{bannerImg},</if>
+            <if test="bannerImg != null">#{bannerImg},</if>
+            <if test="bannerImg != null">#{bannerImg},</if>
+            <if test="bannerImg != null">#{bannerImg},</if>
+            <if test="bannerImg != null">#{bannerImg},</if>
+            <if test="bannerImg != null">#{bannerImg},</if>
+            <if test="bannerImg != null">#{bannerImg},</if>
+            <if test="bannerImg != null">#{bannerImg},</if>
+            <if test="bannerImg != null">#{bannerImg},</if>
+            <if test="bannerImg != null">#{bannerImg},</if>
+            <if test="bannerImg != null">#{bannerImg},</if>
+            <if test="bannerImg != null">#{bannerImg},</if>
+            <if test="bannerImg != null">#{bannerImg},</if>
+            <if test="bannerImg != null">#{bannerImg},</if>
+            <if test="bannerImg">#{bannerImg},</if>
+            <if test="bannerImg != null">#{bannerImg},</if>
+            <if test="bannerImg != null">#{bannerImg},</if>
+            <if test="bannerImg != null">#{bannerImg},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSiteBanner" parameterType="SiteBanner">
+        update site_banner
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="bannerImg != null">banner_img = #{bannerImg},</if>
+            <if test="bannerTitle != null">banner_title = #{bannerTitle},</if>
+            <if test="bannerContent != null">banner_content = #{bannerContent},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="params.showTime != null">show_time = #{showTime},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="bannerImgLang.zh != null and bannerImg == null">banner_img = #{bannerImgLang.zh},</if>
+            <if test="bannerImgLang.en != null">banner_img_en = #{bannerImgLang.en},</if>
+            <if test="bannerImgLang.tc != null">banner_img_tc = #{bannerImgLang.tc},</if>
+            <if test="bannerImgLang.de != null">banner_img_de = #{bannerImgLang.de},</if>
+            <if test="bannerImgLang.es != null">banner_img_es = #{bannerImgLang.es},</if>
+            <if test="bannerImgLang.fr != null">banner_img_fr = #{bannerImgLang.fr},</if>
+            <if test="bannerImgLang.idn != null">banner_img_idn = #{bannerImgLang.idn},</if>
+            <if test="bannerImgLang.jp != null">banner_img_jp = #{bannerImgLang.jp},</if>
+            <if test="bannerImgLang.ko != null">banner_img_ko = #{bannerImgLang.ko},</if>
+            <if test="bannerImgLang.my != null">banner_img_my = #{bannerImgLang.my},</if>
+            <if test="bannerImgLang.th != null">banner_img_th = #{bannerImgLang.th},</if>
+            <if test="bannerImgLang.vi != null">banner_img_vi = #{bannerImgLang.vi},</if>
+            <if test="bannerImgLang.pt != null">banner_img_pt = #{bannerImgLang.pt},</if>
+            <if test="bannerImgLang.rus != null">banner_img_rus = #{bannerImgLang.rus},</if>
+            <if test="bannerImgLang.blr != null">banner_img_blr = #{bannerImgLang.blr},</if>
+            <if test="bannerImgLang.ida != null">banner_img_ida = #{bannerImgLang.ida},</if>
+            <if test="bannerImgLang.sa != null">banner_img_sa = #{bannerImgLang.sa},</if>
+            <if test="bannerImgLang.ar != null">banner_img_ar = #{bannerImgLang.ar},</if>
+            <if test="bannerImgLang.it != null">banner_img_it = #{bannerImgLang.it},</if>
+            <if test="bannerImgLang.tr != null">banner_img_tr = #{bannerImgLang.tr},</if>
+            <if test="bannerTitleLang.zh != null and bannerTitle == null">banner_title = #{bannerTitleLang.zh},</if>
+            <if test="bannerTitleLang.en != null">banner_title_en = #{bannerTitleLang.en},</if>
+            <if test="bannerTitleLang.tc != null">banner_title_tc = #{bannerTitleLang.tc},</if>
+            <if test="bannerTitleLang.de != null">banner_title_de = #{bannerTitleLang.de},</if>
+            <if test="bannerTitleLang.es != null">banner_title_es = #{bannerTitleLang.es},</if>
+            <if test="bannerTitleLang.fr != null">banner_title_fr = #{bannerTitleLang.fr},</if>
+            <if test="bannerTitleLang.idn != null">banner_title_idn = #{bannerTitleLang.idn},</if>
+            <if test="bannerTitleLang.jp != null">banner_title_jp = #{bannerTitleLang.jp},</if>
+            <if test="bannerTitleLang.ko != null">banner_title_ko = #{bannerTitleLang.ko},</if>
+            <if test="bannerTitleLang.my != null">banner_title_my = #{bannerTitleLang.my},</if>
+            <if test="bannerTitleLang.th != null">banner_title_th = #{bannerTitleLang.th},</if>
+            <if test="bannerTitleLang.vi != null">banner_title_vi = #{bannerTitleLang.vi},</if>
+            <if test="bannerTitleLang.pt != null">banner_title_pt = #{bannerTitleLang.pt},</if>
+            <if test="bannerTitleLang.rus != null">banner_title_rus = #{bannerTitleLang.rus},</if>
+            <if test="bannerTitleLang.blr != null">banner_title_blr = #{bannerTitleLang.blr},</if>
+            <if test="bannerTitleLang.ida != null">banner_title_ida = #{bannerTitleLang.ida},</if>
+            <if test="bannerTitleLang.sa != null">banner_title_sa = #{bannerTitleLang.sa},</if>
+            <if test="bannerTitleLang.ar != null">banner_title_ar = #{bannerTitleLang.ar},</if>
+            <if test="bannerTitleLang.it != null">banner_title_it = #{bannerTitleLang.it},</if>
+            <if test="bannerTitleLang.tr != null">banner_title_tr = #{bannerTitleLang.tr},</if>
+            <if test="bannerContentLang.zh != null and bannerContent == null">banner_content = #{bannerContentLang.zh},</if>
+            <if test="bannerContentLang.en != null">banner_content_en = #{bannerContentLang.en},</if>
+            <if test="bannerContentLang.tc != null">banner_content_tc = #{bannerContentLang.tc},</if>
+            <if test="bannerContentLang.de != null">banner_content_de = #{bannerContentLang.de},</if>
+            <if test="bannerContentLang.es != null">banner_content_es = #{bannerContentLang.es},</if>
+            <if test="bannerContentLang.fr != null">banner_content_fr = #{bannerContentLang.fr},</if>
+            <if test="bannerContentLang.idn != null">banner_content_idn = #{bannerContentLang.idn},</if>
+            <if test="bannerContentLang.jp != null">banner_content_jp = #{bannerContentLang.jp},</if>
+            <if test="bannerContentLang.ko != null">banner_content_ko = #{bannerContentLang.ko},</if>
+            <if test="bannerContentLang.my != null">banner_content_my = #{bannerContentLang.my},</if>
+            <if test="bannerContentLang.th != null">banner_content_th = #{bannerContentLang.th},</if>
+            <if test="bannerContentLang.vi != null">banner_content_vi = #{bannerContentLang.vi},</if>
+            <if test="bannerContentLang.pt != null">banner_content_pt = #{bannerContentLang.pt},</if>
+            <if test="bannerContentLang.rus != null">banner_content_rus = #{bannerContentLang.rus},</if>
+            <if test="bannerContentLang.blr != null">banner_content_blr = #{bannerContentLang.blr},</if>
+            <if test="bannerContentLang.ida != null">banner_content_ida = #{bannerContentLang.ida},</if>
+            <if test="bannerContentLang.sa != null">banner_content_sa = #{bannerContentLang.sa},</if>
+            <if test="bannerContentLang.ar != null">banner_content_ar = #{bannerContentLang.ar},</if>
+            <if test="bannerContentLang.it != null">banner_content_it = #{bannerContentLang.it},</if>
+            <if test="bannerContentLang.tr != null">banner_content_tr = #{bannerContentLang.tr},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSiteBannerById" parameterType="Long">
+        delete from site_banner where id = #{id}
+    </delete>
+
+    <delete id="deleteSiteBannerByIds" parameterType="String">
+        delete from site_banner where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

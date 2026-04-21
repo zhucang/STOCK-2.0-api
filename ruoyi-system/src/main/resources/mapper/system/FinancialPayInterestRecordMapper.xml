@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.FinancialPayInterestRecordMapper">
+    
+    <resultMap type="FinancialPayInterestRecord" id="FinancialPayInterestRecordResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="financialOrderId"    column="financial_order_id"    />
+        <result property="dailyIncomeRate"    column="daily_income_rate"    />
+        <result property="payTime"    column="pay_time"    />
+        <result property="payAmount"    column="pay_amount"    />
+        <result property="alreadySettleFlag"    column="already_settle_flag"    />
+    </resultMap>
+
+    <sql id="selectFinancialPayInterestRecordVo">
+        select id, user_id, financial_order_id, daily_income_rate, pay_time, pay_amount,already_settle_flag from financial_pay_interest_record
+    </sql>
+
+    <select id="selectFinancialPayInterestRecordList" parameterType="FinancialPayInterestRecord" resultMap="FinancialPayInterestRecordResult">
+        <include refid="selectFinancialPayInterestRecordVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="financialOrderId != null "> and financial_order_id = #{financialOrderId}</if>
+            <if test="dailyIncomeRate != null "> and daily_income_rate = #{dailyIncomeRate}</if>
+            <if test="payTime != null "> and pay_time = #{payTime}</if>
+            <if test="payAmount != null "> and pay_amount = #{payAmount}</if>
+            <if test="alreadySettleFlag != null "> and already_settle_flag = #{alreadySettleFlag}</if>
+        </where>
+    </select>
+    
+    <select id="selectFinancialPayInterestRecordById" parameterType="Long" resultMap="FinancialPayInterestRecordResult">
+        <include refid="selectFinancialPayInterestRecordVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="getTotalPayAmountByOrderId" resultType="java.util.Map">
+        SELECT financial_order_id AS financialOrderId, SUM(pay_amount) AS totalPayAmount
+        FROM financial_pay_interest_record
+        WHERE financial_order_id IN
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        GROUP BY financial_order_id
+    </select>
+
+
+    <insert id="insertFinancialPayInterestRecord" parameterType="FinancialPayInterestRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into financial_pay_interest_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="financialOrderId != null">financial_order_id,</if>
+            <if test="dailyIncomeRate != null">daily_income_rate,</if>
+            <if test="payTime != null">pay_time,</if>
+            <if test="payAmount != null">pay_amount,</if>
+            <if test="alreadySettleFlag != null">already_settle_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="financialOrderId != null">#{financialOrderId},</if>
+            <if test="dailyIncomeRate != null">#{dailyIncomeRate},</if>
+            <if test="payTime != null">#{payTime},</if>
+            <if test="payAmount != null">#{payAmount},</if>
+            <if test="alreadySettleFlag != null">#{alreadySettleFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFinancialPayInterestRecord" parameterType="FinancialPayInterestRecord">
+        update financial_pay_interest_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="financialOrderId != null">financial_order_id = #{financialOrderId},</if>
+            <if test="dailyIncomeRate != null">daily_income_rate = #{dailyIncomeRate},</if>
+            <if test="payTime != null">pay_time = #{payTime},</if>
+            <if test="payAmount != null">pay_amount = #{payAmount},</if>
+            <if test="alreadySettleFlag != null">already_settle_flag = #{alreadySettleFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteFinancialPayInterestRecordById" parameterType="Long">
+        delete from financial_pay_interest_record where id = #{id}
+    </delete>
+
+    <delete id="deleteFinancialPayInterestRecordByIds" parameterType="String">
+        delete from financial_pay_interest_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

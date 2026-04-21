@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.WebsiteBannerMapper">
+    
+    <resultMap type="WebsiteBanner" id="WebsiteBannerResult">
+        <result property="id"    column="id"    />
+        <result property="bannerImg"    column="banner_img"    />
+        <result property="remark"    column="remark"    />
+        <result property="bannerType"    column="banner_type"    />
+    </resultMap>
+
+    <sql id="selectWebsiteBannerVo">
+        select id, banner_img, remark, banner_type from website_banner
+    </sql>
+
+    <select id="selectWebsiteBannerList" parameterType="WebsiteBanner" resultMap="WebsiteBannerResult">
+        <include refid="selectWebsiteBannerVo"/>
+        <where>  
+            <if test="bannerImg != null  and bannerImg != ''"> and banner_img = #{bannerImg}</if>
+            <if test="bannerType != null "> and banner_type = #{bannerType}</if>
+        </where>
+    </select>
+    
+    <select id="selectWebsiteBannerById" parameterType="Long" resultMap="WebsiteBannerResult">
+        <include refid="selectWebsiteBannerVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWebsiteBanner" parameterType="WebsiteBanner" useGeneratedKeys="true" keyProperty="id">
+        insert into website_banner
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bannerImg != null and bannerImg != ''">banner_img,</if>
+            <if test="remark != null">remark,</if>
+            <if test="bannerType != null">banner_type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bannerImg != null and bannerImg != ''">#{bannerImg},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="bannerType != null">#{bannerType},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWebsiteBanner" parameterType="WebsiteBanner">
+        update website_banner
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="bannerImg != null and bannerImg != ''">banner_img = #{bannerImg},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="bannerType != null">banner_type = #{bannerType},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWebsiteBannerById" parameterType="Long">
+        delete from website_banner where id = #{id}
+    </delete>
+
+    <delete id="deleteWebsiteBannerByIds" parameterType="String">
+        delete from website_banner where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

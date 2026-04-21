@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ProductSettingMapper">
+    
+    <resultMap type="ProductSetting" id="ProductSettingResult">
+        <result property="id"    column="id"    />
+        <result property="dutyFee"    column="duty_fee"    />
+        <result property="stayFee"    column="stay_fee"    />
+        <result property="stayMaxDays"    column="stay_max_days"    />
+        <result property="buyMinAmt"    column="buy_min_amt"    />
+        <result property="buyMinNum"    column="buy_min_num"    />
+        <result property="buyMaxNum"    column="buy_max_num"    />
+        <result property="buyMaxAmtPercent"    column="buy_max_amt_percent"    />
+        <result property="forceStopPercent"    column="force_stop_percent"    />
+        <result property="siteLever"    column="site_lever"    />
+        <result property="handNum"    column="hand_num"    />
+        <result property="buySameTimes"    column="buy_same_times"    />
+        <result property="buySameNums"    column="buy_same_nums"    />
+        <result property="buyNumTimes"    column="buy_num_times"    />
+        <result property="buyNumLots"    column="buy_num_lots"    />
+        <result property="cantSellTimes"    column="cant_sell_times"    />
+        <result property="handCorrespondNum"    column="hand_correspond_num"    />
+        <result property="liquidationMethod"    column="liquidation_method"    />
+        <result property="productType"    column="product_type"    />
+    </resultMap>
+
+    <sql id="selectProductSettingVo">
+        select id, duty_fee, stay_fee, stay_max_days, buy_min_amt, buy_min_num, buy_max_num, buy_max_amt_percent, force_stop_percent, site_lever, hand_num, buy_same_times, buy_same_nums, buy_num_times, buy_num_lots, cant_sell_times, hand_correspond_num, liquidation_method, product_type from product_setting
+    </sql>
+
+    <select id="selectProductSettingList" parameterType="ProductSetting" resultMap="ProductSettingResult">
+        <include refid="selectProductSettingVo"/>
+        <where>  
+            <if test="dutyFee != null "> and duty_fee = #{dutyFee}</if>
+            <if test="stayFee != null "> and stay_fee = #{stayFee}</if>
+            <if test="stayMaxDays != null "> and stay_max_days = #{stayMaxDays}</if>
+            <if test="buyMinAmt != null "> and buy_min_amt = #{buyMinAmt}</if>
+            <if test="buyMinNum != null "> and buy_min_num = #{buyMinNum}</if>
+            <if test="buyMaxNum != null "> and buy_max_num = #{buyMaxNum}</if>
+            <if test="buyMaxAmtPercent != null "> and buy_max_amt_percent = #{buyMaxAmtPercent}</if>
+            <if test="forceStopPercent != null "> and force_stop_percent = #{forceStopPercent}</if>
+            <if test="siteLever != null  and siteLever != ''"> and site_lever = #{siteLever}</if>
+            <if test="handNum != null  and handNum != ''"> and hand_num = #{handNum}</if>
+            <if test="buySameTimes != null "> and buy_same_times = #{buySameTimes}</if>
+            <if test="buySameNums != null "> and buy_same_nums = #{buySameNums}</if>
+            <if test="buyNumTimes != null "> and buy_num_times = #{buyNumTimes}</if>
+            <if test="buyNumLots != null "> and buy_num_lots = #{buyNumLots}</if>
+            <if test="cantSellTimes != null "> and cant_sell_times = #{cantSellTimes}</if>
+            <if test="handCorrespondNum != null "> and hand_correspond_num = #{handCorrespondNum}</if>
+            <if test="liquidationMethod != null "> and liquidation_method = #{liquidationMethod}</if>
+            <if test="productType != null "> and product_type = #{productType}</if>
+        </where>
+    </select>
+    
+    <select id="selectProductSettingById" parameterType="Long" resultMap="ProductSettingResult">
+        <include refid="selectProductSettingVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectProductSettingByProductType" resultMap="ProductSettingResult">
+        <include refid="selectProductSettingVo"/>
+        where product_type = #{productType}
+    </select>
+
+    <insert id="insertProductSetting" parameterType="ProductSetting" useGeneratedKeys="true" keyProperty="id">
+        insert into product_setting
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="dutyFee != null">duty_fee,</if>
+            <if test="stayFee != null">stay_fee,</if>
+            <if test="stayMaxDays != null">stay_max_days,</if>
+            <if test="buyMinAmt != null">buy_min_amt,</if>
+            <if test="buyMinNum != null">buy_min_num,</if>
+            <if test="buyMaxNum != null">buy_max_num,</if>
+            <if test="buyMaxAmtPercent != null">buy_max_amt_percent,</if>
+            <if test="forceStopPercent != null">force_stop_percent,</if>
+            <if test="siteLever != null">site_lever,</if>
+            <if test="handNum != null">hand_num,</if>
+            <if test="buySameTimes != null">buy_same_times,</if>
+            <if test="buySameNums != null">buy_same_nums,</if>
+            <if test="buyNumTimes != null">buy_num_times,</if>
+            <if test="buyNumLots != null">buy_num_lots,</if>
+            <if test="cantSellTimes != null">cant_sell_times,</if>
+            <if test="handCorrespondNum != null">hand_correspond_num,</if>
+            <if test="liquidationMethod != null">liquidation_method,</if>
+            <if test="productType != null">product_type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="dutyFee != null">#{dutyFee},</if>
+            <if test="stayFee != null">#{stayFee},</if>
+            <if test="stayMaxDays != null">#{stayMaxDays},</if>
+            <if test="buyMinAmt != null">#{buyMinAmt},</if>
+            <if test="buyMinNum != null">#{buyMinNum},</if>
+            <if test="buyMaxNum != null">#{buyMaxNum},</if>
+            <if test="buyMaxAmtPercent != null">#{buyMaxAmtPercent},</if>
+            <if test="forceStopPercent != null">#{forceStopPercent},</if>
+            <if test="siteLever != null">#{siteLever},</if>
+            <if test="handNum != null">#{handNum},</if>
+            <if test="buySameTimes != null">#{buySameTimes},</if>
+            <if test="buySameNums != null">#{buySameNums},</if>
+            <if test="buyNumTimes != null">#{buyNumTimes},</if>
+            <if test="buyNumLots != null">#{buyNumLots},</if>
+            <if test="cantSellTimes != null">#{cantSellTimes},</if>
+            <if test="handCorrespondNum != null">#{handCorrespondNum},</if>
+            <if test="liquidationMethod != null">#{liquidationMethod},</if>
+            <if test="productType != null">#{productType},</if>
+         </trim>
+    </insert>
+
+    <update id="updateProductSetting" parameterType="ProductSetting">
+        update product_setting
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="dutyFee != null">duty_fee = #{dutyFee},</if>
+            <if test="stayFee != null">stay_fee = #{stayFee},</if>
+            <if test="stayMaxDays != null">stay_max_days = #{stayMaxDays},</if>
+            <if test="buyMinAmt != null">buy_min_amt = #{buyMinAmt},</if>
+            <if test="buyMinNum != null">buy_min_num = #{buyMinNum},</if>
+            <if test="buyMaxNum != null">buy_max_num = #{buyMaxNum},</if>
+            <if test="buyMaxAmtPercent != null">buy_max_amt_percent = #{buyMaxAmtPercent},</if>
+            <if test="forceStopPercent != null">force_stop_percent = #{forceStopPercent},</if>
+            <if test="siteLever != null">site_lever = #{siteLever},</if>
+            <if test="handNum != null">hand_num = #{handNum},</if>
+            <if test="buySameTimes != null">buy_same_times = #{buySameTimes},</if>
+            <if test="buySameNums != null">buy_same_nums = #{buySameNums},</if>
+            <if test="buyNumTimes != null">buy_num_times = #{buyNumTimes},</if>
+            <if test="buyNumLots != null">buy_num_lots = #{buyNumLots},</if>
+            <if test="cantSellTimes != null">cant_sell_times = #{cantSellTimes},</if>
+            <if test="handCorrespondNum != null">hand_correspond_num = #{handCorrespondNum},</if>
+            <if test="liquidationMethod != null">liquidation_method = #{liquidationMethod},</if>
+            <if test="productType != null">product_type = #{productType},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteProductSettingById" parameterType="Long">
+        delete from product_setting where id = #{id}
+    </delete>
+
+    <delete id="deleteProductSettingByIds" parameterType="String">
+        delete from product_setting where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,1 @@
+update `stock`.`switch_set` set switch_name = 'app端充值提现记录是否展示彩金记录' where id = 78;

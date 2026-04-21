@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PopUpMapper">
+    
+    <resultMap type="PopUp" id="PopUpResult">
+        <result property="id"    column="id"    />
+        <result property="popUpTitle"    column="pop_up_title"    />
+        <result property="popUpContent"    column="pop_up_content"    />
+        <result property="showTime"    column="show_time"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="popUpTitleEn"    column="pop_up_title_en"    />
+        <result property="popUpTitleTc"    column="pop_up_title_tc"    />
+        <result property="popUpTitleDe"    column="pop_up_title_de"    />
+        <result property="popUpTitleEs"    column="pop_up_title_es"    />
+        <result property="popUpTitleFr"    column="pop_up_title_fr"    />
+        <result property="popUpTitleIdn"    column="pop_up_title_idn"    />
+        <result property="popUpTitleJp"    column="pop_up_title_jp"    />
+        <result property="popUpTitleKo"    column="pop_up_title_ko"    />
+        <result property="popUpTitleMy"    column="pop_up_title_my"    />
+        <result property="popUpTitleTh"    column="pop_up_title_th"    />
+        <result property="popUpTitleVi"    column="pop_up_title_vi"    />
+        <result property="popUpTitlePt"    column="pop_up_title_pt"    />
+        <result property="popUpTitleRus"    column="pop_up_title_rus"    />
+        <result property="popUpTitleBlr"    column="pop_up_title_blr"    />
+        <result property="popUpTitleIda"    column="pop_up_title_ida"    />
+        <result property="popUpTitleSa"    column="pop_up_title_sa"    />
+        <result property="popUpTitleAr"    column="pop_up_title_ar"    />
+        <result property="popUpTitleIt"    column="pop_up_title_it"    />
+        <result property="popUpTitleTr"    column="pop_up_title_tr"    />
+        <result property="popUpContentEn"    column="pop_up_content_en"    />
+        <result property="popUpContentTc"    column="pop_up_content_tc"    />
+        <result property="popUpContentDe"    column="pop_up_content_de"    />
+        <result property="popUpContentEs"    column="pop_up_content_es"    />
+        <result property="popUpContentFr"    column="pop_up_content_fr"    />
+        <result property="popUpContentIdn"    column="pop_up_content_idn"    />
+        <result property="popUpContentJp"    column="pop_up_content_jp"    />
+        <result property="popUpContentKo"    column="pop_up_content_ko"    />
+        <result property="popUpContentMy"    column="pop_up_content_my"    />
+        <result property="popUpContentTh"    column="pop_up_content_th"    />
+        <result property="popUpContentVi"    column="pop_up_content_vi"    />
+        <result property="popUpContentPt"    column="pop_up_content_pt"    />
+        <result property="popUpContentRus"    column="pop_up_content_rus"    />
+        <result property="popUpContentBlr"    column="pop_up_content_blr"    />
+        <result property="popUpContentIda"    column="pop_up_content_ida"    />
+        <result property="popUpContentSa"    column="pop_up_content_sa"    />
+        <result property="popUpContentAr"    column="pop_up_content_ar"    />
+        <result property="popUpContentIt"    column="pop_up_content_it"    />
+        <result property="popUpContentTr"    column="pop_up_content_tr"    />
+    </resultMap>
+
+    <sql id="selectPopUpVo">
+        select id, pop_up_title, pop_up_content, show_time, create_time, pop_up_title_en, pop_up_title_tc, pop_up_title_de, pop_up_title_es, pop_up_title_fr, pop_up_title_idn, pop_up_title_jp, pop_up_title_ko, pop_up_title_my, pop_up_title_th, pop_up_title_vi, pop_up_title_pt, pop_up_title_rus, pop_up_title_blr, pop_up_title_ida, pop_up_title_sa, pop_up_title_ar, pop_up_title_it, pop_up_title_tr, pop_up_content_en, pop_up_content_tc, pop_up_content_de, pop_up_content_es, pop_up_content_fr, pop_up_content_idn, pop_up_content_jp, pop_up_content_ko, pop_up_content_my, pop_up_content_th, pop_up_content_vi, pop_up_content_pt, pop_up_content_rus, pop_up_content_blr, pop_up_content_ida, pop_up_content_sa, pop_up_content_ar, pop_up_content_it, pop_up_content_tr from pop_up
+    </sql>
+
+    <select id="selectPopUpList" parameterType="PopUp" resultMap="PopUpResult">
+        <include refid="selectPopUpVo"/>
+        <where>  
+            <if test="popUpTitle != null  and popUpTitle != ''"> and pop_up_title = #{popUpTitle}</if>
+            <if test="popUpContent != null  and popUpContent != ''"> and pop_up_content = #{popUpContent}</if>
+            <if test="showTime != null "> and show_time = #{showTime}</if>
+            <if test="popUpTitleEn != null  and popUpTitleEn != ''"> and pop_up_title_en = #{popUpTitleEn}</if>
+            <if test="popUpTitleTc != null  and popUpTitleTc != ''"> and pop_up_title_tc = #{popUpTitleTc}</if>
+            <if test="popUpTitleDe != null  and popUpTitleDe != ''"> and pop_up_title_de = #{popUpTitleDe}</if>
+            <if test="popUpTitleEs != null  and popUpTitleEs != ''"> and pop_up_title_es = #{popUpTitleEs}</if>
+            <if test="popUpTitleFr != null  and popUpTitleFr != ''"> and pop_up_title_fr = #{popUpTitleFr}</if>
+            <if test="popUpTitleIdn != null  and popUpTitleIdn != ''"> and pop_up_title_idn = #{popUpTitleIdn}</if>
+            <if test="popUpTitleJp != null  and popUpTitleJp != ''"> and pop_up_title_jp = #{popUpTitleJp}</if>
+            <if test="popUpTitleKo != null  and popUpTitleKo != ''"> and pop_up_title_ko = #{popUpTitleKo}</if>
+            <if test="popUpTitleMy != null  and popUpTitleMy != ''"> and pop_up_title_my = #{popUpTitleMy}</if>
+            <if test="popUpTitleTh != null  and popUpTitleTh != ''"> and pop_up_title_th = #{popUpTitleTh}</if>
+            <if test="popUpTitleVi != null  and popUpTitleVi != ''"> and pop_up_title_vi = #{popUpTitleVi}</if>
+            <if test="popUpTitlePt != null  and popUpTitlePt != ''"> and pop_up_title_pt = #{popUpTitlePt}</if>
+            <if test="popUpTitleRus != null  and popUpTitleRus != ''"> and pop_up_title_rus = #{popUpTitleRus}</if>
+            <if test="popUpTitleBlr != null  and popUpTitleBlr != ''"> and pop_up_title_blr = #{popUpTitleBlr}</if>
+            <if test="popUpTitleIda != null  and popUpTitleIda != ''"> and pop_up_title_ida = #{popUpTitleIda}</if>
+            <if test="popUpTitleSa != null  and popUpTitleSa != ''"> and pop_up_title_sa = #{popUpTitleSa}</if>
+            <if test="popUpTitleAr != null  and popUpTitleAr != ''"> and pop_up_title_ar = #{popUpTitleAr}</if>
+            <if test="popUpTitleIt != null  and popUpTitleIt != ''"> and pop_up_title_it = #{popUpTitleIt}</if>
+            <if test="popUpTitleTr != null  and popUpTitleTr != ''"> and pop_up_title_tr = #{popUpTitleTr}</if>
+            <if test="popUpContentEn != null  and popUpContentEn != ''"> and pop_up_content_en = #{popUpContentEn}</if>
+            <if test="popUpContentTc != null  and popUpContentTc != ''"> and pop_up_content_tc = #{popUpContentTc}</if>
+            <if test="popUpContentDe != null  and popUpContentDe != ''"> and pop_up_content_de = #{popUpContentDe}</if>
+            <if test="popUpContentEs != null  and popUpContentEs != ''"> and pop_up_content_es = #{popUpContentEs}</if>
+            <if test="popUpContentFr != null  and popUpContentFr != ''"> and pop_up_content_fr = #{popUpContentFr}</if>
+            <if test="popUpContentIdn != null  and popUpContentIdn != ''"> and pop_up_content_idn = #{popUpContentIdn}</if>
+            <if test="popUpContentJp != null  and popUpContentJp != ''"> and pop_up_content_jp = #{popUpContentJp}</if>
+            <if test="popUpContentKo != null  and popUpContentKo != ''"> and pop_up_content_ko = #{popUpContentKo}</if>
+            <if test="popUpContentMy != null  and popUpContentMy != ''"> and pop_up_content_my = #{popUpContentMy}</if>
+            <if test="popUpContentTh != null  and popUpContentTh != ''"> and pop_up_content_th = #{popUpContentTh}</if>
+            <if test="popUpContentVi != null  and popUpContentVi != ''"> and pop_up_content_vi = #{popUpContentVi}</if>
+            <if test="popUpContentPt != null  and popUpContentPt != ''"> and pop_up_content_pt = #{popUpContentPt}</if>
+            <if test="popUpContentRus != null  and popUpContentRus != ''"> and pop_up_content_rus = #{popUpContentRus}</if>
+            <if test="popUpContentBlr != null  and popUpContentBlr != ''"> and pop_up_content_blr = #{popUpContentBlr}</if>
+            <if test="popUpContentIda != null  and popUpContentIda != ''"> and pop_up_content_ida = #{popUpContentIda}</if>
+            <if test="popUpContentSa != null  and popUpContentSa != ''"> and pop_up_content_sa = #{popUpContentSa}</if>
+            <if test="popUpContentAr != null  and popUpContentAr != ''"> and pop_up_content_ar = #{popUpContentAr}</if>
+            <if test="popUpContentIt != null  and popUpContentIt != ''"> and pop_up_content_it = #{popUpContentIt}</if>
+            <if test="popUpContentTr != null  and popUpContentTr != ''"> and pop_up_content_tr = #{popUpContentTr}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectPopUpById" parameterType="Long" resultMap="PopUpResult">
+        <include refid="selectPopUpVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertPopUp" parameterType="PopUp" useGeneratedKeys="true" keyProperty="id">
+        insert into pop_up
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="popUpTitle != null and popUpTitle != ''">pop_up_title,</if>
+            <if test="popUpContent != null and popUpContent != ''">pop_up_content,</if>
+            <if test="showTime != null">show_time,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="popUpTitleEn != null">pop_up_title_en,</if>
+            <if test="popUpTitleTc != null">pop_up_title_tc,</if>
+            <if test="popUpTitleDe != null">pop_up_title_de,</if>
+            <if test="popUpTitleEs != null">pop_up_title_es,</if>
+            <if test="popUpTitleFr != null">pop_up_title_fr,</if>
+            <if test="popUpTitleIdn != null">pop_up_title_idn,</if>
+            <if test="popUpTitleJp != null">pop_up_title_jp,</if>
+            <if test="popUpTitleKo != null">pop_up_title_ko,</if>
+            <if test="popUpTitleMy != null">pop_up_title_my,</if>
+            <if test="popUpTitleTh != null">pop_up_title_th,</if>
+            <if test="popUpTitleVi != null">pop_up_title_vi,</if>
+            <if test="popUpTitlePt != null">pop_up_title_pt,</if>
+            <if test="popUpTitleRus != null">pop_up_title_rus,</if>
+            <if test="popUpTitleBlr != null">pop_up_title_blr,</if>
+            <if test="popUpTitleIda != null">pop_up_title_ida,</if>
+            <if test="popUpTitleSa != null">pop_up_title_sa,</if>
+            <if test="popUpTitleAr != null">pop_up_title_ar,</if>
+            <if test="popUpTitleIt != null">pop_up_title_it,</if>
+            <if test="popUpTitleTr != null">pop_up_title_tr,</if>
+            <if test="popUpContentEn != null">pop_up_content_en,</if>
+            <if test="popUpContentTc != null">pop_up_content_tc,</if>
+            <if test="popUpContentDe != null">pop_up_content_de,</if>
+            <if test="popUpContentEs != null">pop_up_content_es,</if>
+            <if test="popUpContentFr != null">pop_up_content_fr,</if>
+            <if test="popUpContentIdn != null">pop_up_content_idn,</if>
+            <if test="popUpContentJp != null">pop_up_content_jp,</if>
+            <if test="popUpContentKo != null">pop_up_content_ko,</if>
+            <if test="popUpContentMy != null">pop_up_content_my,</if>
+            <if test="popUpContentTh != null">pop_up_content_th,</if>
+            <if test="popUpContentVi != null">pop_up_content_vi,</if>
+            <if test="popUpContentPt != null">pop_up_content_pt,</if>
+            <if test="popUpContentRus != null">pop_up_content_rus,</if>
+            <if test="popUpContentBlr != null">pop_up_content_blr,</if>
+            <if test="popUpContentIda != null">pop_up_content_ida,</if>
+            <if test="popUpContentSa != null">pop_up_content_sa,</if>
+            <if test="popUpContentAr != null">pop_up_content_ar,</if>
+            <if test="popUpContentIt != null">pop_up_content_it,</if>
+            <if test="popUpContentTr != null">pop_up_content_tr,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="popUpTitle != null and popUpTitle != ''">#{popUpTitle},</if>
+            <if test="popUpContent != null and popUpContent != ''">#{popUpContent},</if>
+            <if test="showTime != null">#{showTime},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="popUpTitleEn != null">#{popUpTitleEn},</if>
+            <if test="popUpTitleTc != null">#{popUpTitleTc},</if>
+            <if test="popUpTitleDe != null">#{popUpTitleDe},</if>
+            <if test="popUpTitleEs != null">#{popUpTitleEs},</if>
+            <if test="popUpTitleFr != null">#{popUpTitleFr},</if>
+            <if test="popUpTitleIdn != null">#{popUpTitleIdn},</if>
+            <if test="popUpTitleJp != null">#{popUpTitleJp},</if>
+            <if test="popUpTitleKo != null">#{popUpTitleKo},</if>
+            <if test="popUpTitleMy != null">#{popUpTitleMy},</if>
+            <if test="popUpTitleTh != null">#{popUpTitleTh},</if>
+            <if test="popUpTitleVi != null">#{popUpTitleVi},</if>
+            <if test="popUpTitlePt != null">#{popUpTitlePt},</if>
+            <if test="popUpTitleRus != null">#{popUpTitleRus},</if>
+            <if test="popUpTitleBlr != null">#{popUpTitleBlr},</if>
+            <if test="popUpTitleIda != null">#{popUpTitleIda},</if>
+            <if test="popUpTitleSa != null">#{popUpTitleSa},</if>
+            <if test="popUpTitleAr != null">#{popUpTitleAr},</if>
+            <if test="popUpTitleIt != null">#{popUpTitleIt},</if>
+            <if test="popUpTitleTr != null">#{popUpTitleTr},</if>
+            <if test="popUpContentEn != null">#{popUpContentEn},</if>
+            <if test="popUpContentTc != null">#{popUpContentTc},</if>
+            <if test="popUpContentDe != null">#{popUpContentDe},</if>
+            <if test="popUpContentEs != null">#{popUpContentEs},</if>
+            <if test="popUpContentFr != null">#{popUpContentFr},</if>
+            <if test="popUpContentIdn != null">#{popUpContentIdn},</if>
+            <if test="popUpContentJp != null">#{popUpContentJp},</if>
+            <if test="popUpContentKo != null">#{popUpContentKo},</if>
+            <if test="popUpContentMy != null">#{popUpContentMy},</if>
+            <if test="popUpContentTh != null">#{popUpContentTh},</if>
+            <if test="popUpContentVi != null">#{popUpContentVi},</if>
+            <if test="popUpContentPt != null">#{popUpContentPt},</if>
+            <if test="popUpContentRus != null">#{popUpContentRus},</if>
+            <if test="popUpContentBlr != null">#{popUpContentBlr},</if>
+            <if test="popUpContentIda != null">#{popUpContentIda},</if>
+            <if test="popUpContentSa != null">#{popUpContentSa},</if>
+            <if test="popUpContentAr != null">#{popUpContentAr},</if>
+            <if test="popUpContentIt != null">#{popUpContentIt},</if>
+            <if test="popUpContentTr != null">#{popUpContentTr},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePopUp" parameterType="PopUp">
+        update pop_up
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="popUpTitle != null and popUpTitle != ''">pop_up_title = #{popUpTitle},</if>
+            <if test="popUpContent != null and popUpContent != ''">pop_up_content = #{popUpContent},</if>
+            <if test="showTime != null">show_time = #{showTime},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="popUpTitleEn != null">pop_up_title_en = #{popUpTitleEn},</if>
+            <if test="popUpTitleTc != null">pop_up_title_tc = #{popUpTitleTc},</if>
+            <if test="popUpTitleDe != null">pop_up_title_de = #{popUpTitleDe},</if>
+            <if test="popUpTitleEs != null">pop_up_title_es = #{popUpTitleEs},</if>
+            <if test="popUpTitleFr != null">pop_up_title_fr = #{popUpTitleFr},</if>
+            <if test="popUpTitleIdn != null">pop_up_title_idn = #{popUpTitleIdn},</if>
+            <if test="popUpTitleJp != null">pop_up_title_jp = #{popUpTitleJp},</if>
+            <if test="popUpTitleKo != null">pop_up_title_ko = #{popUpTitleKo},</if>
+            <if test="popUpTitleMy != null">pop_up_title_my = #{popUpTitleMy},</if>
+            <if test="popUpTitleTh != null">pop_up_title_th = #{popUpTitleTh},</if>
+            <if test="popUpTitleVi != null">pop_up_title_vi = #{popUpTitleVi},</if>
+            <if test="popUpTitlePt != null">pop_up_title_pt = #{popUpTitlePt},</if>
+            <if test="popUpTitleRus != null">pop_up_title_rus = #{popUpTitleRus},</if>
+            <if test="popUpTitleBlr != null">pop_up_title_blr = #{popUpTitleBlr},</if>
+            <if test="popUpTitleIda != null">pop_up_title_ida = #{popUpTitleIda},</if>
+            <if test="popUpTitleSa != null">pop_up_title_sa = #{popUpTitleSa},</if>
+            <if test="popUpTitleAr != null">pop_up_title_ar = #{popUpTitleAr},</if>
+            <if test="popUpTitleIt != null">pop_up_title_it = #{popUpTitleIt},</if>
+            <if test="popUpTitleTr != null">pop_up_title_tr = #{popUpTitleTr},</if>
+            <if test="popUpContentEn != null">pop_up_content_en = #{popUpContentEn},</if>
+            <if test="popUpContentTc != null">pop_up_content_tc = #{popUpContentTc},</if>
+            <if test="popUpContentDe != null">pop_up_content_de = #{popUpContentDe},</if>
+            <if test="popUpContentEs != null">pop_up_content_es = #{popUpContentEs},</if>
+            <if test="popUpContentFr != null">pop_up_content_fr = #{popUpContentFr},</if>
+            <if test="popUpContentIdn != null">pop_up_content_idn = #{popUpContentIdn},</if>
+            <if test="popUpContentJp != null">pop_up_content_jp = #{popUpContentJp},</if>
+            <if test="popUpContentKo != null">pop_up_content_ko = #{popUpContentKo},</if>
+            <if test="popUpContentMy != null">pop_up_content_my = #{popUpContentMy},</if>
+            <if test="popUpContentTh != null">pop_up_content_th = #{popUpContentTh},</if>
+            <if test="popUpContentVi != null">pop_up_content_vi = #{popUpContentVi},</if>
+            <if test="popUpContentPt != null">pop_up_content_pt = #{popUpContentPt},</if>
+            <if test="popUpContentRus != null">pop_up_content_rus = #{popUpContentRus},</if>
+            <if test="popUpContentBlr != null">pop_up_content_blr = #{popUpContentBlr},</if>
+            <if test="popUpContentIda != null">pop_up_content_ida = #{popUpContentIda},</if>
+            <if test="popUpContentSa != null">pop_up_content_sa = #{popUpContentSa},</if>
+            <if test="popUpContentAr != null">pop_up_content_ar = #{popUpContentAr},</if>
+            <if test="popUpContentIt != null">pop_up_content_it = #{popUpContentIt},</if>
+            <if test="popUpContentTr != null">pop_up_content_tr = #{popUpContentTr},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePopUpById" parameterType="Long">
+        delete from pop_up where id = #{id}
+    </delete>
+
+    <delete id="deletePopUpByIds" parameterType="String">
+        delete from pop_up where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

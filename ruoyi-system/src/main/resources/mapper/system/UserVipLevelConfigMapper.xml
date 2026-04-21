@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserVipLevelConfigMapper">
+    
+    <resultMap type="UserVipLevelConfig" id="UserVipLevelConfigResult">
+        <result property="id"    column="id"    />
+        <result property="vipLevel"    column="vip_level"    />
+        <result property="rechargeAmountMin"    column="recharge_amount_min"    />
+        <result property="rechargeAmountMax"    column="recharge_amount_max"    />
+        <result property="rechargeBonusRatio"    column="recharge_bonus_ratio"    />
+        <result property="day"    column="day"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="rechargeBonusAmount"    column="recharge_bonus_amount"    />
+        <result property="bonusMethod"    column="bonus_method"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
+    <sql id="selectUserVipLevelConfigVo">
+        select id, vip_level, recharge_amount_min, recharge_amount_max, recharge_bonus_ratio, recharge_bonus_amount,bonus_method,`day`, order_num,status from user_vip_level_config
+    </sql>
+
+    <select id="selectUserVipLevelConfigList" parameterType="UserVipLevelConfig" resultMap="UserVipLevelConfigResult">
+        <include refid="selectUserVipLevelConfigVo"/>
+        <where>  
+            <if test="vipLevel != null "> and vip_level = #{vipLevel}</if>
+            <if test="rechargeAmountMin != null "> and recharge_amount_min = #{rechargeAmountMin}</if>
+            <if test="rechargeAmountMax != null "> and recharge_amount_max = #{rechargeAmountMax}</if>
+            <if test="rechargeBonusRatio != null "> and recharge_bonus_ratio = #{rechargeBonusRatio}</if>
+            <if test="day != null "> and day = #{day}</if>
+            <if test="orderNum != null "> and order_num = #{orderNum}</if>
+            <if test="status != null "> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserVipLevelConfigById" parameterType="Long" resultMap="UserVipLevelConfigResult">
+        <include refid="selectUserVipLevelConfigVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectUserVipLevelConfigByVipLevel" resultMap="UserVipLevelConfigResult">
+        <include refid="selectUserVipLevelConfigVo"/>
+        where vip_level = #{vipLevel}
+    </select>
+
+    <select id="selectUserVipLevelConfigByRechargeAmount" resultMap="UserVipLevelConfigResult">
+        <include refid="selectUserVipLevelConfigVo"/>
+        <where>
+            <![CDATA[recharge_amount_min <= #{rechargeAmount} and recharge_amount_max >= #{rechargeAmount}]]>
+            and status = 0
+        </where>
+        order by vip_level limit 1
+    </select>
+        
+    <insert id="insertUserVipLevelConfig" parameterType="UserVipLevelConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into user_vip_level_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="vipLevel != null">vip_level,</if>
+            <if test="rechargeAmountMin != null">recharge_amount_min,</if>
+            <if test="rechargeAmountMax != null">recharge_amount_max,</if>
+            <if test="rechargeBonusRatio != null">recharge_bonus_ratio,</if>
+            <if test="day != null">day,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="rechargeBonusAmount != null">recharge_bonus_amount,</if>
+            <if test="bonusMethod != null">bonus_method,</if>
+            <if test="status != null">status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="vipLevel != null">#{vipLevel},</if>
+            <if test="rechargeAmountMin != null">#{rechargeAmountMin},</if>
+            <if test="rechargeAmountMax != null">#{rechargeAmountMax},</if>
+            <if test="rechargeBonusRatio != null">#{rechargeBonusRatio},</if>
+            <if test="day != null">#{day},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="rechargeBonusAmount != null">#{rechargeBonusAmount},</if>
+            <if test="bonusMethod != null">#{bonusMethod},</if>
+            <if test="status != null">#{status},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserVipLevelConfig" parameterType="UserVipLevelConfig">
+        update user_vip_level_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="vipLevel != null">vip_level = #{vipLevel},</if>
+            <if test="rechargeAmountMin != null">recharge_amount_min = #{rechargeAmountMin},</if>
+            <if test="rechargeAmountMax != null">recharge_amount_max = #{rechargeAmountMax},</if>
+            <if test="rechargeBonusRatio != null">recharge_bonus_ratio = #{rechargeBonusRatio},</if>
+            <if test="day != null">day = #{day},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="rechargeBonusAmount != null">recharge_bonus_amount = #{rechargeBonusAmount},</if>
+            <if test="bonusMethod != null">bonus_method = #{bonusMethod},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserVipLevelConfigById" parameterType="Long">
+        delete from user_vip_level_config where id = #{id}
+    </delete>
+
+    <delete id="deleteUserVipLevelConfigByIds" parameterType="String">
+        delete from user_vip_level_config where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

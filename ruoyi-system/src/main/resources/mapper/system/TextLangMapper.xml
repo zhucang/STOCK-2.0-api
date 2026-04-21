@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TextLangMapper">
+    
+    <resultMap type="TextLang" id="TextLangResult">
+        <result property="id"    column="id"    />
+        <result property="content"    column="content"    />
+        <result property="remark"    column="remark"    />
+        <result property="contentType"    column="content_type"    />
+        <result property="websiteClass"    column="website_class"    />
+        <result property="contentVisibleFlag"    column="content_visible_flag"    />
+        <association property="contentLang" javaType="langMgr">
+            <result property="zh"    column="content"    />
+            <result property="en"    column="content_en"    />
+            <result property="tc"    column="content_tc"    />
+            <result property="de"    column="content_de"    />
+            <result property="es"    column="content_es"    />
+            <result property="fr"    column="content_fr"    />
+            <result property="idn"    column="content_idn"    />
+            <result property="jp"    column="content_jp"    />
+            <result property="ko"    column="content_ko"    />
+            <result property="my"    column="content_my"    />
+            <result property="th"    column="content_th"    />
+            <result property="vi"    column="content_vi"    />
+            <result property="pt"    column="content_pt"    />
+            <result property="rus"    column="content_rus"    />
+            <result property="blr"    column="content_blr"    />
+            <result property="ida"    column="content_ida"    />
+            <result property="sa"    column="content_sa"    />
+            <result property="ar"    column="content_ar"    />
+            <result property="it"    column="content_it"    />
+            <result property="tr"    column="content_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectTextLangVo">
+        select id, content, remark, content_type, website_class,content_visible_flag, content_en, content_tc, content_de, content_es, content_fr, content_idn, content_jp, content_ko, content_my, content_th, content_vi, content_pt, content_rus, content_blr, content_ida, content_sa, content_ar, content_it, content_tr from text_lang
+    </sql>
+
+    <select id="selectTextLangList" parameterType="TextLang" resultMap="TextLangResult">
+        <include refid="selectTextLangVo"/>
+        <where>  
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="contentType != null "> and content_type = #{contentType}</if>
+            <if test="websiteClass != null "> and (website_class = #{websiteClass} or website_class is null)</if>
+        </where>
+    </select>
+    
+    <select id="selectTextLangById" parameterType="Long" resultMap="TextLangResult">
+        <include refid="selectTextLangVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTextLang" parameterType="TextLang" useGeneratedKeys="true" keyProperty="id">
+        insert into text_lang
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="content != null and content != ''">content,</if>
+            <if test="remark != null">remark,</if>
+            <if test="contentType != null">content_type,</if>
+            <if test="websiteClass != null">website_class,</if>
+            <if test="contentVisibleFlag != null">content_visible_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="content != null and content != ''">#{content},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="contentType != null">#{contentType},</if>
+            <if test="websiteClass != null">#{websiteClass},</if>
+            <if test="contentVisibleFlag != null">#{contentVisibleFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTextLang" parameterType="TextLang">
+        update text_lang
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="content != null and content != ''">content = #{content},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="contentType != null">content_type = #{contentType},</if>
+            <if test="websiteClass != null">website_class = #{websiteClass},</if>
+            <if test="contentVisibleFlag != null">content_visible_flag = #{contentVisibleFlag},</if>
+            <if test="contentLang.zh != null and content == null">content = #{contentLang.zh},</if>
+            <if test="contentLang.en != null">content_en = #{contentLang.en},</if>
+            <if test="contentLang.tc != null">content_tc = #{contentLang.tc},</if>
+            <if test="contentLang.de != null">content_de = #{contentLang.de},</if>
+            <if test="contentLang.es != null">content_es = #{contentLang.es},</if>
+            <if test="contentLang.fr != null">content_fr = #{contentLang.fr},</if>
+            <if test="contentLang.idn != null">content_idn = #{contentLang.idn},</if>
+            <if test="contentLang.jp != null">content_jp = #{contentLang.jp},</if>
+            <if test="contentLang.ko != null">content_ko = #{contentLang.ko},</if>
+            <if test="contentLang.my != null">content_my = #{contentLang.my},</if>
+            <if test="contentLang.th != null">content_th = #{contentLang.th},</if>
+            <if test="contentLang.vi != null">content_vi = #{contentLang.vi},</if>
+            <if test="contentLang.pt != null">content_pt = #{contentLang.pt},</if>
+            <if test="contentLang.rus != null">content_rus = #{contentLang.rus},</if>
+            <if test="contentLang.blr != null">content_blr = #{contentLang.blr},</if>
+            <if test="contentLang.ida != null">content_ida = #{contentLang.ida},</if>
+            <if test="contentLang.sa != null">content_sa = #{contentLang.sa},</if>
+            <if test="contentLang.ar != null">content_ar = #{contentLang.ar},</if>
+            <if test="contentLang.it != null">content_it = #{contentLang.it},</if>
+            <if test="contentLang.tr != null">content_tr = #{contentLang.tr},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTextLangById" parameterType="Long">
+        delete from text_lang where id = #{id}
+    </delete>
+
+    <delete id="deleteTextLangByIds" parameterType="String">
+        delete from text_lang where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CustomerLossReportMapper">
+
+    <resultMap id="getCustomerLossReportMap" type="CustomerLossReport">
+        <result property="userId" column="user_id"></result>
+        <result property="agentId" column="agent_id"></result>
+        <result property="agentName" column="agent_name"></result>
+        <result property="realName" column="real_name"></result>
+        <result property="userAccount" column="user_account"></result>
+        <result property="balance" column="balance"></result>
+        <result property="rechargeAmount" column="recharge_amount"></result>
+        <result property="rechargeCount" column="recharge_count"></result>
+        <result property="onlineRechargeAmount" column="online_recharge_amount"></result>
+        <result property="onlineRechargeCount" column="online_recharge_count"></result>
+        <result property="withdrawAmount" column="withdraw_amount"></result>
+        <result property="withdrawCount" column="withdraw_count"></result>
+        <result property="upPointAmount" column="up_point_amount"></result>
+        <result property="upPointCount" column="up_point_count"></result>
+        <result property="downPointAmount" column="down_point_amount"></result>
+        <result property="downPointCount" column="down_point_count"></result>
+        <result property="inWinningsAmount" column="inWinningsAmount"></result>
+        <result property="inWinningsCount" column="inWinningsCount"></result>
+        <result property="outWinningsAmount" column="outWinningsAmount"></result>
+        <result property="outWinningsCount" column="outWinningsCount"></result>
+        <result property="loanAmount" column="loan_amount"></result>
+        <result property="loanCount" column="loan_count"></result>
+        <result property="loanAmountNoStatistical" column="loan_amount_no_statistical"></result>
+        <result property="loanCountNoStatistical" column="loan_count_no_statistical"></result>
+        <result property="currencyId" column="currency_id"></result>
+        <result property="currencyName" column="currency_name"></result>
+    </resultMap>
+    <select id="getCustomerLossReport" resultMap="getCustomerLossReportMap">
+        select a.id as user_id,real_name,user_account,agent_name,recharge_amount,recharge_count,online_recharge_amount,online_recharge_count,withdraw_amount,withdraw_count,up_point_amount,up_point_count,down_point_amount,down_point_count,
+        inWinningsAmount,inWinningsCount,outWinningsAmount,outWinningsCount,
+        IFNULL(loan_amount,0) loan_amount,IFNULL(loan_count,0) loan_count,
+        IFNULL(loan_amount_no_statistical,0) loan_amount_no_statistical,IFNULL(loan_count_no_statistical,0) loan_count_no_statistical
+        from user_info a
+
+        left join
+        (select sum(recharge_amount) as recharge_amount,COUNT(1) as recharge_count ,user_id from user_recharge where order_status = 1 and recharge_method = 0
+        <if test="currencyId !=null ">
+            and currency_id = #{currencyId}
+        </if>
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        group by user_id) as b1
+        on a.id = b1.user_id
+
+        left join
+        (select sum(recharge_amount) as online_recharge_amount,COUNT(1) as online_recharge_count ,user_id from user_recharge where order_status = 1 and recharge_method = 1
+        <if test="currencyId !=null ">
+            and currency_id = #{currencyId}
+        </if>
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        group by user_id) as b2
+        on a.id = b2.user_id
+
+        left join
+        (select IFNULL(sum(received_amount),0) as withdraw_amount,COUNT(1) as withdraw_count ,user_id from user_withdraw where withdraw_status = 1 and statistical_report = 0
+        <if test="currencyId !=null ">
+            and currency_id = #{currencyId}
+        </if>
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(trans_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(trans_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        group by user_id) as c
+        on a.id = c.user_id
+
+        left join
+        (select sum(order_amount) as up_point_amount,COUNT(1) as up_point_count ,user_id from user_point_change_record where order_type = 0
+        <if test="currencyId !=null ">
+            and currency_id = #{currencyId}
+        </if>
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        group by user_id) as d
+        on a.id = d.user_id
+
+        left join
+        (select sum(order_amount) as down_point_amount,COUNT(1) as down_point_count ,user_id from user_point_change_record where order_type = 1
+        <if test="currencyId !=null ">
+            and currency_id = #{currencyId}
+        </if>
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        group by user_id) as e
+        on a.id = e.user_id
+
+        left join
+        (select sum(order_amount) as inWinningsAmount,COUNT(1) as inWinningsCount ,user_id from user_winnings_change_record where (order_type = 0 or order_type = 1)
+        <if test="currencyId !=null ">
+            and currency_id = #{currencyId}
+        </if>
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        group by user_id) as f
+        on a.id = f.user_id
+
+        left join
+        (select sum(order_amount) as outWinningsAmount,COUNT(1) as outWinningsCount ,user_id from user_winnings_change_record where order_type = 2
+        <if test="currencyId !=null ">
+            and currency_id = #{currencyId}
+        </if>
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        group by user_id) as g
+        on a.id = g.user_id
+
+        left join
+        (select sum(real_loan_amount+need_pay_interest) as loan_amount,COUNT(1) as loan_count ,user_id from loan_order where (((order_status = 1 or order_status = 2) and repayment_method = 0) or (order_status = 2 and repayment_method = 1)) and statistical_report = 0
+        <if test="currencyId !=null ">
+            and currency_id = #{currencyId}
+        </if>
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        group by user_id) as h
+        on a.id = h.user_id
+
+        left join
+        (select sum(real_loan_amount+need_pay_interest) as loan_amount_no_statistical,COUNT(1) as loan_count_no_statistical ,user_id from loan_order where (((order_status = 1 or order_status = 2) and repayment_method = 0) or (order_status = 2 and repayment_method = 1)) and statistical_report = 1
+        <if test="currencyId !=null ">
+            and currency_id = #{currencyId}
+        </if>
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        group by user_id) as i
+        on a.id = i.user_id
+
+        <where>
+            <if test="params.userIds != null">
+                and a.id in
+                <foreach collection="params.userIds" item="item" open="(" separator="," index="index" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="userAccount != null">
+                and user_account like concat('%',#{userAccount},'%')
+            </if>
+            <if test="userId != null">
+                and a.id  = #{userId}
+            </if>
+            <if test="agentId != null">
+                and a.agent_id = #{agentId}
+            </if>
+            and a.account_type = 0
+        </where>
+        order by a.id desc
+    </select>
+
+
+
+    <resultMap id="getCustomerLossReportMapNew" type="CustomerLossReportNew">
+        <result property="userId" column="user_id"></result>
+        <result property="agentId" column="agent_id"></result>
+        <result property="userAccount" column="user_account"></result>
+        <collection property="reports" javaType="java.util.List" resultMap="reportResult"></collection>
+    </resultMap>
+
+    <resultMap id="reportResult" type="CustomerLossReportDetail">
+        <result property="balance" column="balance"></result>
+        <result property="rechargeAmount" column="recharge_amount"></result>
+        <result property="rechargeCount" column="recharge_count"></result>
+        <result property="onlineRechargeAmount" column="online_recharge_amount"></result>
+        <result property="onlineRechargeCount" column="online_recharge_count"></result>
+        <result property="withdrawAmount" column="withdraw_amount"></result>
+        <result property="withdrawCount" column="withdraw_count"></result>
+        <result property="upPointAmount" column="up_point_amount"></result>
+        <result property="upPointCount" column="up_point_count"></result>
+        <result property="downPointAmount" column="down_point_amount"></result>
+        <result property="downPointCount" column="down_point_count"></result>
+        <result property="inWinningsAmount" column="inWinningsAmount"></result>
+        <result property="inWinningsCount" column="inWinningsCount"></result>
+        <result property="outWinningsAmount" column="outWinningsAmount"></result>
+        <result property="outWinningsCount" column="outWinningsCount"></result>
+        <result property="loanAmount" column="loan_amount"></result>
+        <result property="loanCount" column="loan_count"></result>
+        <result property="loanAmountNoStatistical" column="loan_amount_no_statistical"></result>
+        <result property="loanCountNoStatistical" column="loan_count_no_statistical"></result>
+        <result property="currencyId" column="currency_id"></result>
+        <result property="currencyName" column="currency_name"></result>
+    </resultMap>
+
+    <select id="getCustomerLossReportNew" resultMap="getCustomerLossReportMapNew">
+        select a.id as user_id,user_account,agent_id,pl.id currency_id,currency_name,
+        IFNULL(recharge_amount,0) recharge_amount,IFNULL(recharge_count,0) recharge_count,
+        IFNULL(online_recharge_amount,0) online_recharge_amount,IFNULL(online_recharge_count,0) online_recharge_count,
+        IFNULL(withdraw_amount,0) withdraw_amount,IFNULL(withdraw_count,0) withdraw_count,
+        IFNULL(up_point_amount,0) up_point_amount,IFNULL(up_point_count,0) up_point_count,
+        IFNULL(down_point_amount,0) down_point_amount,IFNULL(down_point_count,0) down_point_count,
+        IFNULL(inWinningsAmount,0) inWinningsAmount,IFNULL(inWinningsCount,0) inWinningsCount,
+        IFNULL(outWinningsAmount,0) outWinningsAmount,IFNULL(outWinningsCount,0) outWinningsCount,
+        IFNULL(loan_amount,0) loan_amount,IFNULL(loan_count,0) loan_count,
+        IFNULL(loan_amount_no_statistical,0) loan_amount_no_statistical,IFNULL(loan_count_no_statistical,0) loan_count_no_statistical
+        from user_info a
+        inner join platform_currency pl
+        on pl.`status` = 0
+
+        left join
+        (select sum(recharge_amount) as recharge_amount,COUNT(1) as recharge_count ,user_id,currency_id from user_recharge where order_status = 1 and recharge_method = 0
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        group by user_id,currency_id) as b1
+        on a.id = b1.user_id and pl.id = b1.currency_id
+
+        left join
+        (select sum(recharge_amount) as online_recharge_amount,COUNT(1) as online_recharge_count ,user_id,currency_id from user_recharge where order_status = 1 and recharge_method = 1
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(pay_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        group by user_id,currency_id) as b2
+        on a.id = b2.user_id and pl.id = b2.currency_id
+
+        left join
+        (select sum(received_amount) as withdraw_amount,COUNT(1) as withdraw_count ,user_id,currency_id from user_withdraw where withdraw_status = 1 and statistical_report = 0
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(trans_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(trans_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        group by user_id,currency_id) as c
+        on a.id = c.user_id and pl.id = c.currency_id
+
+        left join
+        (select sum(order_amount) as up_point_amount,COUNT(1) as up_point_count ,user_id,currency_id from user_point_change_record where order_type = 0
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        group by user_id,currency_id) as d
+        on a.id = d.user_id and pl.id = d.currency_id
+
+        left join
+        (select sum(order_amount) as down_point_amount,COUNT(1) as down_point_count ,user_id,currency_id from user_point_change_record where order_type = 1
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        group by user_id,currency_id) as e
+        on a.id = e.user_id and pl.id = e.currency_id
+
+        left join
+        (select sum(order_amount) as inWinningsAmount,COUNT(1) as inWinningsCount ,user_id,currency_id from user_winnings_change_record where (order_type = 0 or order_type = 1)
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        group by user_id,currency_id) as f
+        on a.id = f.user_id and pl.id = f.currency_id
+
+        left join
+        (select sum(order_amount) as outWinningsAmount,COUNT(1) as outWinningsCount ,user_id,currency_id from user_winnings_change_record where order_type = 2
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        group by user_id,currency_id) as g
+        on a.id = g.user_id and pl.id = g.currency_id
+
+        left join
+        (select sum(real_loan_amount+need_pay_interest) as loan_amount,COUNT(1) as loan_count ,user_id,currency_id from loan_order where (((order_status = 1 or order_status = 2) and repayment_method = 0) or (order_status = 2 and repayment_method = 1)) and statistical_report = 0
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        group by user_id,currency_id) as h
+        on a.id = h.user_id and pl.id = h.currency_id
+
+        left join
+        (select sum(real_loan_amount+need_pay_interest) as loan_amount_no_statistical,COUNT(1) as loan_count_no_statistical ,user_id,currency_id from loan_order where (((order_status = 1 or order_status = 2) and repayment_method = 0) or (order_status = 2 and repayment_method = 1)) and statistical_report = 1
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        group by user_id,currency_id) as i
+        on a.id = i.user_id and pl.id = i.currency_id
+
+        <where>
+            <if test="params.userIds != null and params.userIds.size > 0">
+                and a.id in
+                <foreach collection="params.userIds" index="index" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.userIds != null and params.userIds.size == 0">
+                and a.id = 0
+            </if>
+            <if test="userAccount != null">
+                and user_account like concat('%',#{userAccount},'%')
+            </if>
+            <if test="userId != null">
+                and a.id  = #{userId}
+            </if>
+            <if test="params.currencyId != null">
+                and pl.id  = #{params.currencyId}
+            </if>
+            <if test="agentId != null">
+                and a.agent_id = #{agentId}
+            </if>
+            and a.account_type = 0
+            ${params.dataScope}
+        </where>
+        order by a.id desc
+    </select>
+
+    <select id="getRegNum" resultType="java.lang.Integer">
+        select count(0) from user_info
+        <if test="params.userIds != null and params.userIds.size > 0">
+            where id in
+            <foreach collection="params.userIds" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                #{item}
+            </foreach>
+        </if>
+        <if test="params.userIds != null and params.userIds.size == 0">
+            where id = 0
+        </if>
+        <if test="params.userIds == null">
+            where id = 0
+        </if>
+        <if test="startTime !=null ">
+            <![CDATA[ and DATE_FORMAT(reg_time, '%Y-%m-%d %H:%i:%s') >= DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s') ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[ and DATE_FORMAT(reg_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s') ]]></if>
+    </select>
+</mapper>

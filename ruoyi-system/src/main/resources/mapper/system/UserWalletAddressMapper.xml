@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserWalletAddressMapper">
+    
+    <resultMap type="UserWalletAddress" id="UserWalletAddressResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="currencyId"    column="currency_id"    />
+        <result property="walletAddress"    column="wallet_address"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="currencyName"    column="currency_name"    />
+        <result property="walletAddressType"    column="wallet_address_type"    />
+        <result property="walletReceiptQrCode"    column="wallet_receipt_qr_code"    />
+        <result property="walletTag"    column="wallet_tag"    />
+        <association property="currencyNameLang" javaType="langMgr">
+            <result property="zh"    column="currency_name"    />
+            <result property="en"    column="currency_name_en"    />
+            <result property="tc"    column="currency_name_tc"    />
+            <result property="de"    column="currency_name_de"    />
+            <result property="es"    column="currency_name_es"    />
+            <result property="fr"    column="currency_name_fr"    />
+            <result property="idn"    column="currency_name_idn"    />
+            <result property="jp"    column="currency_name_jp"    />
+            <result property="ko"    column="currency_name_ko"    />
+            <result property="my"    column="currency_name_my"    />
+            <result property="th"    column="currency_name_th"    />
+            <result property="vi"    column="currency_name_vi"    />
+            <result property="pt"    column="currency_name_pt"    />
+            <result property="rus"    column="currency_name_rus"    />
+            <result property="blr"    column="currency_name_blr"    />
+            <result property="ida"    column="currency_name_ida"    />
+            <result property="sa"    column="currency_name_sa"    />
+            <result property="ar"    column="currency_name_ar"    />
+            <result property="it"    column="currency_name_it"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectUserWalletAddressVo">
+        select a.id, user_id, currency_id, wallet_address,a.wallet_address_type,wallet_receipt_qr_code, wallet_tag, create_time,currency_name,currency_name_en, currency_name_tc, currency_name_de, currency_name_es, currency_name_fr, currency_name_idn, currency_name_jp, currency_name_ko, currency_name_my, currency_name_th, currency_name_vi, currency_name_pt, currency_name_rus, currency_name_blr, currency_name_ida, currency_name_sa, currency_name_ar, currency_name_it
+        from user_wallet_address a
+                 left join platform_currency b
+                           on a.currency_id = b.id
+    </sql>
+
+    <select id="selectUserWalletAddressList" parameterType="UserWalletAddress" resultMap="UserWalletAddressResult">
+        <include refid="selectUserWalletAddressVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="currencyId != null "> and currency_id = #{currencyId}</if>
+            <if test="walletAddress != null  and walletAddress != ''"> and wallet_address = #{walletAddress}</if>
+            <if test="walletAddressType != null  and walletAddressType != ''"> and a.wallet_address_type = #{walletAddressType}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and a.id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and a.id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectUserWalletAddressById" parameterType="Long" resultMap="UserWalletAddressResult">
+        <include refid="selectUserWalletAddressVo"/>
+        where a.id = #{id}
+    </select>
+
+    <select id="getUserBindWalletCount" resultType="java.lang.Integer">
+        select count(1) from user_wallet_address where user_id = #{userId}
+        <if test="currencyId != null">and currency_id = #{currencyId}</if>
+        <if test="walletAddressType != null and walletAddressType != ''">and wallet_address_type = #{walletAddressType}</if>
+    </select>
+
+    <insert id="insertUserWalletAddress" parameterType="UserWalletAddress" useGeneratedKeys="true" keyProperty="id">
+        insert into user_wallet_address
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="currencyId != null">currency_id,</if>
+            <if test="walletAddress != null and walletAddress != ''">wallet_address,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="walletAddressType != null">wallet_address_type,</if>
+            <if test="walletReceiptQrCode != null">wallet_receipt_qr_code,</if>
+            <if test="walletTag != null">wallet_tag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="currencyId != null">#{currencyId},</if>
+            <if test="walletAddress != null and walletAddress != ''">#{walletAddress},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="walletAddressType != null">#{walletAddressType},</if>
+            <if test="walletReceiptQrCode != null">#{walletReceiptQrCode},</if>
+            <if test="walletTag != null">#{walletTag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserWalletAddress" parameterType="UserWalletAddress">
+        update user_wallet_address
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="currencyId != null">currency_id = #{currencyId},</if>
+            <if test="walletAddress != null and walletAddress != ''">wallet_address = #{walletAddress},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="walletAddressType != null">wallet_address_type = #{walletAddressType},</if>
+            <if test="walletReceiptQrCode != null">wallet_receipt_qr_code = #{walletReceiptQrCode},</if>
+            <if test="walletTag != null">wallet_tag = #{walletTag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserWalletAddressById" parameterType="Long">
+        delete from user_wallet_address where id = #{id}
+    </delete>
+
+    <delete id="deleteUserWalletAddressByIds" parameterType="String">
+        delete from user_wallet_address where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

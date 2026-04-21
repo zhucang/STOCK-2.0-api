@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StakingProductMapper">
+    
+    <resultMap type="StakingProduct" id="StakingProductResult">
+        <result property="id"    column="id"    />
+        <result property="stakingName"    column="staking_name"    />
+        <result property="stakingImg"    column="staking_img"    />
+        <result property="minPrice"    column="min_price"    />
+        <result property="maxPrice"    column="max_price"    />
+        <result property="stakingTime"    column="staking_time"    />
+        <result property="floatDailyIncomeMinRate"    column="float_daily_income_min_rate"    />
+        <result property="floatDailyIncomeMaxRate"    column="float_daily_income_max_rate"    />
+        <result property="fixedIncomeRate"    column="fixed_income_rate"    />
+        <result property="status"    column="status"    />
+        <result property="sort"    column="sort"    />
+        <result property="breakContractRate"    column="break_contract_rate"    />
+        <result property="userAmountLimit"    column="user_amount_limit"    />
+        <result property="autoApprove"    column="auto_approve"    />
+        <result property="currencyId"    column="currency_id"    />
+        <result property="currencyName"    column="currency_name"    />
+        <result property="vipLevelLimit"    column="vip_level_limit"    />
+        <result property="openQuantity"    column="open_quantity"    />
+        <result property="remainingQuantity"    column="remaining_quantity"    />
+        <result property="sqlVersion"    column="sql_version"    />
+        <result property="isDel"    column="is_del"    />
+        <association property="stakingNameLang" javaType="langMgr">
+            <result property="zh"    column="staking_name"    />
+            <result property="en"    column="staking_name_en"    />
+            <result property="tc"    column="staking_name_tc"    />
+            <result property="de"    column="staking_name_de"    />
+            <result property="es"    column="staking_name_es"    />
+            <result property="fr"    column="staking_name_fr"    />
+            <result property="idn"    column="staking_name_idn"    />
+            <result property="jp"    column="staking_name_jp"    />
+            <result property="ko"    column="staking_name_ko"    />
+            <result property="my"    column="staking_name_my"    />
+            <result property="th"    column="staking_name_th"    />
+            <result property="vi"    column="staking_name_vi"    />
+            <result property="pt"    column="staking_name_pt"    />
+            <result property="rus"    column="staking_name_rus"    />
+            <result property="blr"    column="staking_name_blr"    />
+            <result property="ida"    column="staking_name_ida"    />
+            <result property="sa"    column="staking_name_sa"    />
+            <result property="ar"    column="staking_name_ar"    />
+            <result property="it"    column="staking_name_it"    />
+            <result property="tr"    column="staking_name_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectStakingProductVo">
+        select a.id, staking_name, staking_img, min_price, max_price, staking_time, float_daily_income_min_rate, float_daily_income_max_rate, fixed_income_rate, a.status, a.sort, break_contract_rate, user_amount_limit, auto_approve, currency_id, currency_name, vip_level_limit, open_quantity, remaining_quantity, sql_version, staking_name_en, staking_name_tc, staking_name_de, staking_name_es, staking_name_fr, staking_name_idn, staking_name_jp, staking_name_ko, staking_name_my, staking_name_th, staking_name_vi, staking_name_pt, staking_name_rus, staking_name_blr, staking_name_ida, staking_name_sa, staking_name_ar, staking_name_it, staking_name_tr, is_del
+        from staking_product a
+                 left join platform_currency b
+                           on a.currency_id = b.id
+    </sql>
+
+    <select id="selectStakingProductList" parameterType="StakingProduct" resultMap="StakingProductResult">
+        <include refid="selectStakingProductVo"/>
+        <where>  
+            <if test="stakingName != null  and stakingName != ''"> and staking_name like concat('%', #{stakingName}, '%')</if>
+            <if test="stakingImg != null  and stakingImg != ''"> and staking_img = #{stakingImg}</if>
+            <if test="minPrice != null "> and min_price = #{minPrice}</if>
+            <if test="maxPrice != null "> and max_price = #{maxPrice}</if>
+            <if test="stakingTime != null "> and staking_time = #{stakingTime}</if>
+            <if test="floatDailyIncomeMinRate != null "> and float_daily_income_min_rate = #{floatDailyIncomeMinRate}</if>
+            <if test="floatDailyIncomeMaxRate != null "> and float_daily_income_max_rate = #{floatDailyIncomeMaxRate}</if>
+            <if test="fixedIncomeRate != null "> and fixed_income_rate = #{fixedIncomeRate}</if>
+            <if test="status != null "> and a.status = #{status}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="breakContractRate != null "> and break_contract_rate = #{breakContractRate}</if>
+            <if test="userAmountLimit != null "> and user_amount_limit = #{userAmountLimit}</if>
+            <if test="autoApprove != null "> and auto_approve = #{autoApprove}</if>
+            <if test="currencyId != null "> and currency_id = #{currencyId}</if>
+            <if test="vipLevelLimit != null "> and vip_level_limit = #{vipLevelLimit}</if>
+            <if test="sqlVersion != null "> and sql_version = #{sqlVersion}</if>
+            <if test="isDel != null "> and is_del = #{isDel}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and a.id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and a.id = 0
+            </if>
+            and is_del = 0
+        </where>
+    </select>
+    
+    <select id="selectStakingProductById" parameterType="Long" resultMap="StakingProductResult">
+        <include refid="selectStakingProductVo"/>
+        where a.id = #{id}
+    </select>
+        
+    <insert id="insertStakingProduct" parameterType="StakingProduct" useGeneratedKeys="true" keyProperty="id">
+        insert into staking_product
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stakingName != null and stakingName != ''">staking_name,</if>
+            <if test="stakingImg != null">staking_img,</if>
+            <if test="minPrice != null">min_price,</if>
+            <if test="maxPrice != null">max_price,</if>
+            <if test="stakingTime != null">staking_time,</if>
+            <if test="floatDailyIncomeMinRate != null">float_daily_income_min_rate,</if>
+            <if test="floatDailyIncomeMaxRate != null">float_daily_income_max_rate,</if>
+            <if test="fixedIncomeRate != null">fixed_income_rate,</if>
+            <if test="status != null">status,</if>
+            <if test="sort != null">sort,</if>
+            <if test="breakContractRate != null">break_contract_rate,</if>
+            <if test="userAmountLimit != null">user_amount_limit,</if>
+            <if test="autoApprove != null">auto_approve,</if>
+            <if test="currencyId != null">currency_id,</if>
+            <if test="vipLevelLimit != null">vip_level_limit,</if>
+            <if test="openQuantity != null">open_quantity,</if>
+            <if test="remainingQuantity != null">remaining_quantity,</if>
+            <if test="sqlVersion != null">sql_version,</if>
+            <if test="isDel != null">is_del,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stakingName != null and stakingName != ''">#{stakingName},</if>
+            <if test="stakingImg != null">#{stakingImg},</if>
+            <if test="minPrice != null">#{minPrice},</if>
+            <if test="maxPrice != null">#{maxPrice},</if>
+            <if test="stakingTime != null">#{stakingTime},</if>
+            <if test="floatDailyIncomeMinRate != null">#{floatDailyIncomeMinRate},</if>
+            <if test="floatDailyIncomeMaxRate != null">#{floatDailyIncomeMaxRate},</if>
+            <if test="fixedIncomeRate != null">#{fixedIncomeRate},</if>
+            <if test="status != null">#{status},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="breakContractRate != null">#{breakContractRate},</if>
+            <if test="userAmountLimit != null">#{userAmountLimit},</if>
+            <if test="autoApprove != null">#{autoApprove},</if>
+            <if test="currencyId != null">#{currencyId},</if>
+            <if test="vipLevelLimit != null">#{vipLevelLimit},</if>
+            <if test="openQuantity != null">#{openQuantity},</if>
+            <if test="remainingQuantity != null">#{remainingQuantity},</if>
+            <if test="sqlVersion != null">#{sqlVersion},</if>
+            <if test="isDel != null">#{isDel},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStakingProduct" parameterType="StakingProduct">
+        update staking_product
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="stakingName != null and stakingName != ''">staking_name = #{stakingName},</if>
+            <if test="stakingImg != null">staking_img = #{stakingImg},</if>
+            <if test="minPrice != null">min_price = #{minPrice},</if>
+            <if test="maxPrice != null">max_price = #{maxPrice},</if>
+            <if test="stakingTime != null">staking_time = #{stakingTime},</if>
+            <if test="params.stakingTimeNull != null">staking_time = null,</if>
+            <if test="floatDailyIncomeMinRate != null">float_daily_income_min_rate = #{floatDailyIncomeMinRate},</if>
+            <if test="floatDailyIncomeMaxRate != null">float_daily_income_max_rate = #{floatDailyIncomeMaxRate},</if>
+            <if test="fixedIncomeRate != null">fixed_income_rate = #{fixedIncomeRate},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="breakContractRate != null">break_contract_rate = #{breakContractRate},</if>
+            <if test="userAmountLimit != null">user_amount_limit = #{userAmountLimit},</if>
+            <if test="autoApprove != null">auto_approve = #{autoApprove},</if>
+            <if test="currencyId != null">currency_id = #{currencyId},</if>
+            <if test="vipLevelLimit != null">vip_level_limit = #{vipLevelLimit},</if>
+            open_quantity = #{openQuantity},
+            remaining_quantity = #{remainingQuantity},
+            <if test="sqlVersion != null">sql_version = sql_version + 1,</if>
+            <if test="stakingNameLang.zh != null and stakingName == null">staking_name = #{stakingNameLang.zh},</if>
+            <if test="stakingNameLang.en != null">staking_name_en = #{stakingNameLang.en},</if>
+            <if test="stakingNameLang.tc != null">staking_name_tc = #{stakingNameLang.tc},</if>
+            <if test="stakingNameLang.de != null">staking_name_de = #{stakingNameLang.de},</if>
+            <if test="stakingNameLang.es != null">staking_name_es = #{stakingNameLang.es},</if>
+            <if test="stakingNameLang.fr != null">staking_name_fr = #{stakingNameLang.fr},</if>
+            <if test="stakingNameLang.idn != null">staking_name_idn = #{stakingNameLang.idn},</if>
+            <if test="stakingNameLang.jp != null">staking_name_jp = #{stakingNameLang.jp},</if>
+            <if test="stakingNameLang.ko != null">staking_name_ko = #{stakingNameLang.ko},</if>
+            <if test="stakingNameLang.my != null">staking_name_my = #{stakingNameLang.my},</if>
+            <if test="stakingNameLang.th != null">staking_name_th = #{stakingNameLang.th},</if>
+            <if test="stakingNameLang.vi != null">staking_name_vi = #{stakingNameLang.vi},</if>
+            <if test="stakingNameLang.pt != null">staking_name_pt = #{stakingNameLang.pt},</if>
+            <if test="stakingNameLang.rus != null">staking_name_rus = #{stakingNameLang.rus},</if>
+            <if test="stakingNameLang.blr != null">staking_name_blr = #{stakingNameLang.blr},</if>
+            <if test="stakingNameLang.ida != null">staking_name_ida = #{stakingNameLang.ida},</if>
+            <if test="stakingNameLang.sa != null">staking_name_sa = #{stakingNameLang.sa},</if>
+            <if test="stakingNameLang.ar != null">staking_name_ar = #{stakingNameLang.ar},</if>
+            <if test="stakingNameLang.it != null">staking_name_it = #{stakingNameLang.it},</if>
+            <if test="stakingNameLang.tr != null">staking_name_tr = #{stakingNameLang.tr},</if>
+            <if test="isDel != null">is_del = #{isDel},</if>
+        </trim>
+        where id = #{id}
+        <if test="sqlVersion != null">and sql_version = #{sqlVersion}</if>
+    </update>
+
+    <delete id="deleteStakingProductById" parameterType="Long">
+        update staking_product set is_del = 1 where id = #{id}
+    </delete>
+
+    <delete id="deleteStakingProductByIds" parameterType="String">
+        update staking_product set is_del = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

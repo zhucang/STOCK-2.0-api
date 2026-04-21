@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TrumpetInfoMapper">
+    
+    <resultMap type="TrumpetInfo" id="TrumpetInfoResult">
+        <result property="id"    column="id"    />
+        <result property="trumpetTitle"    column="trumpet_title"    />
+        <result property="trumpetContent"    column="trumpet_content"    />
+        <result property="showTime"    column="show_time"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="trumpetTitleEn"    column="trumpet_title_en"    />
+        <result property="trumpetTitleTc"    column="trumpet_title_tc"    />
+        <result property="trumpetTitleDe"    column="trumpet_title_de"    />
+        <result property="trumpetTitleEs"    column="trumpet_title_es"    />
+        <result property="trumpetTitleFr"    column="trumpet_title_fr"    />
+        <result property="trumpetTitleIdn"    column="trumpet_title_idn"    />
+        <result property="trumpetTitleJp"    column="trumpet_title_jp"    />
+        <result property="trumpetTitleKo"    column="trumpet_title_ko"    />
+        <result property="trumpetTitleMy"    column="trumpet_title_my"    />
+        <result property="trumpetTitleTh"    column="trumpet_title_th"    />
+        <result property="trumpetTitleVi"    column="trumpet_title_vi"    />
+        <result property="trumpetTitlePt"    column="trumpet_title_pt"    />
+        <result property="trumpetTitleRus"    column="trumpet_title_rus"    />
+        <result property="trumpetTitleBlr"    column="trumpet_title_blr"    />
+        <result property="trumpetTitleIda"    column="trumpet_title_ida"    />
+        <result property="trumpetTitleSa"    column="trumpet_title_sa"    />
+        <result property="trumpetTitleAr"    column="trumpet_title_ar"    />
+        <result property="trumpetTitleIt"    column="trumpet_title_it"    />
+        <result property="trumpetTitleTr"    column="trumpet_title_tr"    />
+        <result property="trumpetContentEn"    column="trumpet_content_en"    />
+        <result property="trumpetContentTc"    column="trumpet_content_tc"    />
+        <result property="trumpetContentDe"    column="trumpet_content_de"    />
+        <result property="trumpetContentEs"    column="trumpet_content_es"    />
+        <result property="trumpetContentFr"    column="trumpet_content_fr"    />
+        <result property="trumpetContentIdn"    column="trumpet_content_idn"    />
+        <result property="trumpetContentJp"    column="trumpet_content_jp"    />
+        <result property="trumpetContentKo"    column="trumpet_content_ko"    />
+        <result property="trumpetContentMy"    column="trumpet_content_my"    />
+        <result property="trumpetContentTh"    column="trumpet_content_th"    />
+        <result property="trumpetContentVi"    column="trumpet_content_vi"    />
+        <result property="trumpetContentPt"    column="trumpet_content_pt"    />
+        <result property="trumpetContentRus"    column="trumpet_content_rus"    />
+        <result property="trumpetContentBlr"    column="trumpet_content_blr"    />
+        <result property="trumpetContentIda"    column="trumpet_content_ida"    />
+        <result property="trumpetContentSa"    column="trumpet_content_sa"    />
+        <result property="trumpetContentAr"    column="trumpet_content_ar"    />
+        <result property="trumpetContentIt"    column="trumpet_content_it"    />
+        <result property="trumpetContentTr"    column="trumpet_content_tr"    />
+    </resultMap>
+
+    <sql id="selectTrumpetInfoVo">
+        select id, trumpet_title,trumpet_content,show_time,create_time,trumpet_title_en, trumpet_title_tc, trumpet_title_de, trumpet_title_es, trumpet_title_fr, trumpet_title_idn, trumpet_title_jp, trumpet_title_ko, trumpet_title_my, trumpet_title_th, trumpet_title_vi, trumpet_title_pt, trumpet_title_rus, trumpet_title_blr, trumpet_title_ida, trumpet_title_sa, trumpet_title_ar, trumpet_title_it, trumpet_title_tr, trumpet_content_en, trumpet_content_tc, trumpet_content_de, trumpet_content_es, trumpet_content_fr, trumpet_content_idn, trumpet_content_jp, trumpet_content_ko, trumpet_content_my, trumpet_content_th, trumpet_content_vi, trumpet_content_pt, trumpet_content_rus, trumpet_content_blr, trumpet_content_ida, trumpet_content_sa, trumpet_content_ar, trumpet_content_it, trumpet_content_tr from trumpet_info
+    </sql>
+
+    <select id="selectTrumpetInfoList" parameterType="TrumpetInfo" resultMap="TrumpetInfoResult">
+        <include refid="selectTrumpetInfoVo"/>
+        <where>
+            <if test="trumpetTitle != null  and trumpetTitle != ''"> and trumpet_title = #{trumpetTitle}</if>
+            <if test="trumpetContent != null  and trumpetContent != ''"> and trumpet_content = #{trumpetContent}</if>
+            <if test="trumpetTitleEn != null  and trumpetTitleEn != ''"> and trumpet_title_en = #{trumpetTitleEn}</if>
+            <if test="trumpetTitleTc != null  and trumpetTitleTc != ''"> and trumpet_title_tc = #{trumpetTitleTc}</if>
+            <if test="trumpetTitleDe != null  and trumpetTitleDe != ''"> and trumpet_title_de = #{trumpetTitleDe}</if>
+            <if test="trumpetTitleEs != null  and trumpetTitleEs != ''"> and trumpet_title_es = #{trumpetTitleEs}</if>
+            <if test="trumpetTitleFr != null  and trumpetTitleFr != ''"> and trumpet_title_fr = #{trumpetTitleFr}</if>
+            <if test="trumpetTitleIdn != null  and trumpetTitleIdn != ''"> and trumpet_title_idn = #{trumpetTitleIdn}</if>
+            <if test="trumpetTitleJp != null  and trumpetTitleJp != ''"> and trumpet_title_jp = #{trumpetTitleJp}</if>
+            <if test="trumpetTitleKo != null  and trumpetTitleKo != ''"> and trumpet_title_ko = #{trumpetTitleKo}</if>
+            <if test="trumpetTitleMy != null  and trumpetTitleMy != ''"> and trumpet_title_my = #{trumpetTitleMy}</if>
+            <if test="trumpetTitleTh != null  and trumpetTitleTh != ''"> and trumpet_title_th = #{trumpetTitleTh}</if>
+            <if test="trumpetTitleVi != null  and trumpetTitleVi != ''"> and trumpet_title_vi = #{trumpetTitleVi}</if>
+            <if test="trumpetTitlePt != null  and trumpetTitlePt != ''"> and trumpet_title_pt = #{trumpetTitlePt}</if>
+            <if test="trumpetTitleRus != null  and trumpetTitleRus != ''"> and trumpet_title_rus = #{trumpetTitleRus}</if>
+            <if test="trumpetTitleBlr != null  and trumpetTitleBlr != ''"> and trumpet_title_blr = #{trumpetTitleBlr}</if>
+            <if test="trumpetTitleIda != null  and trumpetTitleIda != ''"> and trumpet_title_ida = #{trumpetTitleIda}</if>
+            <if test="trumpetTitleSa != null  and trumpetTitleSa != ''"> and trumpet_title_sa = #{trumpetTitleSa}</if>
+            <if test="trumpetTitleAr != null  and trumpetTitleAr != ''"> and trumpet_title_ar = #{trumpetTitleAr}</if>
+            <if test="trumpetTitleIt != null  and trumpetTitleIt != ''"> and trumpet_title_it = #{trumpetTitleIt}</if>
+            <if test="trumpetTitleTr != null  and trumpetTitleTr != ''"> and trumpet_title_tr = #{trumpetTitleTr}</if>
+            <if test="trumpetContentEn != null  and trumpetContentEn != ''"> and trumpet_content_en = #{trumpetContentEn}</if>
+            <if test="trumpetContentTc != null  and trumpetContentTc != ''"> and trumpet_content_tc = #{trumpetContentTc}</if>
+            <if test="trumpetContentDe != null  and trumpetContentDe != ''"> and trumpet_content_de = #{trumpetContentDe}</if>
+            <if test="trumpetContentEs != null  and trumpetContentEs != ''"> and trumpet_content_es = #{trumpetContentEs}</if>
+            <if test="trumpetContentFr != null  and trumpetContentFr != ''"> and trumpet_content_fr = #{trumpetContentFr}</if>
+            <if test="trumpetContentIdn != null  and trumpetContentIdn != ''"> and trumpet_content_idn = #{trumpetContentIdn}</if>
+            <if test="trumpetContentJp != null  and trumpetContentJp != ''"> and trumpet_content_jp = #{trumpetContentJp}</if>
+            <if test="trumpetContentKo != null  and trumpetContentKo != ''"> and trumpet_content_ko = #{trumpetContentKo}</if>
+            <if test="trumpetContentMy != null  and trumpetContentMy != ''"> and trumpet_content_my = #{trumpetContentMy}</if>
+            <if test="trumpetContentTh != null  and trumpetContentTh != ''"> and trumpet_content_th = #{trumpetContentTh}</if>
+            <if test="trumpetContentVi != null  and trumpetContentVi != ''"> and trumpet_content_vi = #{trumpetContentVi}</if>
+            <if test="trumpetContentPt != null  and trumpetContentPt != ''"> and trumpet_content_pt = #{trumpetContentPt}</if>
+            <if test="trumpetContentRus != null  and trumpetContentRus != ''"> and trumpet_content_rus = #{trumpetContentRus}</if>
+            <if test="trumpetContentBlr != null  and trumpetContentBlr != ''"> and trumpet_content_blr = #{trumpetContentBlr}</if>
+            <if test="trumpetContentIda != null  and trumpetContentIda != ''"> and trumpet_content_ida = #{trumpetContentIda}</if>
+            <if test="trumpetContentSa != null  and trumpetContentSa != ''"> and trumpet_content_sa = #{trumpetContentSa}</if>
+            <if test="trumpetContentAr != null  and trumpetContentAr != ''"> and trumpet_content_ar = #{trumpetContentAr}</if>
+            <if test="trumpetContentIt != null  and trumpetContentIt != ''"> and trumpet_content_it = #{trumpetContentIt}</if>
+            <if test="trumpetContentTr != null  and trumpetContentTr != ''"> and trumpet_content_tr = #{trumpetContentTr}</if>
+        </where>
+    </select>
+    
+    <select id="selectTrumpetInfoById" parameterType="Long" resultMap="TrumpetInfoResult">
+        <include refid="selectTrumpetInfoVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTrumpetInfo" parameterType="TrumpetInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into trumpet_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="trumpetTitle != null and trumpetTitle != ''">trumpet_title,</if>
+            <if test="trumpetContent != null">trumpet_content,</if>
+            <if test="showTime != null">show_time,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="trumpetTitleEn != null">trumpet_title_en,</if>
+            <if test="trumpetTitleTc != null">trumpet_title_tc,</if>
+            <if test="trumpetTitleDe != null">trumpet_title_de,</if>
+            <if test="trumpetTitleEs != null">trumpet_title_es,</if>
+            <if test="trumpetTitleFr != null">trumpet_title_fr,</if>
+            <if test="trumpetTitleIdn != null">trumpet_title_idn,</if>
+            <if test="trumpetTitleJp != null">trumpet_title_jp,</if>
+            <if test="trumpetTitleKo != null">trumpet_title_ko,</if>
+            <if test="trumpetTitleMy != null">trumpet_title_my,</if>
+            <if test="trumpetTitleTh != null">trumpet_title_th,</if>
+            <if test="trumpetTitleVi != null">trumpet_title_vi,</if>
+            <if test="trumpetTitlePt != null">trumpet_title_pt,</if>
+            <if test="trumpetTitleRus != null">trumpet_title_rus,</if>
+            <if test="trumpetTitleBlr != null">trumpet_title_blr,</if>
+            <if test="trumpetTitleIda != null">trumpet_title_ida,</if>
+            <if test="trumpetTitleSa != null">trumpet_title_sa,</if>
+            <if test="trumpetTitleAr != null">trumpet_title_ar,</if>
+            <if test="trumpetTitleIt != null">trumpet_title_it,</if>
+            <if test="trumpetTitleTr != null">trumpet_title_tr,</if>
+            <if test="trumpetContentEn != null">trumpet_content_en,</if>
+            <if test="trumpetContentTc != null">trumpet_content_tc,</if>
+            <if test="trumpetContentDe != null">trumpet_content_de,</if>
+            <if test="trumpetContentEs != null">trumpet_content_es,</if>
+            <if test="trumpetContentFr != null">trumpet_content_fr,</if>
+            <if test="trumpetContentIdn != null">trumpet_content_idn,</if>
+            <if test="trumpetContentJp != null">trumpet_content_jp,</if>
+            <if test="trumpetContentKo != null">trumpet_content_ko,</if>
+            <if test="trumpetContentMy != null">trumpet_content_my,</if>
+            <if test="trumpetContentTh != null">trumpet_content_th,</if>
+            <if test="trumpetContentVi != null">trumpet_content_vi,</if>
+            <if test="trumpetContentPt != null">trumpet_content_pt,</if>
+            <if test="trumpetContentRus != null">trumpet_content_rus,</if>
+            <if test="trumpetContentBlr != null">trumpet_content_blr,</if>
+            <if test="trumpetContentIda != null">trumpet_content_ida,</if>
+            <if test="trumpetContentSa != null">trumpet_content_sa,</if>
+            <if test="trumpetContentAr != null">trumpet_content_ar,</if>
+            <if test="trumpetContentIt != null">trumpet_content_it,</if>
+            <if test="trumpetContentTr != null">trumpet_content_tr,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="trumpetTitle != null and trumpetTitle != ''">#{trumpetTitle},</if>
+            <if test="trumpetContent != null">#{trumpetContent},</if>
+            <if test="showTime != null">#{showTime},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="trumpetTitleEn != null">#{trumpetTitleEn},</if>
+            <if test="trumpetTitleTc != null">#{trumpetTitleTc},</if>
+            <if test="trumpetTitleDe != null">#{trumpetTitleDe},</if>
+            <if test="trumpetTitleEs != null">#{trumpetTitleEs},</if>
+            <if test="trumpetTitleFr != null">#{trumpetTitleFr},</if>
+            <if test="trumpetTitleIdn != null">#{trumpetTitleIdn},</if>
+            <if test="trumpetTitleJp != null">#{trumpetTitleJp},</if>
+            <if test="trumpetTitleKo != null">#{trumpetTitleKo},</if>
+            <if test="trumpetTitleMy != null">#{trumpetTitleMy},</if>
+            <if test="trumpetTitleTh != null">#{trumpetTitleTh},</if>
+            <if test="trumpetTitleVi != null">#{trumpetTitleVi},</if>
+            <if test="trumpetTitlePt != null">#{trumpetTitlePt},</if>
+            <if test="trumpetTitleRus != null">#{trumpetTitleRus},</if>
+            <if test="trumpetTitleBlr != null">#{trumpetTitleBlr},</if>
+            <if test="trumpetTitleIda != null">#{trumpetTitleIda},</if>
+            <if test="trumpetTitleSa != null">#{trumpetTitleSa},</if>
+            <if test="trumpetTitleAr != null">#{trumpetTitleAr},</if>
+            <if test="trumpetTitleIt != null">#{trumpetTitleIt},</if>
+            <if test="trumpetTitleTr != null">#{trumpetTitleTr},</if>
+            <if test="trumpetContentEn != null">#{trumpetContentEn},</if>
+            <if test="trumpetContentTc != null">#{trumpetContentTc},</if>
+            <if test="trumpetContentDe != null">#{trumpetContentDe},</if>
+            <if test="trumpetContentEs != null">#{trumpetContentEs},</if>
+            <if test="trumpetContentFr != null">#{trumpetContentFr},</if>
+            <if test="trumpetContentIdn != null">#{trumpetContentIdn},</if>
+            <if test="trumpetContentJp != null">#{trumpetContentJp},</if>
+            <if test="trumpetContentKo != null">#{trumpetContentKo},</if>
+            <if test="trumpetContentMy != null">#{trumpetContentMy},</if>
+            <if test="trumpetContentTh != null">#{trumpetContentTh},</if>
+            <if test="trumpetContentVi != null">#{trumpetContentVi},</if>
+            <if test="trumpetContentPt != null">#{trumpetContentPt},</if>
+            <if test="trumpetContentRus != null">#{trumpetContentRus},</if>
+            <if test="trumpetContentBlr != null">#{trumpetContentBlr},</if>
+            <if test="trumpetContentIda != null">#{trumpetContentIda},</if>
+            <if test="trumpetContentSa != null">#{trumpetContentSa},</if>
+            <if test="trumpetContentAr != null">#{trumpetContentAr},</if>
+            <if test="trumpetContentIt != null">#{trumpetContentIt},</if>
+            <if test="trumpetContentTr != null">#{trumpetContentTr},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTrumpetInfo" parameterType="TrumpetInfo">
+        update trumpet_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="trumpetTitle != null and trumpetTitle != ''">trumpet_title = #{trumpetTitle},</if>
+            <if test="trumpetContent != null">trumpet_content = #{trumpetContent},</if>
+            show_time = #{showTime},
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="trumpetTitleEn != null">trumpet_title_en = #{trumpetTitleEn},</if>
+            <if test="trumpetTitleTc != null">trumpet_title_tc = #{trumpetTitleTc},</if>
+            <if test="trumpetTitleDe != null">trumpet_title_de = #{trumpetTitleDe},</if>
+            <if test="trumpetTitleEs != null">trumpet_title_es = #{trumpetTitleEs},</if>
+            <if test="trumpetTitleFr != null">trumpet_title_fr = #{trumpetTitleFr},</if>
+            <if test="trumpetTitleIdn != null">trumpet_title_idn = #{trumpetTitleIdn},</if>
+            <if test="trumpetTitleJp != null">trumpet_title_jp = #{trumpetTitleJp},</if>
+            <if test="trumpetTitleKo != null">trumpet_title_ko = #{trumpetTitleKo},</if>
+            <if test="trumpetTitleMy != null">trumpet_title_my = #{trumpetTitleMy},</if>
+            <if test="trumpetTitleTh != null">trumpet_title_th = #{trumpetTitleTh},</if>
+            <if test="trumpetTitleVi != null">trumpet_title_vi = #{trumpetTitleVi},</if>
+            <if test="trumpetTitlePt != null">trumpet_title_pt = #{trumpetTitlePt},</if>
+            <if test="trumpetTitleRus != null">trumpet_title_rus = #{trumpetTitleRus},</if>
+            <if test="trumpetTitleBlr != null">trumpet_title_blr = #{trumpetTitleBlr},</if>
+            <if test="trumpetTitleIda != null">trumpet_title_ida = #{trumpetTitleIda},</if>
+            <if test="trumpetTitleSa != null">trumpet_title_sa = #{trumpetTitleSa},</if>
+            <if test="trumpetTitleAr != null">trumpet_title_ar = #{trumpetTitleAr},</if>
+            <if test="trumpetTitleIt != null">trumpet_title_it = #{trumpetTitleIt},</if>
+            <if test="trumpetTitleTr != null">trumpet_title_tr = #{trumpetTitleTr},</if>
+            <if test="trumpetContentEn != null">trumpet_content_en = #{trumpetContentEn},</if>
+            <if test="trumpetContentTc != null">trumpet_content_tc = #{trumpetContentTc},</if>
+            <if test="trumpetContentDe != null">trumpet_content_de = #{trumpetContentDe},</if>
+            <if test="trumpetContentEs != null">trumpet_content_es = #{trumpetContentEs},</if>
+            <if test="trumpetContentFr != null">trumpet_content_fr = #{trumpetContentFr},</if>
+            <if test="trumpetContentIdn != null">trumpet_content_idn = #{trumpetContentIdn},</if>
+            <if test="trumpetContentJp != null">trumpet_content_jp = #{trumpetContentJp},</if>
+            <if test="trumpetContentKo != null">trumpet_content_ko = #{trumpetContentKo},</if>
+            <if test="trumpetContentMy != null">trumpet_content_my = #{trumpetContentMy},</if>
+            <if test="trumpetContentTh != null">trumpet_content_th = #{trumpetContentTh},</if>
+            <if test="trumpetContentVi != null">trumpet_content_vi = #{trumpetContentVi},</if>
+            <if test="trumpetContentPt != null">trumpet_content_pt = #{trumpetContentPt},</if>
+            <if test="trumpetContentRus != null">trumpet_content_rus = #{trumpetContentRus},</if>
+            <if test="trumpetContentBlr != null">trumpet_content_blr = #{trumpetContentBlr},</if>
+            <if test="trumpetContentIda != null">trumpet_content_ida = #{trumpetContentIda},</if>
+            <if test="trumpetContentSa != null">trumpet_content_sa = #{trumpetContentSa},</if>
+            <if test="trumpetContentAr != null">trumpet_content_ar = #{trumpetContentAr},</if>
+            <if test="trumpetContentIt != null">trumpet_content_it = #{trumpetContentIt},</if>
+            <if test="trumpetContentTr != null">trumpet_content_tr = #{trumpetContentTr},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTrumpetInfoById" parameterType="Long">
+        delete from trumpet_info where id = #{id}
+    </delete>
+
+    <delete id="deleteTrumpetInfoByIds" parameterType="String">
+        delete from trumpet_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ProductQuoteControlMapper">
+    
+    <resultMap type="ProductQuoteControl" id="ProductQuoteControlResult">
+        <result property="id"    column="id"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="productType"    column="product_type"    />
+        <result property="presetPrice"    column="preset_price"    />
+        <result property="presetStartTime"    column="preset_start_time"    />
+        <result property="presetDuration"    column="preset_duration"    />
+        <result property="returnDuration"    column="return_duration"    />
+        <result property="arrivePresetPriceTime"    column="arrive_preset_price_time"    />
+        <result property="presetEndTime"    column="preset_end_time"    />
+        <result property="startPrice"    column="start_price"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
+    <sql id="selectProductQuoteControlVo">
+        select id, product_code, product_type, preset_price, preset_start_time, preset_duration, return_duration, arrive_preset_price_time, preset_end_time, start_price, status from product_quote_control
+    </sql>
+
+    <select id="selectProductQuoteControlList" parameterType="ProductQuoteControl" resultMap="ProductQuoteControlResult">
+        <include refid="selectProductQuoteControlVo"/>
+        <where>  
+            <if test="productCode != null  and productCode != ''"> and product_code = #{productCode}</if>
+            <if test="productType != null "> and product_type = #{productType}</if>
+            <if test="presetPrice != null "> and preset_price = #{presetPrice}</if>
+            <if test="presetStartTime != null "> and preset_start_time = #{presetStartTime}</if>
+            <if test="presetDuration != null "> and preset_duration = #{presetDuration}</if>
+            <if test="returnDuration != null "> and return_duration = #{returnDuration}</if>
+            <if test="arrivePresetPriceTime != null "> and arrive_preset_price_time = #{arrivePresetPriceTime}</if>
+            <if test="presetEndTime != null "> and preset_end_time = #{presetEndTime}</if>
+            <if test="startPrice != null "> and start_price = #{startPrice}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectProductQuoteControlById" parameterType="Long" resultMap="ProductQuoteControlResult">
+        <include refid="selectProductQuoteControlVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertProductQuoteControl" parameterType="ProductQuoteControl" useGeneratedKeys="true" keyProperty="id">
+        insert into product_quote_control
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productCode != null and productCode != ''">product_code,</if>
+            <if test="productType != null">product_type,</if>
+            <if test="presetPrice != null">preset_price,</if>
+            <if test="presetStartTime != null">preset_start_time,</if>
+            <if test="presetDuration != null">preset_duration,</if>
+            <if test="returnDuration != null">return_duration,</if>
+            <if test="arrivePresetPriceTime != null">arrive_preset_price_time,</if>
+            <if test="presetEndTime != null">preset_end_time,</if>
+            <if test="startPrice != null">start_price,</if>
+            <if test="status != null">status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productCode != null and productCode != ''">#{productCode},</if>
+            <if test="productType != null">#{productType},</if>
+            <if test="presetPrice != null">#{presetPrice},</if>
+            <if test="presetStartTime != null">#{presetStartTime},</if>
+            <if test="presetDuration != null">#{presetDuration},</if>
+            <if test="returnDuration != null">#{returnDuration},</if>
+            <if test="arrivePresetPriceTime != null">#{arrivePresetPriceTime},</if>
+            <if test="presetEndTime != null">#{presetEndTime},</if>
+            <if test="startPrice != null">#{startPrice},</if>
+            <if test="status != null">#{status},</if>
+         </trim>
+    </insert>
+
+    <update id="updateProductQuoteControl" parameterType="ProductQuoteControl">
+        update product_quote_control
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productCode != null and productCode != ''">product_code = #{productCode},</if>
+            <if test="productType != null">product_type = #{productType},</if>
+            <if test="presetPrice != null">preset_price = #{presetPrice},</if>
+            <if test="presetStartTime != null">preset_start_time = #{presetStartTime},</if>
+            <if test="presetDuration != null">preset_duration = #{presetDuration},</if>
+            <if test="returnDuration != null">return_duration = #{returnDuration},</if>
+            <if test="arrivePresetPriceTime != null">arrive_preset_price_time = #{arrivePresetPriceTime},</if>
+            <if test="presetEndTime != null">preset_end_time = #{presetEndTime},</if>
+            <if test="startPrice != null">start_price = #{startPrice},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteProductQuoteControlById" parameterType="Long">
+        delete from product_quote_control where id = #{id}
+    </delete>
+
+    <delete id="deleteProductQuoteControlByIds" parameterType="String">
+        delete from product_quote_control where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

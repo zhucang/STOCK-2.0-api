@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserRebateRateMapper">
+    
+    <resultMap type="UserRebateRate" id="UserRebateRateResult">
+        <result property="id"    column="id"    />
+        <result property="rebateName"    column="rebate_name"    />
+        <result property="rebateRate"    column="rebate_rate"    />
+        <result property="rebateType"    column="rebate_type"    />
+        <result property="rebateLevel"    column="rebate_level"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectUserRebateRateVo">
+        select id, rebate_name, rebate_rate, rebate_type, rebate_level, create_by, create_time, update_by, update_time from user_rebate_rate
+    </sql>
+
+    <select id="selectUserRebateRateList" parameterType="UserRebateRate" resultMap="UserRebateRateResult">
+        <include refid="selectUserRebateRateVo"/>
+        <where>  
+            <if test="rebateName != null  and rebateName != ''"> and rebate_name like concat('%', #{rebateName}, '%')</if>
+            <if test="rebateRate != null "> and rebate_rate = #{rebateRate}</if>
+            <if test="rebateType != null "> and rebate_type = #{rebateType}</if>
+            <if test="rebateLevel != null "> and rebate_level = #{rebateLevel}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserRebateRateById" parameterType="Long" resultMap="UserRebateRateResult">
+        <include refid="selectUserRebateRateVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectUserRebateRate" parameterType="Long" resultMap="UserRebateRateResult">
+        <include refid="selectUserRebateRateVo"/>
+        <where>
+            <if test="rebateName != null  and rebateName != ''"> and rebate_name like concat('%', #{rebateName}, '%')</if>
+            <if test="rebateRate != null "> and rebate_rate = #{rebateRate}</if>
+            <if test="rebateType != null "> and rebate_type = #{rebateType}</if>
+            <if test="rebateLevel != null "> and rebate_level = #{rebateLevel}</if>
+        </where>
+    </select>
+        
+    <insert id="insertUserRebateRate" parameterType="UserRebateRate" useGeneratedKeys="true" keyProperty="id">
+        insert into user_rebate_rate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="rebateName != null">rebate_name,</if>
+            <if test="rebateRate != null">rebate_rate,</if>
+            <if test="rebateType != null">rebate_type,</if>
+            <if test="rebateLevel != null">rebate_level,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="rebateName != null">#{rebateName},</if>
+            <if test="rebateRate != null">#{rebateRate},</if>
+            <if test="rebateType != null">#{rebateType},</if>
+            <if test="rebateLevel != null">#{rebateLevel},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserRebateRate" parameterType="UserRebateRate">
+        update user_rebate_rate
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="rebateName != null">rebate_name = #{rebateName},</if>
+            <if test="rebateRate != null">rebate_rate = #{rebateRate},</if>
+            <if test="rebateType != null">rebate_type = #{rebateType},</if>
+            <if test="rebateLevel != null">rebate_level = #{rebateLevel},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserRebateRateById" parameterType="Long">
+        delete from user_rebate_rate where id = #{id}
+    </delete>
+
+    <delete id="deleteUserRebateRateByIds" parameterType="String">
+        delete from user_rebate_rate where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

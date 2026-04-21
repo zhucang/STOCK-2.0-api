@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.WithdrawChannelConfigMapper">
+    
+    <resultMap type="WithdrawChannelConfig" id="WithdrawChannelConfigResult">
+        <result property="id"    column="id"    />
+        <result property="channelName"    column="channel_name"    />
+        <result property="withdrawMinAmount"    column="withdraw_min_amount"    />
+        <result property="withdrawMaxAmount"    column="withdraw_max_amount"    />
+        <result property="currencyId"    column="currency_id"    />
+        <result property="arrivalCurrencyId"    column="arrival_currency_id"    />
+        <result property="currencyName"    column="currency_name"    />
+        <result property="arrivalCurrencyName"    column="arrival_currency_name"    />
+        <result property="channelImg"    column="channel_img"    />
+        <result property="handingFeeMethod"    column="handing_fee_method"    />
+        <result property="withdrawType"    column="withdraw_type"    />
+        <result property="handingFeeFixedAmount"    column="handing_fee_fixed_amount"    />
+        <result property="handingFeeRate"    column="handing_fee_rate"    />
+        <result property="withdrawStartTime"    column="withdraw_start_time"    />
+        <result property="withdrawEndTime"    column="withdraw_end_time"    />
+        <result property="withdrawCount"    column="withdraw_count"    />
+        <result property="status"    column="status"    />
+        <result property="sort"    column="sort"    />
+        <result property="withdrawType"    column="currencyType"    />
+        <result property="walletAddressType"    column="wallet_address_type"    />
+        <association property="channelNameLang" javaType="langMgr">
+            <result property="zh"    column="channel_name"    />
+            <result property="en"    column="channel_name_en"    />
+            <result property="tc"    column="channel_name_tc"    />
+            <result property="de"    column="channel_name_de"    />
+            <result property="es"    column="channel_name_es"    />
+            <result property="fr"    column="channel_name_fr"    />
+            <result property="idn"    column="channel_name_idn"    />
+            <result property="jp"    column="channel_name_jp"    />
+            <result property="ko"    column="channel_name_ko"    />
+            <result property="my"    column="channel_name_my"    />
+            <result property="th"    column="channel_name_th"    />
+            <result property="vi"    column="channel_name_vi"    />
+            <result property="pt"    column="channel_name_pt"    />
+            <result property="rus"    column="channel_name_rus"    />
+            <result property="blr"    column="channel_name_blr"    />
+            <result property="ida"    column="channel_name_ida"    />
+            <result property="sa"    column="channel_name_sa"    />
+            <result property="ar"    column="channel_name_ar"    />
+            <result property="it"    column="channel_name_it"    />
+            <result property="tr"    column="channel_name_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectWithdrawChannelConfigVo">
+        select a.id, channel_name, withdraw_min_amount, withdraw_max_amount, currency_id,arrival_currency_id,b.currency_name,c.currency_name arrival_currency_name, channel_img, handing_fee_method,withdraw_type, handing_fee_fixed_amount, handing_fee_rate, withdraw_start_time, withdraw_end_time, withdraw_count,a.wallet_address_type, a.status, a.sort, channel_name_en, channel_name_tc, channel_name_de, channel_name_es, channel_name_fr, channel_name_idn, channel_name_jp, channel_name_ko, channel_name_my, channel_name_th, channel_name_vi, channel_name_pt, channel_name_rus, channel_name_blr, channel_name_ida, channel_name_sa, channel_name_ar, channel_name_it, channel_name_tr
+        from withdraw_channel_config a
+                 left join platform_currency b
+                           on a.currency_id = b.id
+                 left join platform_currency c
+                           on a.arrival_currency_id = c.id
+    </sql>
+
+    <select id="selectWithdrawChannelConfigList" parameterType="WithdrawChannelConfig" resultMap="WithdrawChannelConfigResult">
+        <include refid="selectWithdrawChannelConfigVo"/>
+        <where>  
+            <if test="channelName != null  and channelName != ''"> and channel_name like concat('%', #{channelName}, '%')</if>
+            <if test="withdrawMinAmount != null "> and withdraw_min_amount = #{withdrawMinAmount}</if>
+            <if test="withdrawMaxAmount != null "> and withdraw_max_amount = #{withdrawMaxAmount}</if>
+            <if test="currencyId != null "> and currency_id = #{currencyId}</if>
+            <if test="arrivalCurrencyId != null "> and arrival_currency_id = #{arrivalCurrencyId}</if>
+            <if test="channelImg != null  and channelImg != ''"> and channel_img = #{channelImg}</if>
+            <if test="handingFeeMethod != null "> and handing_fee_method = #{handingFeeMethod}</if>
+            <if test="withdrawType != null "> and withdraw_type = #{withdrawType}</if>
+            <if test="handingFeeFixedAmount != null "> and handing_fee_fixed_amount = #{handingFeeFixedAmount}</if>
+            <if test="handingFeeRate != null "> and handing_fee_rate = #{handingFeeRate}</if>
+            <if test="withdrawStartTime != null  and withdrawStartTime != ''"> and withdraw_start_time = #{withdrawStartTime}</if>
+            <if test="withdrawEndTime != null  and withdrawEndTime != ''"> and withdraw_end_time = #{withdrawEndTime}</if>
+            <if test="withdrawCount != null "> and withdraw_count = #{withdrawCount}</if>
+            <if test="status != null "> and a.status = #{status}</if>
+            <if test="sort != null "> and a.sort = #{sort}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and a.id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and a.id = 0
+            </if>
+            and b.status = 0 and b.currency_name is not null
+        </where>
+    </select>
+    
+    <select id="selectWithdrawChannelConfigById" parameterType="Long" resultMap="WithdrawChannelConfigResult">
+        <include refid="selectWithdrawChannelConfigVo"/>
+        where a.id = #{id}
+    </select>
+        
+    <insert id="insertWithdrawChannelConfig" parameterType="WithdrawChannelConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into withdraw_channel_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="channelName != null">channel_name,</if>
+            <if test="withdrawMinAmount != null">withdraw_min_amount,</if>
+            <if test="withdrawMaxAmount != null">withdraw_max_amount,</if>
+            <if test="currencyId != null">currency_id,</if>
+            <if test="arrivalCurrencyId != null">arrival_currency_id,</if>
+            <if test="channelImg != null">channel_img,</if>
+            <if test="handingFeeMethod != null">handing_fee_method,</if>
+            <if test="withdrawType != null">withdraw_type,</if>
+            <if test="handingFeeFixedAmount != null">handing_fee_fixed_amount,</if>
+            <if test="handingFeeRate != null">handing_fee_rate,</if>
+            <if test="withdrawStartTime != null">withdraw_start_time,</if>
+            <if test="withdrawEndTime != null">withdraw_end_time,</if>
+            <if test="withdrawCount != null">withdraw_count,</if>
+            <if test="status != null">status,</if>
+            <if test="sort != null">sort,</if>
+            <if test="walletAddressType != null">wallet_address_type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="channelName != null">#{channelName},</if>
+            <if test="withdrawMinAmount != null">#{withdrawMinAmount},</if>
+            <if test="withdrawMaxAmount != null">#{withdrawMaxAmount},</if>
+            <if test="currencyId != null">#{currencyId},</if>
+            <if test="arrivalCurrencyId != null">#{arrivalCurrencyId},</if>
+            <if test="channelImg != null">#{channelImg},</if>
+            <if test="handingFeeMethod != null">#{handingFeeMethod},</if>
+            <if test="withdrawType != null">#{withdrawType},</if>
+            <if test="handingFeeFixedAmount != null">#{handingFeeFixedAmount},</if>
+            <if test="handingFeeRate != null">#{handingFeeRate},</if>
+            <if test="withdrawStartTime != null">#{withdrawStartTime},</if>
+            <if test="withdrawEndTime != null">#{withdrawEndTime},</if>
+            <if test="withdrawCount != null">#{withdrawCount},</if>
+            <if test="status != null">#{status},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="walletAddressType != null">#{walletAddressType},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWithdrawChannelConfig" parameterType="WithdrawChannelConfig">
+        update withdraw_channel_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="channelName != null">channel_name = #{channelName},</if>
+            <if test="withdrawMinAmount != null">withdraw_min_amount = #{withdrawMinAmount},</if>
+            <if test="withdrawMaxAmount != null">withdraw_max_amount = #{withdrawMaxAmount},</if>
+            <if test="currencyId != null">currency_id = #{currencyId},</if>
+            <if test="arrivalCurrencyId != null">arrival_currency_id = #{arrivalCurrencyId},</if>
+            <if test="channelImg != null">channel_img = #{channelImg},</if>
+            <if test="handingFeeMethod != null">handing_fee_method = #{handingFeeMethod},</if>
+            <if test="withdrawType != null">withdraw_type = #{withdrawType},</if>
+            <if test="handingFeeFixedAmount != null">handing_fee_fixed_amount = #{handingFeeFixedAmount},</if>
+            <if test="handingFeeRate != null">handing_fee_rate = #{handingFeeRate},</if>
+            <if test="withdrawStartTime != null">withdraw_start_time = #{withdrawStartTime},</if>
+            <if test="withdrawEndTime != null">withdraw_end_time = #{withdrawEndTime},</if>
+            <if test="withdrawCount != null">withdraw_count = #{withdrawCount},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="walletAddressType != null">wallet_address_type = #{walletAddressType},</if>
+            <if test="channelNameLang.zh != null and channelName == null">channel_name = #{channelNameLang.zh},</if>
+            <if test="channelNameLang.en != null">channel_name_en = #{channelNameLang.en},</if>
+            <if test="channelNameLang.tc != null">channel_name_tc = #{channelNameLang.tc},</if>
+            <if test="channelNameLang.de != null">channel_name_de = #{channelNameLang.de},</if>
+            <if test="channelNameLang.es != null">channel_name_es = #{channelNameLang.es},</if>
+            <if test="channelNameLang.fr != null">channel_name_fr = #{channelNameLang.fr},</if>
+            <if test="channelNameLang.idn != null">channel_name_idn = #{channelNameLang.idn},</if>
+            <if test="channelNameLang.jp != null">channel_name_jp = #{channelNameLang.jp},</if>
+            <if test="channelNameLang.ko != null">channel_name_ko = #{channelNameLang.ko},</if>
+            <if test="channelNameLang.my != null">channel_name_my = #{channelNameLang.my},</if>
+            <if test="channelNameLang.th != null">channel_name_th = #{channelNameLang.th},</if>
+            <if test="channelNameLang.vi != null">channel_name_vi = #{channelNameLang.vi},</if>
+            <if test="channelNameLang.pt != null">channel_name_pt = #{channelNameLang.pt},</if>
+            <if test="channelNameLang.rus != null">channel_name_rus = #{channelNameLang.rus},</if>
+            <if test="channelNameLang.blr != null">channel_name_blr = #{channelNameLang.blr},</if>
+            <if test="channelNameLang.ida != null">channel_name_ida = #{channelNameLang.ida},</if>
+            <if test="channelNameLang.sa != null">channel_name_sa = #{channelNameLang.sa},</if>
+            <if test="channelNameLang.ar != null">channel_name_ar = #{channelNameLang.ar},</if>
+            <if test="channelNameLang.it != null">channel_name_it = #{channelNameLang.it},</if>
+            <if test="channelNameLang.tr != null">channel_name_tr = #{channelNameLang.tr},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWithdrawChannelConfigById" parameterType="Long">
+        delete from withdraw_channel_config where id = #{id}
+    </delete>
+
+    <delete id="deleteWithdrawChannelConfigByIds" parameterType="String">
+        delete from withdraw_channel_config where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.OtherValueMapper">
+    
+    <resultMap type="OtherValue" id="OtherValueResult">
+        <result property="id"    column="id"    />
+        <result property="otherKey"    column="other_key"    />
+        <result property="name"    column="name"    />
+        <result property="otherValue"    column="other_value"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectOtherValueVo">
+        select id, other_key, name, other_value, remark from other_value
+    </sql>
+
+    <select id="selectOtherValueList" parameterType="OtherValue" resultMap="OtherValueResult">
+        <include refid="selectOtherValueVo"/>
+        <where>  
+            <if test="otherKey != null  and otherKey != ''"> and other_key = #{otherKey}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="otherValue != null  and otherValue != ''"> and other_value = #{otherValue}</if>
+            <if test="params.permission"> and permission_type = 1</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectOtherValueById" parameterType="Long" resultMap="OtherValueResult">
+        <include refid="selectOtherValueVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertOtherValue" parameterType="OtherValue" useGeneratedKeys="true" keyProperty="id">
+        insert into other_value
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="otherKey != null">other_key,</if>
+            <if test="name != null">name,</if>
+            <if test="otherValue != null">other_value,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="otherKey != null">#{otherKey},</if>
+            <if test="name != null">#{name},</if>
+            <if test="otherValue != null">#{otherValue},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOtherValue" parameterType="OtherValue">
+        update other_value
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="otherKey != null">other_key = #{otherKey},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="otherValue != null">other_value = #{otherValue},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOtherValueById" parameterType="Long">
+        delete from other_value where id = #{id}
+    </delete>
+
+    <delete id="deleteOtherValueByIds" parameterType="String">
+        delete from other_value where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

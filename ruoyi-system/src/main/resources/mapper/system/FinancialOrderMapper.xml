@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.FinancialOrderMapper">
+    
+    <resultMap type="FinancialOrder" id="FinancialOrderResult">
+        <result property="id"    column="id"    />
+        <result property="orderCode"    column="order_code"    />
+        <result property="financialProductId"    column="financial_product_id"    />
+        <result property="financialName"    column="financial_name"    />
+        <result property="financialImg"    column="financial_img"    />
+        <result property="financialTime"    column="financial_time"    />
+        <result property="buyPrice"    column="buy_price"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userAccount"    column="user_account"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="accountType"    column="account_type"    />
+        <result property="agentId"    column="agent_id"    />
+        <result property="agentName"    column="agent_name"    />
+        <result property="userRemark"    column="user_remark"    />
+        <result property="startDate"    column="start_date"    />
+        <result property="endDate"    column="end_date"    />
+        <result property="lastInterestTime"    column="last_interest_time"    />
+        <result property="alreadyInterestCount"    column="already_interest_count"    />
+        <result property="breakContractRate"    column="break_contract_rate"    />
+        <result property="dailyIncomeRate"    column="daily_income_rate"    />
+        <result property="floatDailyIncomeMinRate"    column="float_daily_income_min_rate"    />
+        <result property="floatDailyIncomeMaxRate"    column="float_daily_income_max_rate"    />
+        <result property="orderStatus"    column="order_status"    />
+        <result property="settleMethod"    column="settle_method"    />
+        <result property="autoRenew"    column="auto_renew"    />
+        <result property="currencyId"    column="currency_id"    />
+        <result property="currencyName"    column="currency_name"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="sqlVersion"    column="sql_version"    />
+        <association property="financialNameLang" javaType="langMgr">
+            <result property="zh"    column="financial_name"    />
+            <result property="en"    column="financial_name_en"    />
+            <result property="tc"    column="financial_name_tc"    />
+            <result property="de"    column="financial_name_de"    />
+            <result property="es"    column="financial_name_es"    />
+            <result property="fr"    column="financial_name_fr"    />
+            <result property="idn"    column="financial_name_idn"    />
+            <result property="jp"    column="financial_name_jp"    />
+            <result property="ko"    column="financial_name_ko"    />
+            <result property="my"    column="financial_name_my"    />
+            <result property="th"    column="financial_name_th"    />
+            <result property="vi"    column="financial_name_vi"    />
+            <result property="pt"    column="financial_name_pt"    />
+            <result property="rus"    column="financial_name_rus"    />
+            <result property="blr"    column="financial_name_blr"    />
+            <result property="ida"    column="financial_name_ida"    />
+            <result property="sa"    column="financial_name_sa"    />
+            <result property="ar"    column="financial_name_ar"    />
+            <result property="it"    column="financial_name_it"    />
+            <result property="tr"    column="financial_name_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectFinancialOrderVo">
+        select a.id, order_code,financial_product_id,financial_name,financial_img, a.financial_time, buy_price,create_time,update_by,update_time, user_id,user_account,nick_name,account_type,agent_id,agent_name, b.remark user_remark, start_date, end_date, last_interest_time, already_interest_count, a.break_contract_rate, daily_income_rate, a.float_daily_income_min_rate, a.float_daily_income_max_rate, order_status,a.settle_method, auto_renew, a.currency_id,currency_name, a.sql_version,financial_name_en, financial_name_tc, financial_name_de, financial_name_es, financial_name_fr, financial_name_idn, financial_name_jp, financial_name_ko, financial_name_my, financial_name_th, financial_name_vi, financial_name_pt, financial_name_rus, financial_name_blr, financial_name_ida, financial_name_sa, financial_name_ar, financial_name_it, financial_name_tr
+        from financial_order a
+                 left join user_info b
+                           on a.user_id = b.id
+                 left join financial_product c
+                           on a.financial_product_id = c.id
+                 left join platform_currency d
+                           on a.currency_id = d.id
+    </sql>
+
+    <select id="selectFinancialOrderList" parameterType="FinancialOrder" resultMap="FinancialOrderResult">
+        <include refid="selectFinancialOrderVo"/>
+        <where>
+            <if test="id != null "> and a.id = #{id}</if>
+            <if test="orderCode != null "> and order_code like concat('%',#{orderCode},'%')</if>
+            <if test="financialProductId != null "> and financial_product_id = #{financialProductId}</if>
+            <if test="financialTime != null "> and a.financial_time = #{financialTime}</if>
+            <if test="buyPrice != null "> and buy_price = #{buyPrice}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="userAccount != null "> and user_account like concat('%',#{userAccount},'%') </if>
+            <if test="nickName != null "> and nick_name like concat('%',#{nickName},'%') </if>
+            <if test="accountType != null "> and account_type = #{accountType}</if>
+            <if test="startDate != null  and startDate != ''"> and start_date = #{startDate}</if>
+            <if test="endDate != null  and endDate != ''"> and end_date = #{endDate}</if>
+            <if test="lastInterestTime != null "> and last_interest_time = #{lastInterestTime}</if>
+            <if test="alreadyInterestCount != null "> and already_interest_count = #{alreadyInterestCount}</if>
+            <if test="breakContractRate != null "> and a.break_contract_rate = #{breakContractRate}</if>
+            <if test="dailyIncomeRate != null "> and daily_income_rate = #{dailyIncomeRate}</if>
+            <if test="floatDailyIncomeMinRate != null "> and a.float_daily_income_min_rate = #{floatDailyIncomeMinRate}</if>
+            <if test="floatDailyIncomeMaxRate != null "> and a.float_daily_income_max_rate = #{floatDailyIncomeMaxRate}</if>
+            <if test="orderStatus != null "> and order_status = #{orderStatus}</if>
+            <if test="settleMethod != null "> and a.settle_method = #{settleMethod}</if>
+            <if test="autoRenew != null "> and auto_renew = #{autoRenew}</if>
+            <if test="currencyId != null "> and a.currency_id = #{currencyId}</if>
+            <if test="sqlVersion != null "> and a.sql_version = #{sqlVersion}</if>
+            <if test="params.asideRejectOrder != null "> and order_status != 3</if>
+            <if test="agentId != null and params.isAllAgentData != null and params.isAllAgentData == 0">
+                and agent_id in (select user_id from agent_team_level_line where sup_user_id = #{agentId} union select #{agentId})
+            </if>
+            <if test="agentId != null and params.isAllAgentData == null">
+                and agent_id = #{agentId}
+            </if>
+            <if test="startTime !=null ">
+                <![CDATA[   and DATE_FORMAT(update_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+            <if test="endTime !=null ">
+                <![CDATA[  and DATE_FORMAT(update_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+            ${params.dataScope}
+        </where>
+    </select>
+    
+    <select id="selectFinancialOrderById" parameterType="Long" resultMap="FinancialOrderResult">
+        <include refid="selectFinancialOrderVo"/>
+        where a.id = #{id}
+    </select>
+
+    <select id="selectAllOrderCountByUserId" resultType="java.lang.Integer">
+        select count(1) from financial_order where user_id = #{userId}
+    </select>
+
+    <select id="selectAllPayInterestAmountByUserId" resultType="java.math.BigDecimal">
+        select IFNULL(sum(pay_amount),0) from financial_pay_interest_record where user_id = #{userId}
+    </select>
+
+    <select id="selectHostingAmountByUserId" resultType="java.math.BigDecimal">
+        select IFNULL(sum(buy_price),0) from financial_order where order_status = 1 and user_id = #{userId}
+    </select>
+
+    <select id="selectEstimatedIncomeTodayByUserId" resultType="java.math.BigDecimal">
+        select IFNULL(sum(buy_price*(daily_income_rate+float_daily_income_min_rate)*0.01),0) from financial_order where order_status = 1 and user_id = #{userId}
+    </select>
+
+    <select id="selectNotDoneOrder" resultMap="FinancialOrderResult">
+        select id,financial_time,buy_price,user_id,daily_income_rate,float_daily_income_min_rate,float_daily_income_max_rate,order_status,already_interest_count,currency_id,create_time,settle_method,sql_version
+        from financial_order
+        where order_status = 1
+    </select>
+
+    <select id="getUserBuyCountByPeriodOfTime" resultType="java.lang.Integer">
+        select count(1) from financial_order where user_id = #{userId} and order_status != 3
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+    </select>
+
+    <select id="getUserFinancialPendingReviewNum" resultType="java.lang.Long">
+        select a.id
+        from financial_order a
+        LEFT JOIN user_info b
+        on a.user_id = b.id
+        where order_status = 0
+        <if test="params.tourists != null and params.tourists != 0">
+            and account_type = 0
+        </if>
+        <if test="params.dataScope != null and params.dataScope != ''">
+            ${params.dataScope}
+        </if>
+    </select>
+
+    <insert id="insertFinancialOrder" parameterType="FinancialOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into financial_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderCode != null">order_code,</if>
+            <if test="financialProductId != null">financial_product_id,</if>
+            <if test="financialTime != null">financial_time,</if>
+            <if test="buyPrice != null">buy_price,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="startDate != null">start_date,</if>
+            <if test="endDate != null">end_date,</if>
+            <if test="lastInterestTime != null">last_interest_time,</if>
+            <if test="alreadyInterestCount != null">already_interest_count,</if>
+            <if test="breakContractRate != null">break_contract_rate,</if>
+            <if test="dailyIncomeRate != null">daily_income_rate,</if>
+            <if test="floatDailyIncomeMinRate != null">float_daily_income_min_rate,</if>
+            <if test="floatDailyIncomeMaxRate != null">float_daily_income_max_rate,</if>
+            <if test="orderStatus != null">order_status,</if>
+            <if test="settleMethod != null">settle_method,</if>
+            <if test="autoRenew != null">auto_renew,</if>
+            <if test="currencyId != null">currency_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="sqlVersion != null">sql_version,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderCode != null">#{orderCode},</if>
+            <if test="financialProductId != null">#{financialProductId},</if>
+            <if test="financialTime != null">#{financialTime},</if>
+            <if test="buyPrice != null">#{buyPrice},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="startDate != null">#{startDate},</if>
+            <if test="endDate != null">#{endDate},</if>
+            <if test="lastInterestTime != null">#{lastInterestTime},</if>
+            <if test="alreadyInterestCount != null">#{alreadyInterestCount},</if>
+            <if test="breakContractRate != null">#{breakContractRate},</if>
+            <if test="dailyIncomeRate != null">#{dailyIncomeRate},</if>
+            <if test="floatDailyIncomeMinRate != null">#{floatDailyIncomeMinRate},</if>
+            <if test="floatDailyIncomeMaxRate != null">#{floatDailyIncomeMaxRate},</if>
+            <if test="orderStatus != null">#{orderStatus},</if>
+            <if test="settleMethod != null">#{settleMethod},</if>
+            <if test="autoRenew != null">#{autoRenew},</if>
+            <if test="currencyId != null">#{currencyId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="sqlVersion != null">#{sqlVersion},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFinancialOrder" parameterType="FinancialOrder">
+        update financial_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderCode != null">order_code = #{orderCode},</if>
+            <if test="financialProductId != null">financial_product_id = #{financialProductId},</if>
+            <if test="financialTime != null">financial_time = #{financialTime},</if>
+            <if test="buyPrice != null">buy_price = #{buyPrice},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="startDate != null">start_date = #{startDate},</if>
+            <if test="endDate != null">end_date = #{endDate},</if>
+            <if test="lastInterestTime != null">last_interest_time = #{lastInterestTime},</if>
+            <if test="alreadyInterestCount != null">already_interest_count = #{alreadyInterestCount},</if>
+            <if test="breakContractRate != null">break_contract_rate = #{breakContractRate},</if>
+            <if test="dailyIncomeRate != null">daily_income_rate = #{dailyIncomeRate},</if>
+            <if test="floatDailyIncomeMinRate != null">float_daily_income_min_rate = #{floatDailyIncomeMinRate},</if>
+            <if test="floatDailyIncomeMaxRate != null">float_daily_income_max_rate = #{floatDailyIncomeMaxRate},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="settleMethod != null">settle_method = #{settleMethod},</if>
+            <if test="autoRenew != null">auto_renew = #{autoRenew},</if>
+            <if test="currencyId != null">currency_id = #{currencyId},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="sqlVersion != null">sql_version = sql_version + 1,</if>
+        </trim>
+        where id = #{id}
+        <if test="sqlVersion != null">and sql_version = #{sqlVersion}</if>
+    </update>
+
+    <delete id="deleteFinancialOrderById" parameterType="Long">
+        delete from financial_order where id = #{id}
+    </delete>
+
+    <delete id="deleteFinancialOrderByIds" parameterType="String">
+        delete from financial_order where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

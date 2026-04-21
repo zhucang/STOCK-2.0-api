@@ -1,0 +1,71 @@
+/**
+  清理用户业务数据
+ */
+TRUNCATE TABLE agent_team_level_line;
+TRUNCATE TABLE balance_convert_record;
+TRUNCATE TABLE fast_trade_order;
+TRUNCATE TABLE financial_order;
+TRUNCATE TABLE financial_pay_interest_record;
+TRUNCATE TABLE realtime;
+TRUNCATE TABLE scheduled_task_exception_log;
+TRUNCATE TABLE self_sell_product;
+TRUNCATE TABLE self_sell_product_daily_data_config;
+TRUNCATE TABLE self_sell_product_realtime;
+TRUNCATE TABLE site_message;
+TRUNCATE TABLE site_message_read;
+TRUNCATE TABLE spot_trade_order;
+TRUNCATE TABLE sys_logininfor;
+TRUNCATE TABLE sys_oper_log;
+TRUNCATE TABLE user_amount;
+TRUNCATE TABLE user_apply_purchase_order;
+TRUNCATE TABLE user_bank;
+TRUNCATE TABLE user_bill_detail;
+TRUNCATE TABLE user_commission_record;
+TRUNCATE TABLE user_cryptocurrency_position;
+TRUNCATE TABLE user_fast_trade_control;
+TRUNCATE TABLE user_forex_position;
+TRUNCATE TABLE user_futures_position;
+TRUNCATE TABLE user_product_option;
+TRUNCATE TABLE user_realtime_control;
+TRUNCATE TABLE user_recharge;
+TRUNCATE TABLE user_stock_position;
+TRUNCATE TABLE user_team_level_line;
+TRUNCATE TABLE user_wallet_address;
+TRUNCATE TABLE user_withdraw;
+TRUNCATE TABLE user_point_change_record;
+TRUNCATE TABLE user_winnings_change_record;
+TRUNCATE TABLE user_auth_record;
+TRUNCATE TABLE loan_order;
+TRUNCATE TABLE loan_order_interest_record;
+TRUNCATE TABLE user_dm_amount_change_record;
+TRUNCATE TABLE user_loan_repayment_order;
+TRUNCATE TABLE user_bibi_assets;
+TRUNCATE TABLE bibi_trade_order;
+TRUNCATE TABLE self_sell_product_real_time;
+TRUNCATE TABLE user_udun_wallet_address;
+TRUNCATE TABLE vip_experience_value;
+TRUNCATE TABLE user_transfer_money_record;
+TRUNCATE TABLE user_api_key;
+TRUNCATE TABLE user_product_position;
+TRUNCATE TABLE activity_center;
+TRUNCATE TABLE staking_product;
+TRUNCATE TABLE staking_order;
+TRUNCATE TABLE staking_order_interest_record;
+TRUNCATE TABLE user_info;
+insert into user_info(id, user_account, phone, email, nick_name, real_name, user_pwd, with_pwd, agent_id, agent_name, invite_code, account_type, avatar, is_lock, reg_time, reg_ip, reg_address, last_login_ip, last_login_time, id_card, img1_key, img2_key, img3_key, is_active, auth_status_junior, auth_status_senior, auth_method, auth_msg, is_control, allow_fall_into_negative, start_delay_time, overflow_amount, sup_user_id, no_login_info, status, need_order_amount, vip_level, credit_score, is_can_withdraw, fast_trade_win_profit_ratio, fast_trade_lose_profit_ratio, is_agent, is_del, remark)
+    value
+    (1,'z159001',null,null,'z159001',null,'$2a$10$6TTm6Vy3vaPFN9BZd3WseOYnjarbH0/dmqdAOrItXdInfdS2KMcNm',null,null,null,'U705777',1,null,0,now(),null,null,null,null,null,null,null,null,0,0,0,0,null,0,0,60,0,null,null,0,0,1,100,0,0,0,0,0,null),
+    (2,'z159002',null,null,'z159002',null,'$2a$10$6TTm6Vy3vaPFN9BZd3WseOYnjarbH0/dmqdAOrItXdInfdS2KMcNm',null,null,null,'U704757',1,null,0,now(),null,null,null,null,null,null,null,null,0,0,0,0,null,0,0,60,0,null,null,0,0,1,100,0,0,0,0,0,null);
+delete from sys_user where user_id not in (select user_id from (select user_id from sys_user where user_name in ('admin','carter','ouwen','laosiji','xx','rengbaba')) as a);
+delete from sys_user_role where user_id not in (select user_id from (select user_id from sys_user where user_name in ('admin','carter','ouwen','laosiji','xx','rengbaba')) as a);
+delete from sys_role where role_id not in (1,2,3,4,5,6,100,101,109);
+delete from sys_role_dept where role_id not in (1,2,3,4,5,6,100,101,109);
+delete from sys_role_menu where role_id not in (1,2,3,4,5,6,100,101,109);
+delete from sys_user_role where role_id not in (1,2,3,4,5,6,100,101,109);
+delete from stock_product where is_self_sell = 1;
+delete from cryptocurrency_product where is_self_sell = 1;
+delete from futures_product where is_self_sell = 1;
+delete from forex_product where is_self_sell = 1;
+TRUNCATE TABLE client_template;
+insert into client_template (template_name,file_storage_path) values ('default','C://web-vue//h5//');
+update other_value set other_value = '' where other_key in ('telegram_bot_token', 'telegram_message_chat_id');

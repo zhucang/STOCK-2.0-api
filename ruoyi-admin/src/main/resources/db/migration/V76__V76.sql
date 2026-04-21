@@ -1,0 +1,1 @@
+insert into `stock`.`switch_set` (id,switch_name,status,`type`,sort) select 95,'用户是否可以修改密码',0,1,95 from switch_set where not exists (select id from switch_set where id = 95)limit 1;

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//en" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ruoyi.system.mapper.UserCommissionRecordMapper" >
+    
+    <resultMap type="UserCommissionRecord" id="UserCommissionRecordResult">
+        <result property="id"    column="id"    />
+        <result property="superId"    column="super_id"    />
+        <result property="lowerId"    column="lower_id"    />
+        <result property="commissionLevel"    column="commission_level"    />
+        <result property="commissionAmount"    column="commission_amount"    />
+        <result property="commissionProfit"    column="commission_profit"    />
+        <result property="orderCodeSource"    column="order_code_source"    />
+        <result property="orderCodeCommission"    column="order_code_commission"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="currencyId"    column="currency_id"    />
+        <result property="commissionType"    column="commission_type"    />
+    </resultMap>
+
+    <sql id="selectUserCommissionRecordVo">
+        select id, super_id, lower_id, commission_level, commission_amount, commission_profit, order_code_source, order_code_commission, create_time, currency_id, commission_type from user_commission_record
+    </sql>
+
+    <select id="selectUserCommissionRecordList" parameterType="UserCommissionRecord" resultMap="UserCommissionRecordResult">
+        <include refid="selectUserCommissionRecordVo"/>
+        <where>  
+            <if test="superId != null "> and super_id = #{superId}</if>
+            <if test="lowerId != null "> and lower_id = #{lowerId}</if>
+            <if test="commissionLevel != null "> and commission_level = #{commissionLevel}</if>
+            <if test="commissionAmount != null "> and commission_amount = #{commissionAmount}</if>
+            <if test="commissionProfit != null "> and commission_profit = #{commissionProfit}</if>
+            <if test="orderCodeSource != null  and orderCodeSource != ''"> and order_code_source = #{orderCodeSource}</if>
+            <if test="orderCodeCommission != null  and orderCodeCommission != ''"> and order_code_commission = #{orderCodeCommission}</if>
+            <if test="currencyId != null "> and currency_id = #{currencyId}</if>
+            <if test="commissionType != null "> and commission_type = #{commissionType}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserCommissionRecordById" parameterType="Long" resultMap="UserCommissionRecordResult">
+        <include refid="selectUserCommissionRecordVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectUserCommissionAmountAllCurrency" resultMap="UserCommissionRecordResult">
+        select sum(commission_amount) commission_amount,currency_id
+        from user_commission_record
+        where lower_id in
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="startTime !=null ">
+            <![CDATA[   and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') >=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+        <if test="endTime !=null ">
+            <![CDATA[  and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+        and super_id = #{supUserId}
+        and commission_type = #{commissionType}
+        group by currency_id
+    </select>
+
+    <insert id="insertUserCommissionRecord" parameterType="UserCommissionRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into user_commission_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="superId != null">super_id,</if>
+            <if test="lowerId != null">lower_id,</if>
+            <if test="commissionLevel != null">commission_level,</if>
+            <if test="commissionAmount != null">commission_amount,</if>
+            <if test="commissionProfit != null">commission_profit,</if>
+            <if test="orderCodeSource != null and orderCodeSource != ''">order_code_source,</if>
+            <if test="orderCodeCommission != null and orderCodeCommission != ''">order_code_commission,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="currencyId != null">currency_id,</if>
+            <if test="commissionType != null">commission_type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="superId != null">#{superId},</if>
+            <if test="lowerId != null">#{lowerId},</if>
+            <if test="commissionLevel != null">#{commissionLevel},</if>
+            <if test="commissionAmount != null">#{commissionAmount},</if>
+            <if test="commissionProfit != null">#{commissionProfit},</if>
+            <if test="orderCodeSource != null and orderCodeSource != ''">#{orderCodeSource},</if>
+            <if test="orderCodeCommission != null and orderCodeCommission != ''">#{orderCodeCommission},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="currencyId != null">#{currencyId},</if>
+            <if test="commissionType != null">#{commissionType},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserCommissionRecord" parameterType="UserCommissionRecord">
+        update user_commission_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="superId != null">super_id = #{superId},</if>
+            <if test="lowerId != null">lower_id = #{lowerId},</if>
+            <if test="commissionLevel != null">commission_level = #{commissionLevel},</if>
+            <if test="commissionAmount != null">commission_amount = #{commissionAmount},</if>
+            <if test="commissionProfit != null">commission_profit = #{commissionProfit},</if>
+            <if test="orderCodeSource != null and orderCodeSource != ''">order_code_source = #{orderCodeSource},</if>
+            <if test="orderCodeCommission != null and orderCodeCommission != ''">order_code_commission = #{orderCodeCommission},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="currencyId != null">currency_id = #{currencyId},</if>
+            <if test="commissionType != null">commission_type = #{commissionType},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserCommissionRecordById" parameterType="Long">
+        delete from user_commission_record where id = #{id}
+    </delete>
+
+    <delete id="deleteUserCommissionRecordByIds" parameterType="String">
+        delete from user_commission_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,1 @@
+insert into switch_set (id,switch_name,status,`type`) values (64,'订单结束后是否弹窗显示收益',1,1);

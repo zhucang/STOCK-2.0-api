@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SelfSellProductMapper">
+    
+    <resultMap type="SelfSellProduct" id="SelfSellProductResult">
+        <result property="id"    column="id"    />
+        <result property="productName"    column="product_name"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="productDesc"    column="product_desc"    />
+        <result property="productImg"    column="product_img"    />
+        <result property="status"    column="status"    />
+        <result property="productType"    column="product_type"    />
+        <result property="relateProductId"    column="relate_product_id"    />
+        <result property="relateProductSort"    column="relate_product_sort"    />
+        <result property="homeRecommendProductFlag"    column="home_recommend_product_flag"    />
+        <result property="homeRecommendProductSort"    column="home_recommend_product_sort"    />
+        <result property="initialPrice"    column="initial_price"    />
+        <result property="isDirectListing"    column="is_direct_listing"    />
+        <association property="productNameLang" javaType="langMgr">
+            <result property="zh"    column="product_name"    />
+            <result property="en"    column="product_name_en"    />
+            <result property="tc"    column="product_name_tc"    />
+            <result property="de"    column="product_name_de"    />
+            <result property="es"    column="product_name_es"    />
+            <result property="fr"    column="product_name_fr"    />
+            <result property="idn"    column="product_name_idn"    />
+            <result property="jp"    column="product_name_jp"    />
+            <result property="ko"    column="product_name_ko"    />
+            <result property="my"    column="product_name_my"    />
+            <result property="th"    column="product_name_th"    />
+            <result property="vi"    column="product_name_vi"    />
+            <result property="pt"    column="product_name_pt"    />
+            <result property="rus"    column="product_name_rus"    />
+            <result property="blr"    column="product_name_blr"    />
+            <result property="ida"    column="product_name_ida"    />
+            <result property="sa"    column="product_name_sa"    />
+            <result property="ar"    column="product_name_ar"    />
+            <result property="it"    column="product_name_it"    />
+            <result property="tr"    column="product_name_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectSelfSellProductVo">
+        select id, product_name, product_code,product_desc,product_img, status, product_type,relate_product_id,relate_product_sort,home_recommend_product_flag,home_recommend_product_sort,initial_price,is_direct_listing, product_name_en, product_name_tc, product_name_de, product_name_es, product_name_fr, product_name_idn, product_name_jp, product_name_ko, product_name_my, product_name_th, product_name_vi, product_name_pt, product_name_rus, product_name_blr, product_name_ida, product_name_sa, product_name_ar, product_name_it, product_name_tr from self_sell_product
+    </sql>
+
+    <select id="selectSelfSellProductList" parameterType="SelfSellProduct" resultMap="SelfSellProductResult">
+        <include refid="selectSelfSellProductVo"/>
+        <where>  
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="productCode != null  and productCode != ''"> and product_code = #{productCode}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="productType != null "> and product_type = #{productType}</if>
+            <if test="isDirectListing != null "> and is_direct_listing = #{isDirectListing}</if>
+            <if test="relateProductId != null "> and relate_product_id = #{relateProductId}</if>
+            <if test="params.selfSellProductIds != null and params.selfSellProductIds.size > 0">
+                and id in
+                <foreach collection="params.selfSellProductIds" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.selfSellProductIds != null and params.selfSellProductIds.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectSelfSellProductById" parameterType="Long" resultMap="SelfSellProductResult">
+        <include refid="selectSelfSellProductVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectSelfSellProductByProductCodeAndProductType" resultMap="SelfSellProductResult">
+        <include refid="selectSelfSellProductVo"/>
+        where product_code = #{productCode} and product_type = #{productType}
+    </select>
+
+    <insert id="insertSelfSellProduct" parameterType="SelfSellProduct" useGeneratedKeys="true" keyProperty="id">
+        insert into self_sell_product
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productName != null and productName != ''">product_name,</if>
+            <if test="productCode != null and productCode != ''">product_code,</if>
+            <if test="productDesc != null and productDesc != ''">product_desc,</if>
+            <if test="productImg != null and productCode != ''">product_img,</if>
+            <if test="status != null">status,</if>
+            <if test="productType != null">product_type,</if>
+            <if test="relateProductId != null">relate_product_id,</if>
+            <if test="relateProductSort != null">relate_product_sort,</if>
+            <if test="homeRecommendProductFlag != null">home_recommend_product_flag,</if>
+            <if test="homeRecommendProductSort != null">home_recommend_product_sort,</if>
+            <if test="initialPrice != null">initial_price,</if>
+            <if test="isDirectListing != null">is_direct_listing,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productName != null and productName != ''">#{productName},</if>
+            <if test="productCode != null and productCode != ''">#{productCode},</if>
+            <if test="productDesc != null and productDesc != ''">#{productDesc},</if>
+            <if test="productImg != null and productCode != ''">#{productImg},</if>
+            <if test="status != null">#{status},</if>
+            <if test="productType != null">#{productType},</if>
+            <if test="relateProductId != null">#{relateProductId},</if>
+            <if test="relateProductSort != null">#{relateProductSort},</if>
+            <if test="homeRecommendProductFlag != null">#{homeRecommendProductFlag},</if>
+            <if test="homeRecommendProductSort != null">#{homeRecommendProductSort},</if>
+            <if test="initialPrice != null">#{initialPrice},</if>
+            <if test="isDirectListing != null">#{isDirectListing},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSelfSellProduct" parameterType="SelfSellProduct">
+        update self_sell_product
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productName != null and productName != ''">product_name = #{productName},</if>
+            <if test="productDesc != null and productDesc != ''">product_desc = #{productDesc},</if>
+            <if test="productImg != null and productImg != ''">product_img = #{productImg},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="initialPrice != null">initial_price = #{initialPrice},</if>
+            <if test="relateProductId != null">relate_product_id = #{relateProductId},</if>
+            <if test="relateProductSort != null">relate_product_sort = #{relateProductSort},</if>
+            <if test="homeRecommendProductFlag != null">home_recommend_product_flag = #{homeRecommendProductFlag},</if>
+            <if test="homeRecommendProductSort != null">home_recommend_product_sort = #{homeRecommendProductSort},</if>
+            <if test="productNameLang.zh != null and productName == null">product_name = #{productNameLang.zh},</if>
+            <if test="productNameLang.en != null">product_name_en = #{productNameLang.en},</if>
+            <if test="productNameLang.tc != null">product_name_tc = #{productNameLang.tc},</if>
+            <if test="productNameLang.de != null">product_name_de = #{productNameLang.de},</if>
+            <if test="productNameLang.es != null">product_name_es = #{productNameLang.es},</if>
+            <if test="productNameLang.fr != null">product_name_fr = #{productNameLang.fr},</if>
+            <if test="productNameLang.idn != null">product_name_idn = #{productNameLang.idn},</if>
+            <if test="productNameLang.jp != null">product_name_jp = #{productNameLang.jp},</if>
+            <if test="productNameLang.ko != null">product_name_ko = #{productNameLang.ko},</if>
+            <if test="productNameLang.my != null">product_name_my = #{productNameLang.my},</if>
+            <if test="productNameLang.th != null">product_name_th = #{productNameLang.th},</if>
+            <if test="productNameLang.vi != null">product_name_vi = #{productNameLang.vi},</if>
+            <if test="productNameLang.pt != null">product_name_pt = #{productNameLang.pt},</if>
+            <if test="productNameLang.rus != null">product_name_rus = #{productNameLang.rus},</if>
+            <if test="productNameLang.blr != null">product_name_blr = #{productNameLang.blr},</if>
+            <if test="productNameLang.ida != null">product_name_ida = #{productNameLang.ida},</if>
+            <if test="productNameLang.sa != null">product_name_sa = #{productNameLang.sa},</if>
+            <if test="productNameLang.ar != null">product_name_ar = #{productNameLang.ar},</if>
+            <if test="productNameLang.it != null">product_name_it = #{productNameLang.it},</if>
+            <if test="productNameLang.tr != null">product_name_tr = #{productNameLang.tr},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSelfSellProductById" parameterType="Long">
+        delete from self_sell_product where id = #{id}
+    </delete>
+
+    <delete id="deleteSelfSellProductByIds" parameterType="String">
+        delete from self_sell_product where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.RechargeRewardRecordMapper">
+    
+    <resultMap type="RechargeRewardRecord" id="RechargeRewardRecordResult">
+        <result property="rechargeRewardRecordId"    column="recharge_reward_record_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userRechargeId"    column="user_recharge_id"    />
+        <result property="rewardTierId"    column="reward_tier_id"    />
+        <result property="rechargeAmount"    column="recharge_amount"    />
+        <result property="rewardRate"    column="reward_rate"    />
+        <result property="rewardAmount"    column="reward_amount"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectRechargeRewardRecordVo">
+        select recharge_reward_record_id, user_id, user_recharge_id, reward_tier_id, recharge_amount, reward_rate, reward_amount, create_by, create_time, update_by, update_time from recharge_reward_record
+    </sql>
+
+    <select id="selectRechargeRewardRecordList" parameterType="RechargeRewardRecord" resultMap="RechargeRewardRecordResult">
+        <include refid="selectRechargeRewardRecordVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="userRechargeId != null "> and user_recharge_id = #{userRechargeId}</if>
+            <if test="rewardTierId != null "> and reward_tier_id = #{rewardTierId}</if>
+            <if test="rechargeAmount != null "> and recharge_amount = #{rechargeAmount}</if>
+            <if test="rewardRate != null "> and reward_rate = #{rewardRate}</if>
+            <if test="rewardAmount != null "> and reward_amount = #{rewardAmount}</if>
+        </where>
+    </select>
+    
+    <select id="selectRechargeRewardRecordByRechargeRewardRecordId" parameterType="Long" resultMap="RechargeRewardRecordResult">
+        <include refid="selectRechargeRewardRecordVo"/>
+        where recharge_reward_record_id = #{rechargeRewardRecordId}
+    </select>
+
+    <insert id="insertRechargeRewardRecord" parameterType="RechargeRewardRecord" useGeneratedKeys="true" keyProperty="rechargeRewardRecordId">
+        insert into recharge_reward_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="userRechargeId != null">user_recharge_id,</if>
+            <if test="rewardTierId != null">reward_tier_id,</if>
+            <if test="rechargeAmount != null">recharge_amount,</if>
+            <if test="rewardRate != null">reward_rate,</if>
+            <if test="rewardAmount != null">reward_amount,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="userRechargeId != null">#{userRechargeId},</if>
+            <if test="rewardTierId != null">#{rewardTierId},</if>
+            <if test="rechargeAmount != null">#{rechargeAmount},</if>
+            <if test="rewardRate != null">#{rewardRate},</if>
+            <if test="rewardAmount != null">#{rewardAmount},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRechargeRewardRecord" parameterType="RechargeRewardRecord">
+        update recharge_reward_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="userRechargeId != null">user_recharge_id = #{userRechargeId},</if>
+            <if test="rewardTierId != null">reward_tier_id = #{rewardTierId},</if>
+            <if test="rechargeAmount != null">recharge_amount = #{rechargeAmount},</if>
+            <if test="rewardRate != null">reward_rate = #{rewardRate},</if>
+            <if test="rewardAmount != null">reward_amount = #{rewardAmount},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where recharge_reward_record_id = #{rechargeRewardRecordId}
+    </update>
+
+    <delete id="deleteRechargeRewardRecordByRechargeRewardRecordId" parameterType="Long">
+        delete from recharge_reward_record where recharge_reward_record_id = #{rechargeRewardRecordId}
+    </delete>
+
+    <delete id="deleteRechargeRewardRecordByRechargeRewardRecordIds" parameterType="String">
+        delete from recharge_reward_record where recharge_reward_record_id in 
+        <foreach item="rechargeRewardRecordId" collection="array" open="(" separator="," close=")">
+            #{rechargeRewardRecordId}
+        </foreach>
+    </delete>
+</mapper>

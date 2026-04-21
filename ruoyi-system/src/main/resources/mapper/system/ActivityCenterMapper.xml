@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ActivityCenterMapper">
+    
+    <resultMap type="ActivityCenter" id="ActivityCenterResult">
+        <result property="id"    column="id"    />
+        <result property="activityImg"    column="activity_img"    />
+        <result property="activityTitle"    column="activity_title"    />
+        <result property="activityContent"    column="activity_content"    />
+        <result property="sort"    column="sort"    />
+        <result property="showTime"    column="show_time"    />
+        <result property="createTime"    column="create_time"    />
+        <association property="activityImgLang" javaType="langMgr">
+            <result property="zh"    column="activity_img"    />
+            <result property="en"    column="activity_img_en"    />
+            <result property="tc"    column="activity_img_tc"    />
+            <result property="de"    column="activity_img_de"    />
+            <result property="es"    column="activity_img_es"    />
+            <result property="fr"    column="activity_img_fr"    />
+            <result property="idn"    column="activity_img_idn"    />
+            <result property="jp"    column="activity_img_jp"    />
+            <result property="ko"    column="activity_img_ko"    />
+            <result property="my"    column="activity_img_my"    />
+            <result property="th"    column="activity_img_th"    />
+            <result property="vi"    column="activity_img_vi"    />
+            <result property="pt"    column="activity_img_pt"    />
+            <result property="rus"    column="activity_img_rus"    />
+            <result property="blr"    column="activity_img_blr"    />
+            <result property="ida"    column="activity_img_ida"    />
+            <result property="sa"    column="activity_img_sa"    />
+            <result property="ar"    column="activity_img_ar"    />
+            <result property="it"    column="activity_img_it"    />
+            <result property="tr"    column="activity_img_tr"    />
+        </association>
+        <association property="activityTitleLang" javaType="langMgr">
+            <result property="zh"    column="activity_title"    />
+            <result property="en"    column="activity_title_en"    />
+            <result property="tc"    column="activity_title_tc"    />
+            <result property="de"    column="activity_title_de"    />
+            <result property="es"    column="activity_title_es"    />
+            <result property="fr"    column="activity_title_fr"    />
+            <result property="idn"    column="activity_title_idn"    />
+            <result property="jp"    column="activity_title_jp"    />
+            <result property="ko"    column="activity_title_ko"    />
+            <result property="my"    column="activity_title_my"    />
+            <result property="th"    column="activity_title_th"    />
+            <result property="vi"    column="activity_title_vi"    />
+            <result property="pt"    column="activity_title_pt"    />
+            <result property="rus"    column="activity_title_rus"    />
+            <result property="blr"    column="activity_title_blr"    />
+            <result property="ida"    column="activity_title_ida"    />
+            <result property="sa"    column="activity_title_sa"    />
+            <result property="ar"    column="activity_title_ar"    />
+            <result property="it"    column="activity_title_it"    />
+            <result property="tr"    column="activity_title_tr"    />
+        </association>
+        <association property="activityContentLang" javaType="langMgr">
+            <result property="zh"    column="activity_content"    />
+            <result property="en"    column="activity_content_en"    />
+            <result property="tc"    column="activity_content_tc"    />
+            <result property="de"    column="activity_content_de"    />
+            <result property="es"    column="activity_content_es"    />
+            <result property="fr"    column="activity_content_fr"    />
+            <result property="idn"    column="activity_content_idn"    />
+            <result property="jp"    column="activity_content_jp"    />
+            <result property="ko"    column="activity_content_ko"    />
+            <result property="my"    column="activity_content_my"    />
+            <result property="th"    column="activity_content_th"    />
+            <result property="vi"    column="activity_content_vi"    />
+            <result property="pt"    column="activity_content_pt"    />
+            <result property="rus"    column="activity_content_rus"    />
+            <result property="blr"    column="activity_content_blr"    />
+            <result property="ida"    column="activity_content_ida"    />
+            <result property="sa"    column="activity_content_sa"    />
+            <result property="ar"    column="activity_content_ar"    />
+            <result property="it"    column="activity_content_it"    />
+            <result property="tr"    column="activity_content_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectActivityCenterVo">
+        select id, activity_img, activity_title, activity_content, sort, show_time, create_time, activity_img_en, activity_img_tc, activity_img_de, activity_img_es, activity_img_fr, activity_img_idn, activity_img_jp, activity_img_ko, activity_img_my, activity_img_th, activity_img_vi, activity_img_pt, activity_img_rus, activity_img_blr, activity_img_ida, activity_img_sa, activity_img_ar, activity_img_it, activity_img_tr, activity_title_en, activity_title_tc, activity_title_de, activity_title_es, activity_title_fr, activity_title_idn, activity_title_jp, activity_title_ko, activity_title_my, activity_title_th, activity_title_vi, activity_title_pt, activity_title_rus, activity_title_blr, activity_title_ida, activity_title_sa, activity_title_ar, activity_title_it, activity_title_tr, activity_content_en, activity_content_tc, activity_content_de, activity_content_es, activity_content_fr, activity_content_idn, activity_content_jp, activity_content_ko, activity_content_my, activity_content_th, activity_content_vi, activity_content_pt, activity_content_rus, activity_content_blr, activity_content_ida, activity_content_sa, activity_content_ar, activity_content_it, activity_content_tr from activity_center
+    </sql>
+
+    <select id="selectActivityCenterList" parameterType="ActivityCenter" resultMap="ActivityCenterResult">
+        <include refid="selectActivityCenterVo"/>
+        <where>  
+            <if test="activityImg != null  and activityImg != ''"> and activity_img = #{activityImg}</if>
+            <if test="activityTitle != null  and activityTitle != ''"> and activity_title = #{activityTitle}</if>
+            <if test="activityContent != null  and activityContent != ''"> and activity_content = #{activityContent}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="showTime != null "> and show_time = #{showTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectActivityCenterById" parameterType="Long" resultMap="ActivityCenterResult">
+        <include refid="selectActivityCenterVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertActivityCenter" parameterType="ActivityCenter" useGeneratedKeys="true" keyProperty="id">
+        insert into activity_center
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="activityImg != null and activityImg != ''">activity_img,</if>
+            <if test="activityTitle != null">activity_title,</if>
+            <if test="activityContent != null">activity_content,</if>
+            <if test="sort != null">sort,</if>
+            <if test="showTime != null">show_time,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="activityImg != null and activityImg != ''">#{activityImg},</if>
+            <if test="activityTitle != null">#{activityTitle},</if>
+            <if test="activityContent != null">#{activityContent},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="showTime != null">#{showTime},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateActivityCenter" parameterType="ActivityCenter">
+        update activity_center
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="activityImg != null and activityImg != ''">activity_img = #{activityImg},</if>
+            <if test="activityTitle != null">activity_title = #{activityTitle},</if>
+            <if test="activityContent != null">activity_content = #{activityContent},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="showTime != null">show_time = #{showTime},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="activityImgLang.zh != null and activityImg == null">activity_img = #{activityImgLang.zh},</if>
+            <if test="activityImgLang.en != null">activity_img_en = #{activityImgLang.en},</if>
+            <if test="activityImgLang.tc != null">activity_img_tc = #{activityImgLang.tc},</if>
+            <if test="activityImgLang.de != null">activity_img_de = #{activityImgLang.de},</if>
+            <if test="activityImgLang.es != null">activity_img_es = #{activityImgLang.es},</if>
+            <if test="activityImgLang.fr != null">activity_img_fr = #{activityImgLang.fr},</if>
+            <if test="activityImgLang.idn != null">activity_img_idn = #{activityImgLang.idn},</if>
+            <if test="activityImgLang.jp != null">activity_img_jp = #{activityImgLang.jp},</if>
+            <if test="activityImgLang.ko != null">activity_img_ko = #{activityImgLang.ko},</if>
+            <if test="activityImgLang.my != null">activity_img_my = #{activityImgLang.my},</if>
+            <if test="activityImgLang.th != null">activity_img_th = #{activityImgLang.th},</if>
+            <if test="activityImgLang.vi != null">activity_img_vi = #{activityImgLang.vi},</if>
+            <if test="activityImgLang.pt != null">activity_img_pt = #{activityImgLang.pt},</if>
+            <if test="activityImgLang.rus != null">activity_img_rus = #{activityImgLang.rus},</if>
+            <if test="activityImgLang.blr != null">activity_img_blr = #{activityImgLang.blr},</if>
+            <if test="activityImgLang.ida != null">activity_img_ida = #{activityImgLang.ida},</if>
+            <if test="activityImgLang.sa != null">activity_img_sa = #{activityImgLang.sa},</if>
+            <if test="activityImgLang.ar != null">activity_img_ar = #{activityImgLang.ar},</if>
+            <if test="activityImgLang.it != null">activity_img_it = #{activityImgLang.it},</if>
+            <if test="activityImgLang.tr != null">activity_img_tr = #{activityImgLang.tr},</if>
+            <if test="activityTitleLang.zh != null and activityTitle == null">activity_title = #{activityTitleLang.zh},</if>
+            <if test="activityTitleLang.en != null">activity_title_en = #{activityTitleLang.en},</if>
+            <if test="activityTitleLang.tc != null">activity_title_tc = #{activityTitleLang.tc},</if>
+            <if test="activityTitleLang.de != null">activity_title_de = #{activityTitleLang.de},</if>
+            <if test="activityTitleLang.es != null">activity_title_es = #{activityTitleLang.es},</if>
+            <if test="activityTitleLang.fr != null">activity_title_fr = #{activityTitleLang.fr},</if>
+            <if test="activityTitleLang.idn != null">activity_title_idn = #{activityTitleLang.idn},</if>
+            <if test="activityTitleLang.jp != null">activity_title_jp = #{activityTitleLang.jp},</if>
+            <if test="activityTitleLang.ko != null">activity_title_ko = #{activityTitleLang.ko},</if>
+            <if test="activityTitleLang.my != null">activity_title_my = #{activityTitleLang.my},</if>
+            <if test="activityTitleLang.th != null">activity_title_th = #{activityTitleLang.th},</if>
+            <if test="activityTitleLang.vi != null">activity_title_vi = #{activityTitleLang.vi},</if>
+            <if test="activityTitleLang.pt != null">activity_title_pt = #{activityTitleLang.pt},</if>
+            <if test="activityTitleLang.rus != null">activity_title_rus = #{activityTitleLang.rus},</if>
+            <if test="activityTitleLang.blr != null">activity_title_blr = #{activityTitleLang.blr},</if>
+            <if test="activityTitleLang.ida != null">activity_title_ida = #{activityTitleLang.ida},</if>
+            <if test="activityTitleLang.sa != null">activity_title_sa = #{activityTitleLang.sa},</if>
+            <if test="activityTitleLang.ar != null">activity_title_ar = #{activityTitleLang.ar},</if>
+            <if test="activityTitleLang.it != null">activity_title_it = #{activityTitleLang.it},</if>
+            <if test="activityTitleLang.tr != null">activity_title_tr = #{activityTitleLang.tr},</if>
+            <if test="activityContentLang.zh != null and activityContent == null">activity_content = #{activityContentLang.zh},</if>
+            <if test="activityContentLang.en != null">activity_content_en = #{activityContentLang.en},</if>
+            <if test="activityContentLang.tc != null">activity_content_tc = #{activityContentLang.tc},</if>
+            <if test="activityContentLang.de != null">activity_content_de = #{activityContentLang.de},</if>
+            <if test="activityContentLang.es != null">activity_content_es = #{activityContentLang.es},</if>
+            <if test="activityContentLang.fr != null">activity_content_fr = #{activityContentLang.fr},</if>
+            <if test="activityContentLang.idn != null">activity_content_idn = #{activityContentLang.idn},</if>
+            <if test="activityContentLang.jp != null">activity_content_jp = #{activityContentLang.jp},</if>
+            <if test="activityContentLang.ko != null">activity_content_ko = #{activityContentLang.ko},</if>
+            <if test="activityContentLang.my != null">activity_content_my = #{activityContentLang.my},</if>
+            <if test="activityContentLang.th != null">activity_content_th = #{activityContentLang.th},</if>
+            <if test="activityContentLang.vi != null">activity_content_vi = #{activityContentLang.vi},</if>
+            <if test="activityContentLang.pt != null">activity_content_pt = #{activityContentLang.pt},</if>
+            <if test="activityContentLang.rus != null">activity_content_rus = #{activityContentLang.rus},</if>
+            <if test="activityContentLang.blr != null">activity_content_blr = #{activityContentLang.blr},</if>
+            <if test="activityContentLang.ida != null">activity_content_ida = #{activityContentLang.ida},</if>
+            <if test="activityContentLang.sa != null">activity_content_sa = #{activityContentLang.sa},</if>
+            <if test="activityContentLang.ar != null">activity_content_ar = #{activityContentLang.ar},</if>
+            <if test="activityContentLang.it != null">activity_content_it = #{activityContentLang.it},</if>
+            <if test="activityContentLang.tr != null">activity_content_tr = #{activityContentLang.tr},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteActivityCenterById" parameterType="Long">
+        delete from activity_center where id = #{id}
+    </delete>
+
+    <delete id="deleteActivityCenterByIds" parameterType="String">
+        delete from activity_center where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

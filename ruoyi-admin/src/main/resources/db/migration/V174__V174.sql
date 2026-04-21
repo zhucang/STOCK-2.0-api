@@ -1,0 +1,1 @@
+insert into `stock`.`lang_mgr` (lang_key,zh,en) select 'hint_95','提现钱包与提现通道的币种类型不符','The currency type of the withdrawal wallet and the withdrawal channel do not match' from lang_mgr where not exists (select lang_key from lang_mgr where lang_key = 'hint_95') limit 1;

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.BalanceConvertRecordMapper">
+    
+    <resultMap type="BalanceConvertRecord" id="BalanceConvertRecordResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userAccount"    column="user_account"    />
+        <result property="email"    column="email"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="accountType"    column="account_type"    />
+        <result property="agentId"    column="agent_id"    />
+        <result property="agentName"    column="agent_name"    />
+        <result property="userRemark"    column="user_remark"    />
+        <result property="transAmt"    column="trans_amt"    />
+        <result property="convertedAmount"    column="converted_amount"    />
+        <result property="exchangeRate"    column="exchange_rate"    />
+        <result property="handingFee"    column="handing_fee"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="currencyFromId"    column="currency_from_id"    />
+        <result property="currencyToId"    column="currency_to_id"    />
+        <result property="currencyFromName"    column="currency_from_name"    />
+        <result property="currencyToName"    column="currency_to_name"    />
+    </resultMap>
+
+    <sql id="selectBalanceConvertRecordVo">
+        select a.id, user_id,user_account,email,nick_name,account_type,agent_id,agent_name, d.remark user_remark, trans_amt, converted_amount, exchange_rate,handing_fee,create_time, currency_from_id, currency_to_id,
+               b.currency_name currency_from_name,c.currency_name currency_to_name
+        from balance_convert_record a
+                 left join platform_currency b
+                           on currency_from_id = b.id
+                 left join platform_currency c
+                           on currency_to_id = c.id
+                 left join user_info d
+                           on a.user_id = d.id
+    </sql>
+
+    <select id="selectBalanceConvertRecordList" parameterType="BalanceConvertRecord" resultMap="BalanceConvertRecordResult">
+        <include refid="selectBalanceConvertRecordVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="userAccount != null "> and user_account like concat('%',#{userAccount},'%') </if>
+            <if test="email != null "> and email like concat('%',#{email},'%')</if>
+            <if test="nickName != null "> and nick_name like concat('%',#{nickName},'%') </if>
+            <if test="accountType != null "> and b.account_type = #{accountType}</if>
+            <if test="agentId != null and params.isAllAgentData != null and params.isAllAgentData == 0">
+                and agent_id in (select user_id from agent_team_level_line where sup_user_id = #{agentId} union select #{agentId})
+            </if>
+            <if test="agentId != null and params.isAllAgentData == null">
+                and agent_id = #{agentId}
+            </if>
+            <if test="transAmt != null "> and trans_amt = #{transAmt}</if>
+            <if test="convertedAmount != null "> and converted_amount = #{convertedAmount}</if>
+            <if test="currencyFromId != null "> and currency_from_id = #{currencyFromId}</if>
+            <if test="currencyToId != null "> and currency_to_id = #{currencyToId}</if>
+            <if test="createTime != null ">  <![CDATA[ and DATE_FORMAT(create_time, '%Y-%m-%d') = DATE_FORMAT(#{createTime}, '%Y-%m-%d')]]></if>
+            ${params.dataScope}
+        </where>
+    </select>
+    
+    <select id="selectBalanceConvertRecordById" parameterType="Long" resultMap="BalanceConvertRecordResult">
+        <include refid="selectBalanceConvertRecordVo"/>
+        where a.id = #{id}
+    </select>
+
+    <select id="getBalanceConvertCountTodayByUserId" resultType="java.lang.Integer">
+        select count(1) from balance_convert_record where user_id = #{userId} and DATE_FORMAT(create_time, '%Y-%m-%d') = DATE_FORMAT(now(), '%Y-%m-%d')
+    </select>
+
+    <insert id="insertBalanceConvertRecord" parameterType="BalanceConvertRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into balance_convert_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="transAmt != null">trans_amt,</if>
+            <if test="convertedAmount != null">converted_amount,</if>
+            <if test="exchangeRate != null">exchange_rate,</if>
+            <if test="handingFee != null">handing_fee,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="currencyFromId != null">currency_from_id,</if>
+            <if test="currencyToId != null">currency_to_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="transAmt != null">#{transAmt},</if>
+            <if test="convertedAmount != null">#{convertedAmount},</if>
+            <if test="exchangeRate != null">#{exchangeRate},</if>
+            <if test="handingFee != null">#{handingFee},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="currencyFromId != null">#{currencyFromId},</if>
+            <if test="currencyToId != null">#{currencyToId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBalanceConvertRecord" parameterType="BalanceConvertRecord">
+        update balance_convert_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="transAmt != null">trans_amt = #{transAmt},</if>
+            <if test="convertedAmount != null">converted_amount = #{convertedAmount},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="currencyFromId != null">currency_from_id = #{currencyFromId},</if>
+            <if test="currencyToId != null">currency_to_id = #{currencyToId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBalanceConvertRecordById" parameterType="Long">
+        delete from balance_convert_record where id = #{id}
+    </delete>
+
+    <delete id="deleteBalanceConvertRecordByIds" parameterType="String">
+        delete from balance_convert_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

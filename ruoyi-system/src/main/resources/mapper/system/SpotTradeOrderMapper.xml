@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SpotTradeOrderMapper">
+    
+    <resultMap type="SpotTradeOrder" id="SpotTradeOrderResult">
+        <result property="id"    column="id"    />
+        <result property="productType"    column="product_type"    />
+        <result property="orderCode"    column="order_code"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userAccount"    column="user_account"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="accountType"    column="account_type"    />
+        <result property="agentId"    column="agent_id"    />
+        <result property="agentName"    column="agent_name"    />
+        <result property="userRemark"    column="user_remark"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="productDesc"    column="product_desc"    />
+        <result property="productName"    column="product_name"    />
+        <result property="buyOrderTime"    column="buy_order_time"    />
+        <result property="buyOrderPrice"    column="buy_order_price"    />
+        <result property="sellOrderTime"    column="sell_order_time"    />
+        <result property="sellOrderPrice"    column="sell_order_price"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="orderTotalPrice"    column="order_total_price"    />
+        <result property="orderFee"    column="order_fee"    />
+        <result property="profitAndLose"    column="profit_and_lose"    />
+        <result property="allProfitAndLose"    column="all_profit_and_lose"    />
+        <result property="currencyId"    column="currency_id"    />
+        <result property="orderStatus"    column="order_status"    />
+        <result property="sqlVersion"    column="sql_version"    />
+    </resultMap>
+
+    <sql id="selectSpotTradeOrderVo">
+        select a.id, a.product_type, order_code, user_id,user_account,nick_name,account_type,agent_id,agent_name, b.remark user_remark, a.product_code,product_desc, c.product_name, buy_order_time, buy_order_price, sell_order_time, sell_order_price, order_num, order_total_price, order_fee, profit_and_lose, all_profit_and_lose, currency_id, order_status, a.sql_version
+        from spot_trade_order a
+                 left join user_info b
+                           on a.user_id = b.id
+                 left join
+             (select product_name,product_code,null as product_desc,1 as product_type from stock_product
+              union
+              select product_name,product_code,product_desc,2 as product_type from cryptocurrency_product
+              union
+              select product_name,product_code,null as product_desc,3 as product_type from futures_product
+              union
+              select product_name,product_code,null as product_desc,4 as product_type  from forex_product) as c
+             on a.product_code = c.product_code and a.product_type = c.product_type
+    </sql>
+
+    <select id="selectSpotTradeOrderList" parameterType="SpotTradeOrder" resultMap="SpotTradeOrderResult">
+        <include refid="selectSpotTradeOrderVo"/>
+        <where>
+            <if test="id != null "> and a.id = #{id}</if>
+            <if test="productType != null "> and a.product_type = #{productType}</if>
+            <if test="orderCode != null  and orderCode != ''"> and order_code like concat('%',#{orderCode},'%')</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="userAccount != null "> and user_account like concat('%',#{userAccount},'%') </if>
+            <if test="nickName != null "> and nick_name like concat('%',#{nickName},'%') </if>
+            <if test="accountType != null "> and account_type = #{accountType}</if>
+            <if test="email != null "> and email like concat('%',#{email},'%')</if>
+            <if test="productCode != null  and productCode != ''"> and a.product_code = #{productCode}</if>
+            <if test="productName != null  and productName != ''"> and c.product_name like concat('%', #{productName}, '%')</if>
+            <if test="orderNum != null "> and order_num = #{orderNum}</if>
+            <if test="orderTotalPrice != null "> and order_total_price = #{orderTotalPrice}</if>
+            <if test="orderFee != null "> and order_fee = #{orderFee}</if>
+            <if test="profitAndLose != null "> and profit_and_lose = #{profitAndLose}</if>
+            <if test="allProfitAndLose != null "> and all_profit_and_lose = #{allProfitAndLose}</if>
+            <if test="currencyId != null "> and currency_id = #{currencyId}</if>
+            <if test="orderStatus != null "> and order_status = #{orderStatus}</if>
+            <if test="agentId != null and params.isAllAgentData != null and params.isAllAgentData == 0">
+                and agent_id in (select user_id from agent_team_level_line where sup_user_id = #{agentId} union select #{agentId})
+            </if>
+            <if test="agentId != null and params.isAllAgentData == null">
+                and agent_id = #{agentId}
+            </if>
+            <if test="startTime !=null ">
+                <![CDATA[   and DATE_FORMAT(buy_order_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+            <if test="endTime !=null ">
+                <![CDATA[  and DATE_FORMAT(buy_order_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+            ${params.dataScope}
+        </where>
+    </select>
+    
+    <select id="selectSpotTradeOrderById" parameterType="Long" resultMap="SpotTradeOrderResult">
+        <include refid="selectSpotTradeOrderVo"/>
+        where a.id = #{id}
+    </select>
+        
+    <insert id="insertSpotTradeOrder" parameterType="SpotTradeOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into spot_trade_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productType != null">product_type,</if>
+            <if test="orderCode != null and orderCode != ''">order_code,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="productCode != null and productCode != ''">product_code,</if>
+            <if test="productName != null">product_name,</if>
+            <if test="buyOrderTime != null">buy_order_time,</if>
+            <if test="buyOrderPrice != null">buy_order_price,</if>
+            <if test="sellOrderTime != null">sell_order_time,</if>
+            <if test="sellOrderPrice != null">sell_order_price,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="orderTotalPrice != null">order_total_price,</if>
+            <if test="orderFee != null">order_fee,</if>
+            <if test="profitAndLose != null">profit_and_lose,</if>
+            <if test="allProfitAndLose != null">all_profit_and_lose,</if>
+            <if test="currencyId != null">currency_id,</if>
+            <if test="orderStatus != null">order_status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productType != null">#{productType},</if>
+            <if test="orderCode != null and orderCode != ''">#{orderCode},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="productCode != null and productCode != ''">#{productCode},</if>
+            <if test="productName != null">#{productName},</if>
+            <if test="buyOrderTime != null">#{buyOrderTime},</if>
+            <if test="buyOrderPrice != null">#{buyOrderPrice},</if>
+            <if test="sellOrderTime != null">#{sellOrderTime},</if>
+            <if test="sellOrderPrice != null">#{sellOrderPrice},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="orderTotalPrice != null">#{orderTotalPrice},</if>
+            <if test="orderFee != null">#{orderFee},</if>
+            <if test="profitAndLose != null">#{profitAndLose},</if>
+            <if test="allProfitAndLose != null">#{allProfitAndLose},</if>
+            <if test="currencyId != null">#{currencyId},</if>
+            <if test="orderStatus != null">#{orderStatus},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertSpotTradeOrders">
+        insert into spot_trade_order (product_type,order_code,user_id,product_code,product_name,buy_order_time,
+        buy_order_price,order_num,order_total_price,currency_id)
+        <foreach collection="list" open="values(" close=")" separator="),(" index="index" item="item" nullable="true">
+            #{item.productType},#{item.orderCode},#{item.userId},#{item.productCode},#{item.productName},#{item.buyOrderTime},
+            #{item.buyOrderPrice},#{item.orderNum},#{item.orderTotalPrice},#{item.currencyId}
+        </foreach>
+    </insert>
+
+    <update id="updateSpotTradeOrder" parameterType="SpotTradeOrder">
+        update spot_trade_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productType != null">product_type = #{productType},</if>
+            <if test="orderCode != null and orderCode != ''">order_code = #{orderCode},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="productCode != null and productCode != ''">product_code = #{productCode},</if>
+            <if test="productName != null">product_name = #{productName},</if>
+            <if test="buyOrderTime != null">buy_order_time = #{buyOrderTime},</if>
+            <if test="buyOrderPrice != null">buy_order_price = #{buyOrderPrice},</if>
+            <if test="sellOrderTime != null">sell_order_time = #{sellOrderTime},</if>
+            <if test="sellOrderPrice != null">sell_order_price = #{sellOrderPrice},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="orderTotalPrice != null">order_total_price = #{orderTotalPrice},</if>
+            <if test="orderFee != null">order_fee = #{orderFee},</if>
+            <if test="profitAndLose != null">profit_and_lose = #{profitAndLose},</if>
+            <if test="allProfitAndLose != null">all_profit_and_lose = #{allProfitAndLose},</if>
+            <if test="currencyId != null">currency_id = #{currencyId},</if>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="sqlVersion != null">sql_version = sql_version + 1,</if>
+        </trim>
+        where id = #{id}
+        <if test="sqlVersion != null">and sql_version = #{sqlVersion}</if>
+    </update>
+
+    <delete id="deleteSpotTradeOrderById" parameterType="Long">
+        delete from spot_trade_order where id = #{id}
+    </delete>
+
+    <delete id="deleteSpotTradeOrderByIds" parameterType="String">
+        delete from spot_trade_order where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

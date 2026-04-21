@@ -1,0 +1,8 @@
+insert into `stock`.`switch_set` (id,switch_name,status,`type`,sort) select 127,'telegram通知（充值申请）',0,1,127 from switch_set where not exists (select id from switch_set where id = 127)limit 1;
+insert into `stock`.`switch_set` (id,switch_name,status,`type`,sort) select 128,'telegram通知（提现申请）',0,1,128 from switch_set where not exists (select id from switch_set where id = 128)limit 1;
+insert into `stock`.`switch_set` (id,switch_name,status,`type`,sort) select 129,'telegram通知（新增注册）',0,1,129 from switch_set where not exists (select id from switch_set where id = 129)limit 1;
+insert into `stock`.`switch_set` (id,switch_name,status,`type`,sort) select 130,'telegram通知（合约下注）',0,1,130 from switch_set where not exists (select id from switch_set where id = 130)limit 1;
+insert into `stock`.`switch_set` (id,switch_name,status,`type`,sort) select 131,'telegram通知（定期理财）',0,1,131 from switch_set where not exists (select id from switch_set where id = 131)limit 1;
+insert into `stock`.`switch_set` (id,switch_name,status,`type`,sort) select 132,'telegram通知（贷款申请）',0,1,132 from switch_set where not exists (select id from switch_set where id = 132)limit 1;
+insert into `stock`.`switch_set` (id,switch_name,status,`type`,sort) select 133,'telegram通知（实名认证）',0,1,133 from switch_set where not exists (select id from switch_set where id = 133)limit 1;
+insert into `stock`.`switch_set` (id,switch_name,status,`type`,sort) select 134,'telegram通知（绑定钱包地址）',0,1,134 from switch_set where not exists (select id from switch_set where id = 134)limit 1;

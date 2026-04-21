@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.OrderFeeSettingMapper">
+    
+    <resultMap type="OrderFeeSetting" id="OrderFeeSettingResult">
+        <result property="id"    column="id"    />
+        <result property="key"    column="key"    />
+        <result property="feeRate"    column="fee_rate"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectOrderFeeSettingVo">
+        select id, `key`, fee_rate, remark from order_fee_setting
+    </sql>
+
+    <select id="selectOrderFeeSettingList" parameterType="OrderFeeSetting" resultMap="OrderFeeSettingResult">
+        <include refid="selectOrderFeeSettingVo"/>
+        <where>  
+            <if test="key != null  and key != ''"> and `key` = #{key}</if>
+            <if test="feeRate != null "> and fee_rate = #{feeRate}</if>
+        </where>
+    </select>
+    
+    <select id="selectOrderFeeSettingById" parameterType="Long" resultMap="OrderFeeSettingResult">
+        <include refid="selectOrderFeeSettingVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectOrderFeeSettingByKey" resultMap="OrderFeeSettingResult">
+        <include refid="selectOrderFeeSettingVo"/>
+        where `key` = #{key}
+    </select>
+
+    <insert id="insertOrderFeeSetting" parameterType="OrderFeeSetting" useGeneratedKeys="true" keyProperty="id">
+        insert into order_fee_setting
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="key != null and key != ''">`key`,</if>
+            <if test="feeRate != null">fee_rate,</if>
+            <if test="remark != null and remark != ''">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="key != null and key != ''">#{key},</if>
+            <if test="feeRate != null">#{feeRate},</if>
+            <if test="remark != null and remark != ''">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOrderFeeSetting" parameterType="OrderFeeSetting">
+        update order_fee_setting
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="key != null and key != ''">`key` = #{key},</if>
+            <if test="feeRate != null">fee_rate = #{feeRate},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOrderFeeSettingById" parameterType="Long">
+        delete from order_fee_setting where id = #{id}
+    </delete>
+
+    <delete id="deleteOrderFeeSettingByIds" parameterType="String">
+        delete from order_fee_setting where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

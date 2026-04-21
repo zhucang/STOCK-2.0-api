@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.NewProductApplyPurchaseMapper">
+    
+    <resultMap type="NewProductApplyPurchase" id="NewProductApplyPurchaseResult">
+        <result property="id"    column="id"    />
+        <result property="selfSellProductId"    column="self_sell_product_id"    />
+        <result property="productName"    column="product_name"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="listingPrice"    column="listing_price"    />
+        <result property="listingQuantity"    column="listing_quantity"    />
+        <result property="listingDayIncreaseRate"    column="listing_day_increase_rate"    />
+        <result property="userAmountLimit"    column="user_amount_limit"    />
+        <result property="tradeDate"    column="trade_date"    />
+        <result property="status"    column="status"    />
+        <result property="sort"    column="sort"    />
+        <result property="applyPurchaseStartDate"    column="apply_purchase_start_date"    />
+        <result property="applyPurchaseEndDate"    column="apply_purchase_end_date"    />
+        <result property="remainingQuantity"    column="remaining_quantity"    />
+        <result property="listingStartDate"    column="listing_start_date"    />
+        <result property="listingEndDate"    column="listing_end_date"    />
+        <result property="listedDayIncreaseRate"    column="listed_day_increase_rate"    />
+        <result property="applyPurchaseMin"    column="apply_purchase_min"    />
+        <result property="applyPurchaseMax"    column="apply_purchase_max"    />
+        <result property="lockupPeriod"    column="lockup_period"    />
+        <result property="listingStatus"    column="listing_status"    />
+        <result property="productType"    column="product_type"    />
+        <result property="sqlVersion"    column="sql_version"    />
+        <association property="productNameLang" javaType="langMgr">
+            <result property="zh"    column="product_name"    />
+            <result property="en"    column="product_name_en"    />
+            <result property="tc"    column="product_name_tc"    />
+            <result property="de"    column="product_name_de"    />
+            <result property="es"    column="product_name_es"    />
+            <result property="fr"    column="product_name_fr"    />
+            <result property="idn"    column="product_name_idn"    />
+            <result property="jp"    column="product_name_jp"    />
+            <result property="ko"    column="product_name_ko"    />
+            <result property="my"    column="product_name_my"    />
+            <result property="th"    column="product_name_th"    />
+            <result property="vi"    column="product_name_vi"    />
+            <result property="pt"    column="product_name_pt"    />
+            <result property="rus"    column="product_name_rus"    />
+            <result property="blr"    column="product_name_blr"    />
+            <result property="ida"    column="product_name_ida"    />
+            <result property="sa"    column="product_name_sa"    />
+            <result property="ar"    column="product_name_ar"    />
+            <result property="it"    column="product_name_it"    />
+            <result property="tr"    column="product_name_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectNewProductApplyPurchaseVo">
+        select a.id, self_sell_product_id, product_name, product_code, listing_price, listing_quantity, listing_day_increase_rate, user_amount_limit, trade_date, a.status, sort, apply_purchase_start_date, apply_purchase_end_date, remaining_quantity, listing_start_date, listing_end_date, listed_day_increase_rate, apply_purchase_min, apply_purchase_max, lockup_period, listing_status,sql_version, a.product_type,product_name_en, product_name_tc, product_name_de, product_name_es, product_name_fr, product_name_idn, product_name_jp, product_name_ko, product_name_my, product_name_th, product_name_vi, product_name_pt, product_name_rus, product_name_blr, product_name_ida, product_name_sa, product_name_ar, product_name_it, product_name_tr
+        from new_product_apply_purchase a
+                 left join self_sell_product b
+                           on a.self_sell_product_id = b.id
+    </sql>
+
+    <select id="selectNewProductApplyPurchaseList" parameterType="NewProductApplyPurchase" resultMap="NewProductApplyPurchaseResult">
+        <include refid="selectNewProductApplyPurchaseVo"/>
+        <where>  
+            <if test="selfSellProductId != null "> and self_sell_product_id = #{selfSellProductId}</if>
+            <if test="listingPrice != null "> and listing_price = #{listingPrice}</if>
+            <if test="listingQuantity != null "> and listing_quantity = #{listingQuantity}</if>
+            <if test="listingDayIncreaseRate != null "> and listing_day_increase_rate = #{listingDayIncreaseRate}</if>
+            <if test="userAmountLimit != null "> and user_amount_limit = #{userAmountLimit}</if>
+            <if test="tradeDate != null "> and trade_date = #{tradeDate}</if>
+            <if test="status != null "> and a.status = #{status}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="applyPurchaseStartDate != null "> and apply_purchase_start_date = #{applyPurchaseStartDate}</if>
+            <if test="applyPurchaseEndDate != null "> and apply_purchase_end_date = #{applyPurchaseEndDate}</if>
+            <if test="remainingQuantity != null "> and remaining_quantity = #{remainingQuantity}</if>
+            <if test="listingStartDate != null "> and listing_start_date = #{listingStartDate}</if>
+            <if test="listingEndDate != null "> and listing_end_date = #{listingEndDate}</if>
+            <if test="listedDayIncreaseRate != null "> and listed_day_increase_rate = #{listedDayIncreaseRate}</if>
+            <if test="applyPurchaseMin != null "> and apply_purchase_min = #{applyPurchaseMin}</if>
+            <if test="applyPurchaseMax != null "> and apply_purchase_max = #{applyPurchaseMax}</if>
+            <if test="lockupPeriod != null "> and lockup_period = #{lockupPeriod}</if>
+            <if test="listingStatus != null "> and listing_status = #{listingStatus}</if>
+            <if test="productType != null "> and a.product_type = #{productType}</if>
+            <if test="params.appView != null "> and (listing_status = 0 or listing_status = 1)</if>
+        </where>
+    </select>
+    
+    <select id="selectNewProductApplyPurchaseById" parameterType="Long" resultMap="NewProductApplyPurchaseResult">
+        <include refid="selectNewProductApplyPurchaseVo"/>
+        where a.id = #{id}
+    </select>
+
+    <select id="selectListingNewProduct" resultMap="NewProductApplyPurchaseResult">
+        <include refid="selectNewProductApplyPurchaseVo"/>
+        where a.status = 0 and listing_status = 1
+        <![CDATA[ and DATE_FORMAT(#{nowDate},'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT(listing_start_date,'%Y-%m-%d %H:%i:%s')]]>
+    </select>
+
+    <insert id="insertNewProductApplyPurchase" parameterType="NewProductApplyPurchase" useGeneratedKeys="true" keyProperty="id">
+        insert into new_product_apply_purchase
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="selfSellProductId != null">self_sell_product_id,</if>
+            <if test="listingPrice != null">listing_price,</if>
+            <if test="listingQuantity != null">listing_quantity,</if>
+            <if test="listingDayIncreaseRate != null">listing_day_increase_rate,</if>
+            <if test="userAmountLimit != null">user_amount_limit,</if>
+            <if test="tradeDate != null">trade_date,</if>
+            <if test="status != null">status,</if>
+            <if test="sort != null">sort,</if>
+            <if test="applyPurchaseStartDate != null">apply_purchase_start_date,</if>
+            <if test="applyPurchaseEndDate != null">apply_purchase_end_date,</if>
+            <if test="remainingQuantity != null">remaining_quantity,</if>
+            <if test="listingStartDate != null">listing_start_date,</if>
+            <if test="listingEndDate != null">listing_end_date,</if>
+            <if test="listedDayIncreaseRate != null">listed_day_increase_rate,</if>
+            <if test="applyPurchaseMin != null">apply_purchase_min,</if>
+            <if test="applyPurchaseMax != null">apply_purchase_max,</if>
+            <if test="lockupPeriod != null">lockup_period,</if>
+            <if test="listingStatus != null">listing_status,</if>
+            <if test="productType != null">product_type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="selfSellProductId != null">#{selfSellProductId},</if>
+            <if test="listingPrice != null">#{listingPrice},</if>
+            <if test="listingQuantity != null">#{listingQuantity},</if>
+            <if test="listingDayIncreaseRate != null">#{listingDayIncreaseRate},</if>
+            <if test="userAmountLimit != null">#{userAmountLimit},</if>
+            <if test="tradeDate != null">#{tradeDate},</if>
+            <if test="status != null">#{status},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="applyPurchaseStartDate != null">#{applyPurchaseStartDate},</if>
+            <if test="applyPurchaseEndDate != null">#{applyPurchaseEndDate},</if>
+            <if test="remainingQuantity != null">#{remainingQuantity},</if>
+            <if test="listingStartDate != null">#{listingStartDate},</if>
+            <if test="listingEndDate != null">#{listingEndDate},</if>
+            <if test="listedDayIncreaseRate != null">#{listedDayIncreaseRate},</if>
+            <if test="applyPurchaseMin != null">#{applyPurchaseMin},</if>
+            <if test="applyPurchaseMax != null">#{applyPurchaseMax},</if>
+            <if test="lockupPeriod != null">#{lockupPeriod},</if>
+            <if test="listingStatus != null">#{listingStatus},</if>
+            <if test="productType != null">#{productType},</if>
+         </trim>
+    </insert>
+
+    <update id="updateNewProductApplyPurchase" parameterType="NewProductApplyPurchase">
+        update new_product_apply_purchase
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="selfSellProductId != null">self_sell_product_id = #{selfSellProductId},</if>
+            <if test="listingPrice != null">listing_price = #{listingPrice},</if>
+            listing_quantity = #{listingQuantity},
+            remaining_quantity = #{remainingQuantity},
+            <if test="listingDayIncreaseRate != null">listing_day_increase_rate = #{listingDayIncreaseRate},</if>
+            <if test="userAmountLimit != null">user_amount_limit = #{userAmountLimit},</if>
+            <if test="tradeDate != null">trade_date = #{tradeDate},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="applyPurchaseStartDate != null">apply_purchase_start_date = #{applyPurchaseStartDate},</if>
+            <if test="applyPurchaseEndDate != null">apply_purchase_end_date = #{applyPurchaseEndDate},</if>
+            <if test="listingStartDate != null">listing_start_date = #{listingStartDate},</if>
+            <if test="listingEndDate != null">listing_end_date = #{listingEndDate},</if>
+            <if test="listedDayIncreaseRate != null">listed_day_increase_rate = #{listedDayIncreaseRate},</if>
+            <if test="applyPurchaseMin != null">apply_purchase_min = #{applyPurchaseMin},</if>
+            <if test="applyPurchaseMax != null">apply_purchase_max = #{applyPurchaseMax},</if>
+            <if test="lockupPeriod != null">lockup_period = #{lockupPeriod},</if>
+            <if test="listingStatus != null">listing_status = #{listingStatus},</if>
+            <if test="productType != null">product_type = #{productType},</if>
+            <if test="sqlVersion != null">sql_version = sql_version + 1,</if>
+        </trim>
+        where id = #{id}
+        <if test="sqlVersion != null">and sql_version = #{sqlVersion}</if>
+    </update>
+
+    <update id="startApplyPurchaseNewProduct">
+        update new_product_apply_purchase set listing_status = 1
+        where status = 0 and listing_status = 0
+        <![CDATA[ and DATE_FORMAT(#{nowDate},'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT(apply_purchase_start_date,'%Y-%m-%d %H:%i:%s')]]>
+    </update>
+
+    <delete id="deleteNewProductApplyPurchaseById" parameterType="Long">
+        delete from new_product_apply_purchase where id = #{id}
+    </delete>
+
+    <delete id="deleteNewProductApplyPurchaseByIds" parameterType="String">
+        delete from new_product_apply_purchase where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

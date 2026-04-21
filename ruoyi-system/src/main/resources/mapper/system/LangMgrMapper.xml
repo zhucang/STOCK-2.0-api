@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.LangMgrMapper">
+    
+    <resultMap type="LangMgr" id="LangMgrResult">
+        <result property="id"    column="id"    />
+        <result property="langKey"    column="lang_key"    />
+        <result property="zh"    column="zh"    />
+        <result property="en"    column="en"    />
+        <result property="tc"    column="tc"    />
+        <result property="de"    column="de"    />
+        <result property="es"    column="es"    />
+        <result property="fr"    column="fr"    />
+        <result property="idn"    column="idn"    />
+        <result property="jp"    column="jp"    />
+        <result property="ko"    column="ko"    />
+        <result property="my"    column="my"    />
+        <result property="th"    column="th"    />
+        <result property="vi"    column="vi"    />
+        <result property="pt"    column="pt"    />
+        <result property="rus"    column="rus"    />
+        <result property="blr"    column="blr"    />
+        <result property="ida"    column="ida"    />
+        <result property="sa"    column="sa"    />
+        <result property="ar"    column="ar"    />
+        <result property="it"    column="it"    />
+        <result property="tr"    column="tr"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectLangMgrVo">
+        select id, lang_key, zh, en, tc, de, es, fr, idn, jp, ko, my, th, vi, pt, rus, blr, ida, sa, ar, it, tr, remark from lang_mgr
+    </sql>
+
+    <select id="selectLangMgrList" parameterType="LangMgr" resultMap="LangMgrResult">
+        <include refid="selectLangMgrVo"/>
+        <where>
+            <if test="langKey != null  and langKey != ''"> and lang_key like concat('%',#{langKey},'%')</if>
+            <if test="zh != null  and zh != ''"> and zh like concat('%',#{zh},'%')</if>
+            <if test="en != null  and en != ''"> and en like concat('%',#{en},'%')</if>
+            <if test="tc != null  and tc != ''"> and tc like concat('%',#{tc},'%')</if>
+            <if test="de != null  and de != ''"> and de like concat('%',#{de},'%')</if>
+            <if test="es != null  and es != ''"> and es like concat('%',#{es},'%')</if>
+            <if test="fr != null  and fr != ''"> and fr like concat('%',#{fr},'%')</if>
+            <if test="idn != null  and idn != ''"> and idn like concat('%',#{idn},'%')</if>
+            <if test="jp != null  and jp != ''"> and jp like concat('%',#{jp},'%')</if>
+            <if test="ko != null  and ko != ''"> and ko like concat('%',#{ko},'%')</if>
+            <if test="my != null  and my != ''"> and my like concat('%',#{my},'%')</if>
+            <if test="th != null  and th != ''"> and th like concat('%',#{th},'%')</if>
+            <if test="vi != null  and vi != ''"> and vi like concat('%',#{vi},'%')</if>
+            <if test="pt != null  and pt != ''"> and pt like concat('%',#{pt},'%')</if>
+            <if test="rus != null  and rus != ''"> and rus like concat('%',#{rus},'%')</if>
+            <if test="blr != null  and blr != ''"> and blr like concat('%',#{blr},'%')</if>
+            <if test="ida != null  and ida != ''"> and ida like concat('%',#{ida},'%')</if>
+            <if test="sa != null  and sa != ''"> and sa like concat('%',#{sa},'%')</if>
+            <if test="ar != null  and ar != ''"> and ar like concat('%',#{ar},'%')</if>
+            <if test="it != null  and it != ''"> and it like concat('%',#{it},'%')</if>
+            <if test="tr != null  and tr != ''"> and tr like concat('%',#{tr},'%')</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectLangMgrById" parameterType="Long" resultMap="LangMgrResult">
+        <include refid="selectLangMgrVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectLangMgrByLangKey" resultMap="LangMgrResult">
+        <include refid="selectLangMgrVo"/>
+        where lang_key = #{langKey}
+    </select>
+
+    <insert id="insertLangMgr" parameterType="LangMgr" useGeneratedKeys="true" keyProperty="id">
+        insert into lang_mgr
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="langKey != null and langKey != ''">lang_key,</if>
+            <if test="zh != null">zh,</if>
+            <if test="en != null">en,</if>
+            <if test="tc != null">tc,</if>
+            <if test="de != null">de,</if>
+            <if test="es != null">es,</if>
+            <if test="fr != null">fr,</if>
+            <if test="idn != null">idn,</if>
+            <if test="jp != null">jp,</if>
+            <if test="ko != null">ko,</if>
+            <if test="my != null">my,</if>
+            <if test="th != null">th,</if>
+            <if test="vi != null">vi,</if>
+            <if test="pt != null">pt,</if>
+            <if test="rus != null">rus,</if>
+            <if test="blr != null">blr,</if>
+            <if test="ida != null">ida,</if>
+            <if test="sa != null">sa,</if>
+            <if test="ar != null">ar,</if>
+            <if test="it != null">it,</if>
+            <if test="tr != null">tr,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="langKey != null and langKey != ''">#{langKey},</if>
+            <if test="zh != null">#{zh},</if>
+            <if test="en != null">#{en},</if>
+            <if test="tc != null">#{tc},</if>
+            <if test="de != null">#{de},</if>
+            <if test="es != null">#{es},</if>
+            <if test="fr != null">#{fr},</if>
+            <if test="idn != null">#{idn},</if>
+            <if test="jp != null">#{jp},</if>
+            <if test="ko != null">#{ko},</if>
+            <if test="my != null">#{my},</if>
+            <if test="th != null">#{th},</if>
+            <if test="vi != null">#{vi},</if>
+            <if test="pt != null">#{pt},</if>
+            <if test="rus != null">#{rus},</if>
+            <if test="blr != null">#{blr},</if>
+            <if test="ida != null">#{ida},</if>
+            <if test="sa != null">#{sa},</if>
+            <if test="ar != null">#{ar},</if>
+            <if test="it != null">#{it},</if>
+            <if test="tr != null">#{tr},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLangMgr" parameterType="LangMgr">
+        update lang_mgr
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="langKey != null and langKey != ''">lang_key = #{langKey},</if>
+            <if test="zh != null">zh = #{zh},</if>
+            <if test="en != null">en = #{en},</if>
+            <if test="tc != null">tc = #{tc},</if>
+            <if test="de != null">de = #{de},</if>
+            <if test="es != null">es = #{es},</if>
+            <if test="fr != null">fr = #{fr},</if>
+            <if test="idn != null">idn = #{idn},</if>
+            <if test="jp != null">jp = #{jp},</if>
+            <if test="ko != null">ko = #{ko},</if>
+            <if test="my != null">my = #{my},</if>
+            <if test="th != null">th = #{th},</if>
+            <if test="vi != null">vi = #{vi},</if>
+            <if test="pt != null">pt = #{pt},</if>
+            <if test="rus != null">rus = #{rus},</if>
+            <if test="blr != null">blr = #{blr},</if>
+            <if test="ida != null">ida = #{ida},</if>
+            <if test="sa != null">sa = #{sa},</if>
+            <if test="ar != null">ar = #{ar},</if>
+            <if test="it != null">it = #{it},</if>
+            <if test="tr != null">tr = #{tr},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="updateLangMgrByLangKey">
+        update lang_mgr
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="zh != null">zh = #{zh},</if>
+            <if test="en != null">en = #{en},</if>
+            <if test="tc != null">tc = #{tc},</if>
+            <if test="de != null">de = #{de},</if>
+            <if test="es != null">es = #{es},</if>
+            <if test="fr != null">fr = #{fr},</if>
+            <if test="idn != null">idn = #{idn},</if>
+            <if test="jp != null">jp = #{jp},</if>
+            <if test="ko != null">ko = #{ko},</if>
+            <if test="my != null">my = #{my},</if>
+            <if test="th != null">th = #{th},</if>
+            <if test="vi != null">vi = #{vi},</if>
+            <if test="pt != null">pt = #{pt},</if>
+            <if test="rus != null">rus = #{rus},</if>
+            <if test="blr != null">blr = #{blr},</if>
+            <if test="ida != null">ida = #{ida},</if>
+            <if test="sa != null">sa = #{sa},</if>
+            <if test="ar != null">ar = #{ar},</if>
+            <if test="it != null">it = #{it},</if>
+            <if test="tr != null">tr = #{tr},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where lang_key = #{langKey}
+    </update>
+
+    <update id="batchReplaceLangValue">
+        update lang_mgr
+        set
+            zh=replace(zh,#{from},#{to}),
+            en=replace(en,#{from},#{to}),
+            tc=replace(tc,#{from},#{to}),
+            de=replace(de,#{from},#{to}),
+            es=replace(es,#{from},#{to}),
+            fr=replace(fr,#{from},#{to}),
+            idn=replace(idn,#{from},#{to}),
+            jp=replace(jp,#{from},#{to}),
+            ko=replace(ko,#{from},#{to}),
+            my=replace(my,#{from},#{to}),
+            th=replace(th,#{from},#{to}),
+            vi=replace(vi,#{from},#{to}),
+            pt=replace(pt,#{from},#{to}),
+            rus=replace(rus,#{from},#{to}),
+            blr=replace(blr,#{from},#{to}),
+            ida=replace(ida,#{from},#{to}),
+            sa=replace(sa,#{from},#{to}),
+            ar=replace(ar,#{from},#{to}),
+            it=replace(it,#{from},#{to}),
+            tr=replace(tr,#{from},#{to}),
+            remark=replace(remark,#{from},#{to})
+    </update>
+
+    <delete id="deleteLangMgrById" parameterType="Long">
+        delete from lang_mgr where id = #{id}
+    </delete>
+
+    <delete id="deleteLangMgrByIds" parameterType="String">
+        delete from lang_mgr where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

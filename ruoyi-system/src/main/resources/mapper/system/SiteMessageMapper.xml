@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SiteMessageMapper">
+    
+    <resultMap type="SiteMessage" id="SiteMessageResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userAccount"    column="user_account"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="accountType"    column="account_type"    />
+        <result property="agentId"    column="agent_id"    />
+        <result property="agentName"    column="agent_name"    />
+        <result property="userRemark"    column="user_remark"    />
+        <result property="msgTitle"    column="msg_title"    />
+        <result property="msgContent"    column="msg_content"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="isVisible"    column="is_visible"    />
+        <result property="isPrivate"    column="is_private"    />
+        <result property="siteMessageTypeId"    column="site_message_type_id"    />
+        <result property="readFlag"    column="read_flag"    />
+        <association property="msgTitleLang" javaType="langMgr">
+            <result property="zh"    column="msg_title"    />
+            <result property="en"    column="msg_title_en"    />
+            <result property="tc"    column="msg_title_tc"    />
+            <result property="de"    column="msg_title_de"    />
+            <result property="es"    column="msg_title_es"    />
+            <result property="fr"    column="msg_title_fr"    />
+            <result property="idn"    column="msg_title_idn"    />
+            <result property="jp"    column="msg_title_jp"    />
+            <result property="ko"    column="msg_title_ko"    />
+            <result property="my"    column="msg_title_my"    />
+            <result property="th"    column="msg_title_th"    />
+            <result property="vi"    column="msg_title_vi"    />
+            <result property="pt"    column="msg_title_pt"    />
+            <result property="rus"    column="msg_title_rus"    />
+            <result property="blr"    column="msg_title_blr"    />
+            <result property="ida"    column="msg_title_ida"    />
+            <result property="sa"    column="msg_title_sa"    />
+            <result property="ar"    column="msg_title_ar"    />
+            <result property="it"    column="msg_title_it"    />
+            <result property="tr"    column="msg_title_tr"    />
+        </association>
+        <association property="msgContentLang" javaType="langMgr">
+            <result property="zh"    column="msg_content"    />
+            <result property="en"    column="msg_content_en"    />
+            <result property="tc"    column="msg_content_tc"    />
+            <result property="de"    column="msg_content_de"    />
+            <result property="es"    column="msg_content_es"    />
+            <result property="fr"    column="msg_content_fr"    />
+            <result property="idn"    column="msg_content_idn"    />
+            <result property="jp"    column="msg_content_jp"    />
+            <result property="ko"    column="msg_content_ko"    />
+            <result property="my"    column="msg_content_my"    />
+            <result property="th"    column="msg_content_th"    />
+            <result property="vi"    column="msg_content_vi"    />
+            <result property="pt"    column="msg_content_pt"    />
+            <result property="rus"    column="msg_content_rus"    />
+            <result property="blr"    column="msg_content_blr"    />
+            <result property="ida"    column="msg_content_ida"    />
+            <result property="sa"    column="msg_content_sa"    />
+            <result property="ar"    column="msg_content_ar"    />
+            <result property="it"    column="msg_content_it"    />
+            <result property="tr"    column="msg_content_tr"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectSiteMessageVo">
+        select a.id, user_id,user_account,nick_name,account_type,agent_id,agent_name, b.remark user_remark, msg_title, msg_content, create_time, is_visible, is_private, site_message_type_id, msg_title_en, msg_title_tc, msg_title_de, msg_title_es, msg_title_fr, msg_title_idn, msg_title_jp, msg_title_ko, msg_title_my, msg_title_th, msg_title_vi, msg_title_pt, msg_title_rus, msg_title_blr, msg_title_ida, msg_title_sa, msg_title_ar, msg_title_it, msg_title_tr, msg_content_en, msg_content_tc, msg_content_de, msg_content_es, msg_content_fr, msg_content_idn, msg_content_jp, msg_content_ko, msg_content_my, msg_content_th, msg_content_vi, msg_content_pt, msg_content_rus, msg_content_blr, msg_content_ida, msg_content_sa, msg_content_ar, msg_content_it, msg_content_tr
+             ,(select COUNT(1) from site_message_read where user_id = IFNULL(a.user_id,#{userId}) and site_message_id = a.id) as read_flag
+        from site_message a
+                 left join user_info b
+                           on a.user_id = b.id
+    </sql>
+
+    <select id="selectSiteMessageList" parameterType="SiteMessage" resultMap="SiteMessageResult">
+        <include refid="selectSiteMessageVo"/>
+        <where>  
+            <if test="userId != null"> and (user_id = #{userId} or user_id is null)</if>
+            <if test="userAccount != null "> and user_account like concat('%',#{userAccount},'%') </if>
+            <if test="nickName != null "> and nick_name like concat('%',#{nickName},'%') </if>
+            <if test="accountType != null "> and account_type = #{accountType}</if>
+            <if test="agentId != null "> and agent_id = #{agentId}</if>
+            <if test="msgTitle != null  and msgTitle != ''"> and msg_title = #{msgTitle}</if>
+            <if test="msgContent != null  and msgContent != ''"> and msg_content = #{msgContent}</if>
+            <if test="isVisible != null "> and is_visible = #{isVisible}</if>
+            <if test="isPrivate != null "> and is_private = #{isPrivate}</if>
+            <if test="siteMessageTypeId != null "> and site_message_type_id = #{siteMessageTypeId}</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and a.id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and a.id = 0
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectSiteMessageById" parameterType="Long" resultMap="SiteMessageResult">
+        <include refid="selectSiteMessageVo"/>
+        where a.id = #{id}
+    </select>
+
+    <select id="notReadMessageCount" resultType="java.lang.Integer">
+        select count(1)
+        from site_message a
+        where (user_id = #{userId} or user_id is null)
+          and
+            (select COUNT(1) from site_message_read where user_id = #{userId} and site_message_id = a.id) = 0;
+    </select>
+
+    <insert id="insertSiteMessage" parameterType="SiteMessage" useGeneratedKeys="true" keyProperty="id">
+        insert into site_message
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="msgTitle != null">msg_title,</if>
+            <if test="msgContent != null">msg_content,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="isVisible != null">is_visible,</if>
+            <if test="isPrivate != null">is_private,</if>
+            <if test="siteMessageTypeId != null">site_message_type_id,</if>
+            <if test="msgTitleLang.zh != null and msgTitle == null">msg_title,</if>
+            <if test="msgTitleLang.en != null">msg_title_en,</if>
+            <if test="msgTitleLang.tc != null">msg_title_tc,</if>
+            <if test="msgTitleLang.de != null">msg_title_de,</if>
+            <if test="msgTitleLang.es != null">msg_title_es,</if>
+            <if test="msgTitleLang.fr != null">msg_title_fr,</if>
+            <if test="msgTitleLang.idn != null">msg_title_idn,</if>
+            <if test="msgTitleLang.jp != null">msg_title_jp,</if>
+            <if test="msgTitleLang.ko != null">msg_title_ko,</if>
+            <if test="msgTitleLang.my != null">msg_title_my,</if>
+            <if test="msgTitleLang.th != null">msg_title_th,</if>
+            <if test="msgTitleLang.vi != null">msg_title_vi,</if>
+            <if test="msgTitleLang.pt != null">msg_title_pt,</if>
+            <if test="msgTitleLang.rus != null">msg_title_rus,</if>
+            <if test="msgTitleLang.blr != null">msg_title_blr,</if>
+            <if test="msgTitleLang.ida != null">msg_title_ida,</if>
+            <if test="msgTitleLang.sa != null">msg_title_sa,</if>
+            <if test="msgTitleLang.ar != null">msg_title_ar,</if>
+            <if test="msgTitleLang.it != null">msg_title_it,</if>
+            <if test="msgTitleLang.tr != null">msg_title_tr,</if>
+            <if test="msgContentLang.zh != null and msgContent == null">msg_content,</if>
+            <if test="msgContentLang.en != null">msg_content_en,</if>
+            <if test="msgContentLang.tc != null">msg_content_tc,</if>
+            <if test="msgContentLang.de != null">msg_content_de,</if>
+            <if test="msgContentLang.es != null">msg_content_es,</if>
+            <if test="msgContentLang.fr != null">msg_content_fr,</if>
+            <if test="msgContentLang.idn != null">msg_content_idn,</if>
+            <if test="msgContentLang.jp != null">msg_content_jp,</if>
+            <if test="msgContentLang.ko != null">msg_content_ko,</if>
+            <if test="msgContentLang.my != null">msg_content_my,</if>
+            <if test="msgContentLang.th != null">msg_content_th,</if>
+            <if test="msgContentLang.vi != null">msg_content_vi,</if>
+            <if test="msgContentLang.pt != null">msg_content_pt,</if>
+            <if test="msgContentLang.rus != null">msg_content_rus,</if>
+            <if test="msgContentLang.blr != null">msg_content_blr,</if>
+            <if test="msgContentLang.ida != null">msg_content_ida,</if>
+            <if test="msgContentLang.sa != null">msg_content_sa,</if>
+            <if test="msgContentLang.ar != null">msg_content_ar,</if>
+            <if test="msgContentLang.it != null">msg_content_it,</if>
+            <if test="msgContentLang.tr != null">msg_content_tr,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="msgTitle != null">#{msgTitle},</if>
+            <if test="msgContent != null">#{msgContent},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="isVisible != null">#{isVisible},</if>
+            <if test="isPrivate != null">#{isPrivate},</if>
+            <if test="siteMessageTypeId != null">#{siteMessageTypeId},</if>
+            <if test="msgTitleLang.zh != null and msgTitle == null">#{msgTitleLang.zh},</if>
+            <if test="msgTitleLang.en != null">#{msgTitleLang.en},</if>
+            <if test="msgTitleLang.tc != null">#{msgTitleLang.tc},</if>
+            <if test="msgTitleLang.de != null">#{msgTitleLang.de},</if>
+            <if test="msgTitleLang.es != null">#{msgTitleLang.es},</if>
+            <if test="msgTitleLang.fr != null">#{msgTitleLang.fr},</if>
+            <if test="msgTitleLang.idn != null">#{msgTitleLang.idn},</if>
+            <if test="msgTitleLang.jp != null">#{msgTitleLang.jp},</if>
+            <if test="msgTitleLang.ko != null">#{msgTitleLang.ko},</if>
+            <if test="msgTitleLang.my != null">#{msgTitleLang.my},</if>
+            <if test="msgTitleLang.th != null">#{msgTitleLang.th},</if>
+            <if test="msgTitleLang.vi != null">#{msgTitleLang.vi},</if>
+            <if test="msgTitleLang.pt != null">#{msgTitleLang.pt},</if>
+            <if test="msgTitleLang.rus != null">#{msgTitleLang.rus},</if>
+            <if test="msgTitleLang.blr != null">#{msgTitleLang.blr},</if>
+            <if test="msgTitleLang.ida != null">#{msgTitleLang.ida},</if>
+            <if test="msgTitleLang.sa != null">#{msgTitleLang.sa},</if>
+            <if test="msgTitleLang.ar != null">#{msgTitleLang.ar},</if>
+            <if test="msgTitleLang.it != null">#{msgTitleLang.it},</if>
+            <if test="msgTitleLang.tr != null">#{msgTitleLang.tr},</if>
+            <if test="msgContentLang.zh != null and msgContent == null">#{msgContentLang.zh},</if>
+            <if test="msgContentLang.en != null">#{msgContentLang.en},</if>
+            <if test="msgContentLang.tc != null">#{msgContentLang.tc},</if>
+            <if test="msgContentLang.de != null">#{msgContentLang.de},</if>
+            <if test="msgContentLang.es != null">#{msgContentLang.es},</if>
+            <if test="msgContentLang.fr != null">#{msgContentLang.fr},</if>
+            <if test="msgContentLang.idn != null">#{msgContentLang.idn},</if>
+            <if test="msgContentLang.jp != null">#{msgContentLang.jp},</if>
+            <if test="msgContentLang.ko != null">#{msgContentLang.ko},</if>
+            <if test="msgContentLang.my != null">#{msgContentLang.my},</if>
+            <if test="msgContentLang.th != null">#{msgContentLang.th},</if>
+            <if test="msgContentLang.vi != null">#{msgContentLang.vi},</if>
+            <if test="msgContentLang.pt != null">#{msgContentLang.pt},</if>
+            <if test="msgContentLang.rus != null">#{msgContentLang.rus},</if>
+            <if test="msgContentLang.blr != null">#{msgContentLang.blr},</if>
+            <if test="msgContentLang.ida != null">#{msgContentLang.ida},</if>
+            <if test="msgContentLang.sa != null">#{msgContentLang.sa},</if>
+            <if test="msgContentLang.ar != null">#{msgContentLang.ar},</if>
+            <if test="msgContentLang.it != null">#{msgContentLang.it},</if>
+            <if test="msgContentLang.tr != null">#{msgContentLang.tr},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertSiteMessages">
+        insert into site_message(user_id, msg_title, msg_content, create_time, is_visible, is_private, site_message_type_id,
+        msg_title_en, msg_title_tc, msg_title_de, msg_title_es, msg_title_fr, msg_title_idn, msg_title_jp, msg_title_ko, msg_title_my, msg_title_th, msg_title_vi, msg_title_pt, msg_title_rus, msg_title_blr, msg_title_ida, msg_title_sa, msg_title_ar, msg_title_it, msg_title_tr,
+        msg_content_en, msg_content_tc, msg_content_de, msg_content_es, msg_content_fr, msg_content_idn, msg_content_jp, msg_content_ko, msg_content_my, msg_content_th, msg_content_vi, msg_content_pt, msg_content_rus, msg_content_blr, msg_content_ida, msg_content_sa, msg_content_ar, msg_content_it, msg_content_tr)
+        values
+        <foreach collection="siteMessages" item="item" separator=",">
+            (#{item.userId}, #{item.msgTitle}, #{item.msgContent}, #{item.createTime}, #{item.isVisible}, #{item.isPrivate}, #{item.siteMessageTypeId},
+            #{item.msgTitleLang.en}, #{item.msgTitleLang.tc}, #{item.msgTitleLang.de}, #{item.msgTitleLang.es}, #{item.msgTitleLang.fr}, #{item.msgTitleLang.idn}, #{item.msgTitleLang.jp}, #{item.msgTitleLang.ko}, #{item.msgTitleLang.my}, #{item.msgTitleLang.th}, #{item.msgTitleLang.vi}, #{item.msgTitleLang.pt}, #{item.msgTitleLang.rus}, #{item.msgTitleLang.blr}, #{item.msgTitleLang.ida}, #{item.msgTitleLang.sa}, #{item.msgTitleLang.ar}, #{item.msgTitleLang.it}, #{item.msgTitleLang.tr},
+            #{item.msgContentLang.en}, #{item.msgContentLang.tc}, #{item.msgContentLang.de}, #{item.msgContentLang.es}, #{item.msgContentLang.fr}, #{item.msgContentLang.idn}, #{item.msgContentLang.jp}, #{item.msgContentLang.ko}, #{item.msgContentLang.my}, #{item.msgContentLang.th}, #{item.msgContentLang.vi}, #{item.msgContentLang.pt}, #{item.msgContentLang.rus}, #{item.msgContentLang.blr}, #{item.msgContentLang.ida}, #{item.msgContentLang.sa}, #{item.msgContentLang.ar}, #{item.msgContentLang.it}, #{item.msgContentLang.tr})
+        </foreach>
+    </insert>
+
+    <update id="updateSiteMessage" parameterType="SiteMessage">
+        update site_message
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="msgTitle != null">msg_title = #{msgTitle},</if>
+            <if test="msgContent != null">msg_content = #{msgContent},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="isVisible != null">is_visible = #{isVisible},</if>
+            <if test="isPrivate != null">is_private = #{isPrivate},</if>
+            <if test="siteMessageTypeId != null">site_message_type_id = #{siteMessageTypeId},</if>
+            <if test="msgTitleLang.zh != null and msgTitle == null">msg_title = #{msgTitleLang.zh},</if>
+            <if test="msgTitleLang.en != null">msg_title_en = #{msgTitleLang.en},</if>
+            <if test="msgTitleLang.tc != null">msg_title_tc = #{msgTitleLang.tc},</if>
+            <if test="msgTitleLang.de != null">msg_title_de = #{msgTitleLang.de},</if>
+            <if test="msgTitleLang.es != null">msg_title_es = #{msgTitleLang.es},</if>
+            <if test="msgTitleLang.fr != null">msg_title_fr = #{msgTitleLang.fr},</if>
+            <if test="msgTitleLang.idn != null">msg_title_idn = #{msgTitleLang.idn},</if>
+            <if test="msgTitleLang.jp != null">msg_title_jp = #{msgTitleLang.jp},</if>
+            <if test="msgTitleLang.ko != null">msg_title_ko = #{msgTitleLang.ko},</if>
+            <if test="msgTitleLang.my != null">msg_title_my = #{msgTitleLang.my},</if>
+            <if test="msgTitleLang.th != null">msg_title_th = #{msgTitleLang.th},</if>
+            <if test="msgTitleLang.vi != null">msg_title_vi = #{msgTitleLang.vi},</if>
+            <if test="msgTitleLang.pt != null">msg_title_pt = #{msgTitleLang.pt},</if>
+            <if test="msgTitleLang.rus != null">msg_title_rus = #{msgTitleLang.rus},</if>
+            <if test="msgTitleLang.blr != null">msg_title_blr = #{msgTitleLang.blr},</if>
+            <if test="msgTitleLang.ida != null">msg_title_ida = #{msgTitleLang.ida},</if>
+            <if test="msgTitleLang.sa != null">msg_title_sa = #{msgTitleLang.sa},</if>
+            <if test="msgTitleLang.ar != null">msg_title_ar = #{msgTitleLang.ar},</if>
+            <if test="msgTitleLang.it != null">msg_title_it = #{msgTitleLang.it},</if>
+            <if test="msgTitleLang.tr != null">msg_title_tr = #{msgTitleLang.tr},</if>
+            <if test="msgContentLang.zh != null and msgContent == null">msg_content = #{msgContentLang.zh},</if>
+            <if test="msgContentLang.en != null">msg_content_en = #{msgContentLang.en},</if>
+            <if test="msgContentLang.tc != null">msg_content_tc = #{msgContentLang.tc},</if>
+            <if test="msgContentLang.de != null">msg_content_de = #{msgContentLang.de},</if>
+            <if test="msgContentLang.es != null">msg_content_es = #{msgContentLang.es},</if>
+            <if test="msgContentLang.fr != null">msg_content_fr = #{msgContentLang.fr},</if>
+            <if test="msgContentLang.idn != null">msg_content_idn = #{msgContentLang.idn},</if>
+            <if test="msgContentLang.jp != null">msg_content_jp = #{msgContentLang.jp},</if>
+            <if test="msgContentLang.ko != null">msg_content_ko = #{msgContentLang.ko},</if>
+            <if test="msgContentLang.my != null">msg_content_my = #{msgContentLang.my},</if>
+            <if test="msgContentLang.th != null">msg_content_th = #{msgContentLang.th},</if>
+            <if test="msgContentLang.vi != null">msg_content_vi = #{msgContentLang.vi},</if>
+            <if test="msgContentLang.pt != null">msg_content_pt = #{msgContentLang.pt},</if>
+            <if test="msgContentLang.rus != null">msg_content_rus = #{msgContentLang.rus},</if>
+            <if test="msgContentLang.blr != null">msg_content_blr = #{msgContentLang.blr},</if>
+            <if test="msgContentLang.ida != null">msg_content_ida = #{msgContentLang.ida},</if>
+            <if test="msgContentLang.sa != null">msg_content_sa = #{msgContentLang.sa},</if>
+            <if test="msgContentLang.ar != null">msg_content_ar = #{msgContentLang.ar},</if>
+            <if test="msgContentLang.it != null">msg_content_it = #{msgContentLang.it},</if>
+            <if test="msgContentLang.tr != null">msg_content_tr = #{msgContentLang.tr},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSiteMessageById" parameterType="Long">
+        delete from site_message where id = #{id}
+    </delete>
+
+    <delete id="deleteSiteMessageByIds" parameterType="String">
+        delete from site_message where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

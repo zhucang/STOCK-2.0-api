@@ -1,0 +1,1 @@
+insert into `stock`.`switch_set` (id,switch_name,status,`type`,sort) select 100,'用户上级线使用用户ID展示',1,1,100 from switch_set where not exists (select id from switch_set where id = 100)limit 1;

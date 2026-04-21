@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserTransferMoneyRecordMapper">
+    
+    <resultMap type="UserTransferMoneyRecord" id="UserTransferMoneyRecordResult">
+        <result property="userTransferMoneyRecordId"    column="user_transfer_money_record_id"    />
+        <result property="userIdFrom"    column="user_id_from"    />
+        <result property="userAccountFrom"    column="user_account_from"    />
+        <result property="userIdTo"    column="user_id_to"    />
+        <result property="userAccountTo"    column="user_account_to"    />
+        <result property="transferAmount"    column="transfer_amount"    />
+        <result property="currencyId"    column="currency_id"    />
+        <result property="currencyName"    column="currency_name"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectUserTransferMoneyRecordVo">
+        select user_transfer_money_record_id, user_id_from, b.user_account user_account_from, user_id_to, (select user_account from user_info where id = user_id_to) user_account_to, transfer_amount, currency_id, currency_name, create_time, a.remark
+        from user_transfer_money_record a
+                 left join user_info b
+                           on user_id_from = b.id
+                 left join platform_currency c
+                           on currency_id = c.id
+    </sql>
+
+    <select id="selectUserTransferMoneyRecordList" parameterType="UserTransferMoneyRecord" resultMap="UserTransferMoneyRecordResult">
+        <include refid="selectUserTransferMoneyRecordVo"/>
+        <where>  
+            <if test="userIdFrom != null "> and user_id_from = #{userIdFrom}</if>
+            <if test="userIdTo != null "> and user_id_to = #{userIdTo}</if>
+            <if test="transferAmount != null "> and transfer_amount = #{transferAmount}</if>
+            <if test="currencyId != null "> and currency_id = #{currencyId}</if>
+            <if test="startTime !=null ">
+                <![CDATA[   and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%s')   ]]></if>
+            <if test="endTime !=null ">
+                <![CDATA[  and DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%s')    ]]></if>
+            ${params.dataScope}
+        </where>
+    </select>
+    
+    <select id="selectUserTransferMoneyRecordByUserTransferMoneyRecordId" parameterType="Long" resultMap="UserTransferMoneyRecordResult">
+        <include refid="selectUserTransferMoneyRecordVo"/>
+        where user_transfer_money_record_id = #{userTransferMoneyRecordId}
+    </select>
+        
+    <insert id="insertUserTransferMoneyRecord" parameterType="UserTransferMoneyRecord" useGeneratedKeys="true" keyProperty="userTransferMoneyRecordId">
+        insert into user_transfer_money_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userIdFrom != null">user_id_from,</if>
+            <if test="userIdTo != null">user_id_to,</if>
+            <if test="transferAmount != null">transfer_amount,</if>
+            <if test="currencyId != null">currency_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userIdFrom != null">#{userIdFrom},</if>
+            <if test="userIdTo != null">#{userIdTo},</if>
+            <if test="transferAmount != null">#{transferAmount},</if>
+            <if test="currencyId != null">#{currencyId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserTransferMoneyRecord" parameterType="UserTransferMoneyRecord">
+        update user_transfer_money_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userIdFrom != null">user_id_from = #{userIdFrom},</if>
+            <if test="userIdTo != null">user_id_to = #{userIdTo},</if>
+            <if test="transferAmount != null">transfer_amount = #{transferAmount},</if>
+            <if test="currencyId != null">currency_id = #{currencyId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where user_transfer_money_record_id = #{userTransferMoneyRecordId}
+    </update>
+
+    <delete id="deleteUserTransferMoneyRecordByUserTransferMoneyRecordId" parameterType="Long">
+        delete from user_transfer_money_record where user_transfer_money_record_id = #{userTransferMoneyRecordId}
+    </delete>
+
+    <delete id="deleteUserTransferMoneyRecordByUserTransferMoneyRecordIds" parameterType="String">
+        delete from user_transfer_money_record where user_transfer_money_record_id in 
+        <foreach item="userTransferMoneyRecordId" collection="array" open="(" separator="," close=")">
+            #{userTransferMoneyRecordId}
+        </foreach>
+    </delete>
+</mapper>

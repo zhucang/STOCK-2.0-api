@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserBibiAssetsMapper">
+    
+    <resultMap type="UserBibiAssets" id="UserBibiAssetsResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userAccount"    column="user_account"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="accountType"    column="account_type"    />
+        <result property="agentId"    column="agent_id"    />
+        <result property="agentName"    column="agent_name"    />
+        <result property="userRemark"    column="user_remark"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="productName"    column="product_name"    />
+        <result property="productType"    column="product_type"    />
+        <result property="bibiAmount"    column="bibi_amount"    />
+        <result property="bibiFrozenAmount"    column="bibi_frozen_amount"    />
+        <result property="buyAmountAll"    column="buy_amount_all"    />
+        <result property="sellAmountAll"    column="sell_amount_all"    />
+        <result property="buyAndSellAmountDifference"    column="buy_and_sell_amount_difference"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="sqlVersion"    column="sql_version"    />
+    </resultMap>
+
+    <sql id="selectUserBibiAssetsVo">
+        select a.id, user_id,user_account,nick_name,account_type,agent_id,agent_name, b.remark user_remark, a.product_code,c.product_name, a.product_type, bibi_amount,bibi_frozen_amount, buy_amount_all, sell_amount_all, buy_and_sell_amount_difference, create_time, a.sql_version
+        from user_bibi_assets a
+                 left join user_info b
+                           on a.user_id = b.id
+                 left join
+             (select product_name,product_code,null as product_desc,1 as product_type from stock_product
+              union
+              select product_name,product_code,product_desc,2 as product_type from cryptocurrency_product
+              union
+              select product_name,product_code,null as product_desc,3 as product_type from futures_product
+              union
+              select product_name,product_code,null as product_desc,4 as product_type  from forex_product) as c
+             on a.product_code = c.product_code and a.product_type = c.product_type
+    </sql>
+
+    <select id="selectUserBibiAssetsList" parameterType="UserBibiAssets" resultMap="UserBibiAssetsResult">
+        <include refid="selectUserBibiAssetsVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="userAccount != null "> and user_account like concat('%',#{userAccount},'%') </if>
+            <if test="nickName != null "> and nick_name like concat('%',#{nickName},'%') </if>
+            <if test="accountType != null "> and account_type = #{accountType}</if>
+            <if test="agentId != null and params.isAllAgentData != null and params.isAllAgentData == 0">
+                and agent_id in (select user_id from agent_team_level_line where sup_user_id = #{agentId} union select #{agentId})
+            </if>
+            <if test="agentId != null and params.isAllAgentData == null">
+                and agent_id = #{agentId}
+            </if>
+            <if test="productCode != null  and productCode != ''"> and a.product_code like concat('%',#{productCode},'%')</if>
+            <if test="productName != null  and productName != ''"> and c.product_name like concat('%',#{productName},'%')</if>
+            <if test="productType != null "> and a.product_type = #{productType}</if>
+            <if test="bibiAmount != null "> and bibi_amount = #{bibiAmount}</if>
+            <if test="buyAmountAll != null "> and buy_amount_all = #{buyAmountAll}</if>
+            <if test="sellAmountAll != null "> and sell_amount_all = #{sellAmountAll}</if>
+            <if test="buyAndSellAmountDifference != null "> and buy_and_sell_amount_difference = #{buyAndSellAmountDifference}</if>
+            <if test="sqlVersion != null "> and sql_version = #{sqlVersion}</if>
+            <if test="params.userIds != null and params.userIds.size > 0">
+                and user_id in
+                <foreach collection="params.userIds" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.userIds != null and params.userIds.size == 0">
+                and a.id = 0
+            </if>
+            ${params.dataScope}
+        </where>
+    </select>
+    
+    <select id="selectUserBibiAssetsById" parameterType="Long" resultMap="UserBibiAssetsResult">
+        <include refid="selectUserBibiAssetsVo"/>
+        where a.id = #{id}
+    </select>
+        
+    <insert id="insertUserBibiAssets" parameterType="UserBibiAssets">
+        insert into user_bibi_assets
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="productCode != null and productCode != ''">product_code,</if>
+            <if test="productType != null">product_type,</if>
+            <if test="bibiAmount != null">bibi_amount,</if>
+            <if test="bibiFrozenAmount != null">bibi_frozen_amount,</if>
+            <if test="buyAmountAll != null">buy_amount_all,</if>
+            <if test="sellAmountAll != null">sell_amount_all,</if>
+            <if test="buyAndSellAmountDifference != null">buy_and_sell_amount_difference,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="sqlVersion != null">sql_version,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="productCode != null and productCode != ''">#{productCode},</if>
+            <if test="productType != null">#{productType},</if>
+            <if test="bibiAmount != null">#{bibiAmount},</if>
+            <if test="bibiFrozenAmount != null">#{bibiFrozenAmount},</if>
+            <if test="buyAmountAll != null">#{buyAmountAll},</if>
+            <if test="sellAmountAll != null">#{sellAmountAll},</if>
+            <if test="buyAndSellAmountDifference != null">#{buyAndSellAmountDifference},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="sqlVersion != null">#{sqlVersion},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserBibiAssets" parameterType="UserBibiAssets">
+        update user_bibi_assets
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="productCode != null and productCode != ''">product_code = #{productCode},</if>
+            <if test="productType != null">product_type = #{productType},</if>
+            <if test="bibiAmount != null">bibi_amount = #{bibiAmount},</if>
+            <if test="bibiFrozenAmount != null">bibi_frozen_amount = #{bibiFrozenAmount},</if>
+            <if test="buyAmountAll != null">buy_amount_all = #{buyAmountAll},</if>
+            <if test="sellAmountAll != null">sell_amount_all = #{sellAmountAll},</if>
+            <if test="buyAndSellAmountDifference != null">buy_and_sell_amount_difference = #{buyAndSellAmountDifference},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="sqlVersion != null">sql_version = sql_version + 1,</if>
+        </trim>
+        where id = #{id}
+        <if test="sqlVersion != null">and sql_version = #{sqlVersion}</if>
+    </update>
+
+    <delete id="deleteUserBibiAssetsById" parameterType="Long">
+        delete from user_bibi_assets where id = #{id}
+    </delete>
+
+    <delete id="deleteUserBibiAssetsByIds" parameterType="String">
+        delete from user_bibi_assets where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
