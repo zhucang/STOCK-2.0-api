@@ -53,6 +53,11 @@
         from copy_trade_order
     </sql>
 
+    <select id="selectCopyTradeOrderById" parameterType="Long" resultMap="CopyTradeOrderResult">
+        <include refid="selectCopyTradeOrderVo"/>
+        where id = #{id}
+    </select>
+
     <select id="selectCopyTradeOrderList" parameterType="CopyTradeOrder" resultMap="CopyTradeOrderResult">
         <include refid="selectCopyTradeOrderVo"/>
         <where>
@@ -138,4 +143,11 @@
         </trim>
         where id = #{id}
     </update>
+
+    <delete id="deleteCopyTradeOrderByIds" parameterType="Long">
+        delete from copy_trade_order where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
 </mapper>

@@ -10,6 +10,14 @@ import java.util.List;
  */
 public interface CopyTradeOrderMapper {
     /**
+     * 根据主键查询跟单订单映射。
+     *
+     * @param id 跟单订单映射主键
+     * @return 跟单订单映射
+     */
+    CopyTradeOrder selectCopyTradeOrderById(Long id);
+
+    /**
      * 查询跟单订单映射列表。
      *
      * @param copyTradeOrder 查询条件
@@ -49,4 +57,12 @@ public interface CopyTradeOrderMapper {
      * @return 影响行数
      */
     int updateCopyTradeOrder(CopyTradeOrder copyTradeOrder);
+
+    /**
+     * 批量删除跟单订单映射。
+     *
+     * @param ids 主键数组
+     * @return 影响行数
+     */
+    int deleteCopyTradeOrderByIds(Long[] ids);
 }

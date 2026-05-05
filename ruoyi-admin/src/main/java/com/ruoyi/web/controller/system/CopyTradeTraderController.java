@@ -8,22 +8,30 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.system.domain.CopyTradeTrader;
-import com.ruoyi.system.service.ICopyTradeService;
+import com.ruoyi.system.service.ICopyTradeTraderService;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
 
 /**
  * 后台交易员管理接口。
+ * 负责交易员配置的新增、修改、删除和后台查询。
  */
 @RestController
 @RequestMapping("/system/copyTradeTrader")
 public class CopyTradeTraderController extends BaseController {
-    /** 跟单业务服务。 */
+    /** 交易员服务。 */
     @Resource
-    private ICopyTradeService copyTradeService;
+    private ICopyTradeTraderService copyTradeTraderService;
 
     /**
      * 查询交易员列表。
@@ -37,7 +45,7 @@ public class CopyTradeTraderController extends BaseController {
         // 后台默认按排序值和主键倒序展示，便于运营维护。
         startPage();
         startOrderBy("sort is null,sort,id desc");
-        List<CopyTradeTrader> list = copyTradeService.selectCopyTradeTraderList(copyTradeTrader);
+        List<CopyTradeTrader> list = copyTradeTraderService.selectCopyTradeTraderList(copyTradeTrader);
         return getDataTable(list);
     }
 
@@ -50,7 +58,7 @@ public class CopyTradeTraderController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:copyTradeTrader:query')")
     @GetMapping("/{id}")
     public AjaxResult getInfo(@PathVariable Long id) {
-        return success(copyTradeService.selectCopyTradeTraderById(id));
+        return success(copyTradeTraderService.selectCopyTradeTraderById(id));
     }
 
     /**
@@ -68,7 +76,7 @@ public class CopyTradeTraderController extends BaseController {
         if (copyTradeTrader.getUserId() == null) {
             throw new ServiceException("请选择交易员用户");
         }
-        return toAjax(copyTradeService.insertCopyTradeTrader(copyTradeTrader));
+        return toAjax(copyTradeTraderService.insertCopyTradeTrader(copyTradeTrader));
     }
 
     /**
@@ -86,7 +94,7 @@ public class CopyTradeTraderController extends BaseController {
         if (copyTradeTrader.getId() == null) {
             throw new ServiceException("请选择需要修改的交易员");
         }
-        return toAjax(copyTradeService.updateCopyTradeTrader(copyTradeTrader));
+        return toAjax(copyTradeTraderService.updateCopyTradeTrader(copyTradeTrader));
     }
 
     /**
@@ -100,6 +108,6 @@ public class CopyTradeTraderController extends BaseController {
     @RepeatSubmit
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
-        return toAjax(copyTradeService.deleteCopyTradeTraderByIds(ids));
+        return toAjax(copyTradeTraderService.deleteCopyTradeTraderByIds(ids));
     }
 }

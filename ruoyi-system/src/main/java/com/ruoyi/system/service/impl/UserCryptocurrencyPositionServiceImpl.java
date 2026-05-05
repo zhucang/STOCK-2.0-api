@@ -18,7 +18,7 @@ import com.ruoyi.common.utils.cache.CacheUtil;
 import com.ruoyi.common.utils.http.HttpUtils;
 import com.ruoyi.system.domain.*;
 import com.ruoyi.system.mapper.*;
-import com.ruoyi.system.service.ICopyTradeService;
+import com.ruoyi.system.service.ICopyTradeOrderService;
 import com.ruoyi.system.service.IPlatformCurrencyService;
 import com.ruoyi.system.service.ISwitchSetService;
 import com.ruoyi.system.service.IUserAmountService;
@@ -89,7 +89,7 @@ public class UserCryptocurrencyPositionServiceImpl implements IUserCryptocurrenc
 
     @Lazy
     @Autowired
-    private ICopyTradeService copyTradeService;
+    private ICopyTradeOrderService copyTradeOrderService;
 
     /**
      * 查询用户加密货币持仓
@@ -394,7 +394,7 @@ public class UserCryptocurrencyPositionServiceImpl implements IUserCryptocurrenc
         createPosition(position, userId);
         try {
             // 如果当前用户同时是交易员，则在主单创建成功后触发跟单同步。
-            copyTradeService.handleLeaderOpenPosition(position);
+            copyTradeOrderService.handleLeaderOpenPosition(position);
         } catch (Exception e) {
             // 跟单同步失败不应该影响交易员本人开仓，因此这里只记录异常。
             recordCopyTradeSyncError("跟单开仓触发失败", position.getId(), e);
@@ -908,7 +908,7 @@ public class UserCryptocurrencyPositionServiceImpl implements IUserCryptocurrenc
         }
         try {
             // 主单平仓成功后，再尝试同步所有关联的跟单单平仓。
-            copyTradeService.handleLeaderClosePosition(position);
+            copyTradeOrderService.handleLeaderClosePosition(position);
         } catch (Exception e) {
             // 同步失败不回滚主单平仓，只记录异常等待后续排查。
             recordCopyTradeSyncError("跟单平仓触发失败", position.getId(), e);

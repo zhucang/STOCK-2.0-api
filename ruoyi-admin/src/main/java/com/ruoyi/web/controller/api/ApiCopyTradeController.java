@@ -4,25 +4,42 @@ import com.ruoyi.common.annotation.RepeatSubmit;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.system.domain.CopyTradeOrder;
 import com.ruoyi.system.domain.CopyTradeRelation;
 import com.ruoyi.system.domain.CopyTradeTrader;
-import com.ruoyi.system.service.ICopyTradeService;
+import com.ruoyi.system.service.ICopyTradeOrderService;
+import com.ruoyi.system.service.ICopyTradeRelationService;
+import com.ruoyi.system.service.ICopyTradeTraderService;
 import com.ruoyi.system.utils.UserApiKeyUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
 
 /**
  * 用户端跟单接口。
- * 提供交易员列表、我的跟单关系，以及跟随/停止跟随操作。
+ * 提供交易员列表、我的跟单关系、我的跟单订单，以及跟随和停止跟随操作。
  */
 @RestController
 @RequestMapping("/api/copyTrade")
 public class ApiCopyTradeController extends BaseController {
-    /** 跟单业务服务。 */
+    /** 交易员服务。 */
     @Resource
-    private ICopyTradeService copyTradeService;
+    private ICopyTradeTraderService copyTradeTraderService;
+
+    /** 跟单关系服务。 */
+    @Resource
+    private ICopyTradeRelationService copyTradeRelationService;
+
+    /** 跟单订单映射服务。 */
+    @Resource
+    private ICopyTradeOrderService copyTradeOrderService;
 
     /**
      * 查询可跟随的交易员列表。
@@ -37,7 +54,7 @@ public class ApiCopyTradeController extends BaseController {
         // 开启分页和默认排序，保证热门交易员稳定展示。
         startPage();
         startOrderBy("sort is null,sort,id desc");
-        List<CopyTradeTrader> list = copyTradeService.selectCopyTradeTraderList(copyTradeTrader);
+        List<CopyTradeTrader> list = copyTradeTraderService.selectCopyTradeTraderList(copyTradeTrader);
         return getDataTable(list);
     }
 
@@ -49,7 +66,7 @@ public class ApiCopyTradeController extends BaseController {
      */
     @GetMapping("/trader/{id}")
     public AjaxResult traderInfo(@PathVariable Long id) {
-        return success(copyTradeService.selectCopyTradeTraderById(id));
+        return success(copyTradeTraderService.selectCopyTradeTraderById(id));
     }
 
     /**
@@ -64,8 +81,44 @@ public class ApiCopyTradeController extends BaseController {
         copyTradeRelation.setFollowerUserId(UserApiKeyUtils.getUserId());
         startPage();
         startOrderBy("id desc");
-        List<CopyTradeRelation> list = copyTradeService.selectCopyTradeRelationList(copyTradeRelation);
+        List<CopyTradeRelation> list = copyTradeRelationService.selectCopyTradeRelationList(copyTradeRelation);
         return getDataTable(list);
+    }
+
+    /**
+     * 查询当前用户自己的跟单订单映射列表。
+     *
+     * @param copyTradeOrder 跟单订单映射筛选条件
+     * @return 分页结果
+     */
+    @GetMapping("/order/myList")
+    public TableDataInfo myOrderList(CopyTradeOrder copyTradeOrder) {
+        // 强制限定为当前登录用户自己的跟单订单，避免看到别人的映射关系。
+        copyTradeOrder.setFollowerUserId(UserApiKeyUtils.getUserId());
+        startPage();
+        startOrderBy("id desc");
+        List<CopyTradeOrder> list = copyTradeOrderService.selectCopyTradeOrderList(copyTradeOrder);
+        return getDataTable(list);
+    }
+
+    /**
+     * 查询当前用户自己的单条跟单订单映射详情。
+     *
+     * @param id 跟单订单映射主键
+     * @return 跟单订单映射详情
+     */
+    @GetMapping("/order/{id}")
+    public AjaxResult myOrderInfo(@PathVariable Long id) {
+        // 先加载订单映射，再校验是否属于当前登录用户。
+        CopyTradeOrder copyTradeOrder = copyTradeOrderService.selectCopyTradeOrderById(id);
+        if (copyTradeOrder == null) {
+            throw new ServiceException("跟单订单映射不存在");
+        }
+        // 不是自己的数据时直接拒绝访问。
+        if (!UserApiKeyUtils.getUserId().equals(copyTradeOrder.getFollowerUserId())) {
+            throw new ServiceException("无权查看该跟单订单");
+        }
+        return success(copyTradeOrder);
     }
 
     /**
@@ -77,7 +130,7 @@ public class ApiCopyTradeController extends BaseController {
     @RepeatSubmit
     @PostMapping("/relation/follow")
     public AjaxResult follow(@RequestBody CopyTradeRelation copyTradeRelation) {
-        return copyTradeService.followTrader(copyTradeRelation);
+        return copyTradeRelationService.followTrader(copyTradeRelation);
     }
 
     /**
@@ -89,6 +142,6 @@ public class ApiCopyTradeController extends BaseController {
     @RepeatSubmit
     @PostMapping("/relation/unfollow")
     public AjaxResult unfollow(Long relationId) {
-        return copyTradeService.unfollowTrader(relationId);
+        return copyTradeRelationService.unfollowTrader(relationId);
     }
 }
