@@ -1,0 +1,244 @@
+package com.ruoyi.system.domain;
+
+import com.ruoyi.common.annotation.Excel;
+import com.ruoyi.common.core.domain.entity.UserInfoDetailVo;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+import java.math.BigDecimal;
+
+/**
+ * 跟单交易员对象 copy_trade_trader
+ * 用于描述一个可以被用户跟随下单的“带单员”。
+ */
+public class CopyTradeTrader extends UserInfoDetailVo {
+    private static final long serialVersionUID = 1L;
+
+    /** 主键ID。 */
+    private Long id;
+
+    /** 交易员对应的用户ID。 */
+    @Excel(name = "交易员用户ID")
+    private Long userId;
+
+    /** 前端展示给用户看的交易员标题。 */
+    @Excel(name = "交易员标题")
+    private String traderTitle;
+
+    /** 交易员简介，用于展示交易风格或说明。 */
+    @Excel(name = "交易员简介")
+    private String traderDesc;
+
+    /** 状态 0启用 1停用。 */
+    @Excel(name = "状态 0启用 1停用")
+    private Integer status;
+
+    /** 允许跟随者设置的最小跟单金额。 */
+    @Excel(name = "最小跟单金额")
+    private BigDecimal minFollowAmount;
+
+    /** 允许跟随者设置的最大跟单金额。 */
+    @Excel(name = "最大跟单金额")
+    private BigDecimal maxFollowAmount;
+
+    /** 限制可以跟随该交易员的最大人数。 */
+    @Excel(name = "最大跟单人数")
+    private Integer maxFollowerCount;
+
+    /** 默认跟单模式 0固定金额 1按比例。 */
+    @Excel(name = "默认跟单模式 0固定金额 1按比例")
+    private Integer defaultFollowMode;
+
+    /** 默认跟单比例，在按比例模式下使用。 */
+    @Excel(name = "默认跟单比例")
+    private BigDecimal defaultFollowRatio;
+
+    /** 列表排序值，越小越靠前。 */
+    @Excel(name = "排序")
+    private Integer sort;
+
+    /** 交易员头像，用于前端展示。 */
+    private String avatar;
+
+    /** 当前正在跟随该交易员的人数。 */
+    private Integer currentFollowerCount;
+
+    /** 累计创建过的跟单单数。 */
+    private Integer totalCopyCount;
+
+    /** 跟单订单累计总盈亏。 */
+    private BigDecimal totalProfitAmount;
+
+    /** 获取主键ID。 */
+    public Long getId() {
+        return id;
+    }
+
+    /** 设置主键ID。 */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /** 获取交易员用户ID。 */
+    @Override
+    public Long getUserId() {
+        return userId;
+    }
+
+    /** 设置交易员用户ID。 */
+    @Override
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    /** 获取交易员标题。 */
+    public String getTraderTitle() {
+        return traderTitle;
+    }
+
+    /** 设置交易员标题。 */
+    public void setTraderTitle(String traderTitle) {
+        this.traderTitle = traderTitle;
+    }
+
+    /** 获取交易员简介。 */
+    public String getTraderDesc() {
+        return traderDesc;
+    }
+
+    /** 设置交易员简介。 */
+    public void setTraderDesc(String traderDesc) {
+        this.traderDesc = traderDesc;
+    }
+
+    /** 获取交易员状态。 */
+    public Integer getStatus() {
+        return status;
+    }
+
+    /** 设置交易员状态。 */
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    /** 获取最小跟单金额。 */
+    public BigDecimal getMinFollowAmount() {
+        return minFollowAmount;
+    }
+
+    /** 设置最小跟单金额。 */
+    public void setMinFollowAmount(BigDecimal minFollowAmount) {
+        this.minFollowAmount = minFollowAmount;
+    }
+
+    /** 获取最大跟单金额。 */
+    public BigDecimal getMaxFollowAmount() {
+        return maxFollowAmount;
+    }
+
+    /** 设置最大跟单金额。 */
+    public void setMaxFollowAmount(BigDecimal maxFollowAmount) {
+        this.maxFollowAmount = maxFollowAmount;
+    }
+
+    /** 获取最大跟单人数。 */
+    public Integer getMaxFollowerCount() {
+        return maxFollowerCount;
+    }
+
+    /** 设置最大跟单人数。 */
+    public void setMaxFollowerCount(Integer maxFollowerCount) {
+        this.maxFollowerCount = maxFollowerCount;
+    }
+
+    /** 获取默认跟单模式。 */
+    public Integer getDefaultFollowMode() {
+        return defaultFollowMode;
+    }
+
+    /** 设置默认跟单模式。 */
+    public void setDefaultFollowMode(Integer defaultFollowMode) {
+        this.defaultFollowMode = defaultFollowMode;
+    }
+
+    /** 获取默认跟单比例。 */
+    public BigDecimal getDefaultFollowRatio() {
+        return defaultFollowRatio;
+    }
+
+    /** 设置默认跟单比例。 */
+    public void setDefaultFollowRatio(BigDecimal defaultFollowRatio) {
+        this.defaultFollowRatio = defaultFollowRatio;
+    }
+
+    /** 获取排序值。 */
+    public Integer getSort() {
+        return sort;
+    }
+
+    /** 设置排序值。 */
+    public void setSort(Integer sort) {
+        this.sort = sort;
+    }
+
+    /** 获取头像地址。 */
+    public String getAvatar() {
+        return avatar;
+    }
+
+    /** 设置头像地址。 */
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    /** 获取当前跟随人数。 */
+    public Integer getCurrentFollowerCount() {
+        return currentFollowerCount;
+    }
+
+    /** 设置当前跟随人数。 */
+    public void setCurrentFollowerCount(Integer currentFollowerCount) {
+        this.currentFollowerCount = currentFollowerCount;
+    }
+
+    /** 获取累计跟单单数。 */
+    public Integer getTotalCopyCount() {
+        return totalCopyCount;
+    }
+
+    /** 设置累计跟单单数。 */
+    public void setTotalCopyCount(Integer totalCopyCount) {
+        this.totalCopyCount = totalCopyCount;
+    }
+
+    /** 获取累计跟单总盈亏。 */
+    public BigDecimal getTotalProfitAmount() {
+        return totalProfitAmount;
+    }
+
+    /** 设置累计跟单总盈亏。 */
+    public void setTotalProfitAmount(BigDecimal totalProfitAmount) {
+        this.totalProfitAmount = totalProfitAmount;
+    }
+
+    /** 输出对象调试信息。 */
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("id", getId())
+                .append("userId", getUserId())
+                .append("traderTitle", getTraderTitle())
+                .append("traderDesc", getTraderDesc())
+                .append("status", getStatus())
+                .append("minFollowAmount", getMinFollowAmount())
+                .append("maxFollowAmount", getMaxFollowAmount())
+                .append("maxFollowerCount", getMaxFollowerCount())
+                .append("defaultFollowMode", getDefaultFollowMode())
+                .append("defaultFollowRatio", getDefaultFollowRatio())
+                .append("sort", getSort())
+                .append("currentFollowerCount", getCurrentFollowerCount())
+                .append("totalCopyCount", getTotalCopyCount())
+                .append("totalProfitAmount", getTotalProfitAmount())
+                .toString();
+    }
+}

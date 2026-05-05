@@ -18,6 +18,7 @@ import com.ruoyi.common.utils.cache.CacheUtil;
 import com.ruoyi.common.utils.http.HttpUtils;
 import com.ruoyi.system.domain.*;
 import com.ruoyi.system.mapper.*;
+import com.ruoyi.system.service.ICopyTradeService;
 import com.ruoyi.system.service.IPlatformCurrencyService;
 import com.ruoyi.system.service.ISwitchSetService;
 import com.ruoyi.system.service.IUserAmountService;
@@ -27,6 +28,7 @@ import com.ruoyi.system.utils.ForceSellUtils;
 import com.ruoyi.system.utils.ProductQuoteUtils;
 import com.ruoyi.system.utils.UserApiKeyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,6 +86,10 @@ public class UserCryptocurrencyPositionServiceImpl implements IUserCryptocurrenc
 
     @Autowired
     private IPlatformCurrencyService platformCurrencyService;
+
+    @Lazy
+    @Autowired
+    private ICopyTradeService copyTradeService;
 
     /**
      * 查询用户加密货币持仓
@@ -383,8 +389,67 @@ public class UserCryptocurrencyPositionServiceImpl implements IUserCryptocurrenc
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int buy(UserCryptocurrencyPosition position){
-        //用户id
+        // 用户端普通开仓仍然走原有交易校验和扣款流程。
         Long userId = UserApiKeyUtils.getUserId();
+        createPosition(position, userId);
+        try {
+            // 如果当前用户同时是交易员，则在主单创建成功后触发跟单同步。
+            copyTradeService.handleLeaderOpenPosition(position);
+        } catch (Exception e) {
+            // 跟单同步失败不应该影响交易员本人开仓，因此这里只记录异常。
+            recordCopyTradeSyncError("跟单开仓触发失败", position.getId(), e);
+        }
+        return 1;
+    }
+
+    /**
+     * 为跟单用户开出一笔和交易员主单方向一致的仓位。
+     *
+     * @param followerUserId 跟单用户ID
+     * @param leaderPosition 交易员主仓位
+     * @param relation 跟单关系配置
+     * @return 跟单仓位
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public UserCryptocurrencyPosition openCopyTradePosition(Long followerUserId, UserCryptocurrencyPosition leaderPosition, CopyTradeRelation relation) {
+        // 先换算出交易员主单对应的保证金，作为按比例模式的计算基准。
+        BigDecimal leaderMarginAmount = leaderPosition.getOrderTotalPrice()
+                .divide(new BigDecimal(leaderPosition.getOrderLever()), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUNDINGMODE);
+        BigDecimal marginAmount;
+        if (relation.getFollowMode().equals(0)) {
+            // 固定金额模式直接使用配置金额。
+            marginAmount = relation.getFollowAmount();
+        } else {
+            // 比例模式下，按主单保证金 * 比例 得到跟单保证金。
+            BigDecimal followRatio = relation.getFollowRatio() == null ? BigDecimal.ONE : relation.getFollowRatio();
+            marginAmount = leaderMarginAmount.multiply(followRatio).setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUNDINGMODE);
+        }
+        // 跟单金额无效时直接拒绝创建子单。
+        if (marginAmount == null || marginAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ServiceException("跟单金额必须大于0");
+        }
+        // 跟单单只继承交易相关参数，不允许跟单人篡改产品、方向、杠杆等核心信息。
+        UserCryptocurrencyPosition position = new UserCryptocurrencyPosition();
+        position.setProductCode(leaderPosition.getProductCode());
+        position.setOrderDirection(leaderPosition.getOrderDirection());
+        position.setOrderLever(leaderPosition.getOrderLever());
+        position.setStopProfitPrice(leaderPosition.getStopProfitPrice());
+        position.setStopLossPrice(leaderPosition.getStopLossPrice());
+        // 复用原开仓逻辑时，通过 params 传入保证金金额。
+        position.getParams().put("marginAmount", marginAmount);
+        createPosition(position, followerUserId);
+        return position;
+    }
+
+    /**
+     * 创建一笔真实的加密货币合约持仓。
+     * 该方法既服务普通用户下单，也服务跟单用户下单。
+     *
+     * @param position 下单参数
+     * @param userId 下单用户ID
+     */
+    private void createPosition(UserCryptocurrencyPosition position, Long userId) {
         //用户信息
         UserInfo userInfo = userInfoMapper.selectUserInfoById(userId);
         //日志记录用户id
@@ -661,7 +726,6 @@ public class UserCryptocurrencyPositionServiceImpl implements IUserCryptocurrenc
         if (count <= 0) {
             throw new LangException(HintConstants.SYSTEM_BUSY,"系统繁忙");
         }
-        return 1;
     }
 
     /**
@@ -842,7 +906,32 @@ public class UserCryptocurrencyPositionServiceImpl implements IUserCryptocurrenc
         if (count <= 0) {
             throw new LangException(HintConstants.SYSTEM_BUSY,"系统繁忙");
         }
+        try {
+            // 主单平仓成功后，再尝试同步所有关联的跟单单平仓。
+            copyTradeService.handleLeaderClosePosition(position);
+        } catch (Exception e) {
+            // 同步失败不回滚主单平仓，只记录异常等待后续排查。
+            recordCopyTradeSyncError("跟单平仓触发失败", position.getId(), e);
+        }
         return AjaxResult.success().put("orderInfo",position);
+    }
+
+    /**
+     * 记录跟单同步异常。
+     *
+     * @param jobName 任务名称
+     * @param positionId 主单持仓ID
+     * @param e 异常对象
+     */
+    private void recordCopyTradeSyncError(String jobName, Long positionId, Exception e) {
+        // 将同步异常落库，方便后台统一排查。
+        ScheduledTaskExceptionLog scheduledTaskExceptionLog = new ScheduledTaskExceptionLog();
+        scheduledTaskExceptionLog.setJobName(jobName);
+        scheduledTaskExceptionLog.setExceptionInfo(e.getMessage());
+        scheduledTaskExceptionLog.setCreateTime(new Date());
+        scheduledTaskExceptionLog.setExceptionInfoDetail(ExceptionUtil.stacktraceToString(e));
+        scheduledTaskExceptionLog.setRelateInfo("positionId:" + positionId);
+        scheduledTaskExceptionLogMapper.insertScheduledTaskExceptionLog(scheduledTaskExceptionLog);
     }
 
     /**
