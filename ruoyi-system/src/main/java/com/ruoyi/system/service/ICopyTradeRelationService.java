@@ -19,6 +19,13 @@ public interface ICopyTradeRelationService {
     List<CopyTradeRelation> selectCopyTradeRelationList(CopyTradeRelation copyTradeRelation);
 
     /**
+     * 填充跟单关系展示所需的扩展信息。
+     *
+     * @param copyTradeRelation 跟单关系
+     */
+    void fillOtherInfo(CopyTradeRelation copyTradeRelation);
+
+    /**
      * 根据主键查询跟单关系。
      *
      * @param id 跟单关系主键

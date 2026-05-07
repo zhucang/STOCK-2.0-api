@@ -37,6 +37,15 @@ public class CopyTradeRelationServiceImpl implements ICopyTradeRelationService {
         return copyTradeRelationMapper.selectCopyTradeRelationList(copyTradeRelation);
     }
 
+    /** 填充跟单关系展示所需的扩展信息。 */
+    @Override
+    public void fillOtherInfo(CopyTradeRelation copyTradeRelation) {
+        if (copyTradeRelation == null || copyTradeRelation.getTraderId() == null) {
+            return;
+        }
+        copyTradeRelation.setTraderInfo(copyTradeTraderService.selectCopyTradeTraderById(copyTradeRelation.getTraderId()));
+    }
+
     /** 查询单条跟单关系。 */
     @Override
     public CopyTradeRelation selectCopyTradeRelationById(Long id) {

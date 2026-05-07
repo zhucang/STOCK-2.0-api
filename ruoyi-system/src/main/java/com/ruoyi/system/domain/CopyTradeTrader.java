@@ -53,6 +53,22 @@ public class CopyTradeTrader extends UserInfoDetailVo {
     @Excel(name = "默认跟单比例")
     private BigDecimal defaultFollowRatio;
 
+    /** APP展示的月收益率范围最低值，由后台直接配置。 */
+    @Excel(name = "月收益率最低")
+    private BigDecimal monthlyProfitMinRate;
+
+    /** APP展示的月收益率范围最高值，由后台直接配置。 */
+    @Excel(name = "月收益率最高")
+    private BigDecimal monthlyProfitMaxRate;
+
+    /** APP展示的年收益率范围最低值，由后台直接配置。 */
+    @Excel(name = "年收益率最低")
+    private BigDecimal annualProfitMinRate;
+
+    /** APP展示的年收益率范围最高值，由后台直接配置。 */
+    @Excel(name = "年收益率最高")
+    private BigDecimal annualProfitMaxRate;
+
     /** 列表排序值，越小越靠前。 */
     @Excel(name = "排序")
     private Integer sort;
@@ -171,6 +187,46 @@ public class CopyTradeTrader extends UserInfoDetailVo {
         this.defaultFollowRatio = defaultFollowRatio;
     }
 
+    /** 获取月收益率范围最低值。 */
+    public BigDecimal getMonthlyProfitMinRate() {
+        return monthlyProfitMinRate;
+    }
+
+    /** 设置月收益率范围最低值。 */
+    public void setMonthlyProfitMinRate(BigDecimal monthlyProfitMinRate) {
+        this.monthlyProfitMinRate = monthlyProfitMinRate;
+    }
+
+    /** 获取月收益率范围最高值。 */
+    public BigDecimal getMonthlyProfitMaxRate() {
+        return monthlyProfitMaxRate;
+    }
+
+    /** 设置月收益率范围最高值。 */
+    public void setMonthlyProfitMaxRate(BigDecimal monthlyProfitMaxRate) {
+        this.monthlyProfitMaxRate = monthlyProfitMaxRate;
+    }
+
+    /** 获取年收益率范围最低值。 */
+    public BigDecimal getAnnualProfitMinRate() {
+        return annualProfitMinRate;
+    }
+
+    /** 设置年收益率范围最低值。 */
+    public void setAnnualProfitMinRate(BigDecimal annualProfitMinRate) {
+        this.annualProfitMinRate = annualProfitMinRate;
+    }
+
+    /** 获取年收益率范围最高值。 */
+    public BigDecimal getAnnualProfitMaxRate() {
+        return annualProfitMaxRate;
+    }
+
+    /** 设置年收益率范围最高值。 */
+    public void setAnnualProfitMaxRate(BigDecimal annualProfitMaxRate) {
+        this.annualProfitMaxRate = annualProfitMaxRate;
+    }
+
     /** 获取排序值。 */
     public Integer getSort() {
         return sort;
@@ -235,6 +291,10 @@ public class CopyTradeTrader extends UserInfoDetailVo {
                 .append("maxFollowerCount", getMaxFollowerCount())
                 .append("defaultFollowMode", getDefaultFollowMode())
                 .append("defaultFollowRatio", getDefaultFollowRatio())
+                .append("monthlyProfitMinRate", getMonthlyProfitMinRate())
+                .append("monthlyProfitMaxRate", getMonthlyProfitMaxRate())
+                .append("annualProfitMinRate", getAnnualProfitMinRate())
+                .append("annualProfitMaxRate", getAnnualProfitMaxRate())
                 .append("sort", getSort())
                 .append("currentFollowerCount", getCurrentFollowerCount())
                 .append("totalCopyCount", getTotalCopyCount())

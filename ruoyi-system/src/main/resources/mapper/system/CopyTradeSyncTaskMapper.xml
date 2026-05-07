@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CopyTradeSyncTaskMapper">
+
+    <resultMap id="CopyTradeSyncTaskResult" type="CopyTradeSyncTask">
+        <result property="id" column="id"/>
+        <result property="syncType" column="sync_type"/>
+        <result property="taskKey" column="task_key"/>
+        <result property="relationId" column="relation_id"/>
+        <result property="copyTradeOrderId" column="copy_trade_order_id"/>
+        <result property="traderUserId" column="trader_user_id"/>
+        <result property="followerUserId" column="follower_user_id"/>
+        <result property="leaderPositionId" column="leader_position_id"/>
+        <result property="productType" column="product_type"/>
+        <result property="status" column="status"/>
+        <result property="retryCount" column="retry_count"/>
+        <result property="maxRetryCount" column="max_retry_count"/>
+        <result property="nextRetryTime" column="next_retry_time"/>
+        <result property="lastError" column="last_error"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectCopyTradeSyncTaskVo">
+        select id,
+               sync_type,
+               task_key,
+               relation_id,
+               copy_trade_order_id,
+               trader_user_id,
+               follower_user_id,
+               leader_position_id,
+               product_type,
+               status,
+               retry_count,
+               max_retry_count,
+               next_retry_time,
+               last_error,
+               create_time,
+               update_time
+        from copy_trade_sync_task
+    </sql>
+
+    <select id="selectCopyTradeSyncTaskById" parameterType="Long" resultMap="CopyTradeSyncTaskResult">
+        <include refid="selectCopyTradeSyncTaskVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectCopyTradeSyncTaskList" parameterType="CopyTradeSyncTask" resultMap="CopyTradeSyncTaskResult">
+        <include refid="selectCopyTradeSyncTaskVo"/>
+        <where>
+            <if test="id != null">and id = #{id}</if>
+            <if test="syncType != null">and sync_type = #{syncType}</if>
+            <if test="taskKey != null and taskKey != ''">and task_key = #{taskKey}</if>
+            <if test="relationId != null">and relation_id = #{relationId}</if>
+            <if test="copyTradeOrderId != null">and copy_trade_order_id = #{copyTradeOrderId}</if>
+            <if test="traderUserId != null">and trader_user_id = #{traderUserId}</if>
+            <if test="followerUserId != null">and follower_user_id = #{followerUserId}</if>
+            <if test="leaderPositionId != null">and leader_position_id = #{leaderPositionId}</if>
+            <if test="productType != null">and product_type = #{productType}</if>
+            <if test="status != null">and status = #{status}</if>
+        </where>
+    </select>
+
+    <insert id="insertIgnoreCopyTradeSyncTask" parameterType="CopyTradeSyncTask" useGeneratedKeys="true" keyProperty="id">
+        insert ignore into copy_trade_sync_task
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="syncType != null">sync_type,</if>
+            <if test="taskKey != null and taskKey != ''">task_key,</if>
+            <if test="relationId != null">relation_id,</if>
+            <if test="copyTradeOrderId != null">copy_trade_order_id,</if>
+            <if test="traderUserId != null">trader_user_id,</if>
+            <if test="followerUserId != null">follower_user_id,</if>
+            <if test="leaderPositionId != null">leader_position_id,</if>
+            <if test="productType != null">product_type,</if>
+            <if test="status != null">status,</if>
+            <if test="retryCount != null">retry_count,</if>
+            <if test="maxRetryCount != null">max_retry_count,</if>
+            <if test="nextRetryTime != null">next_retry_time,</if>
+            <if test="lastError != null">last_error,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="syncType != null">#{syncType},</if>
+            <if test="taskKey != null and taskKey != ''">#{taskKey},</if>
+            <if test="relationId != null">#{relationId},</if>
+            <if test="copyTradeOrderId != null">#{copyTradeOrderId},</if>
+            <if test="traderUserId != null">#{traderUserId},</if>
+            <if test="followerUserId != null">#{followerUserId},</if>
+            <if test="leaderPositionId != null">#{leaderPositionId},</if>
+            <if test="productType != null">#{productType},</if>
+            <if test="status != null">#{status},</if>
+            <if test="retryCount != null">#{retryCount},</if>
+            <if test="maxRetryCount != null">#{maxRetryCount},</if>
+            <if test="nextRetryTime != null">#{nextRetryTime},</if>
+            <if test="lastError != null">#{lastError},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertIgnoreCopyTradeSyncTaskBatch">
+        insert ignore into copy_trade_sync_task
+        (sync_type,
+         task_key,
+         relation_id,
+         copy_trade_order_id,
+         trader_user_id,
+         follower_user_id,
+         leader_position_id,
+         product_type,
+         status,
+         retry_count,
+         max_retry_count,
+         next_retry_time,
+         last_error,
+         create_time,
+         update_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.syncType},
+             #{item.taskKey},
+             #{item.relationId},
+             #{item.copyTradeOrderId},
+             #{item.traderUserId},
+             #{item.followerUserId},
+             #{item.leaderPositionId},
+             #{item.productType},
+             #{item.status},
+             #{item.retryCount},
+             #{item.maxRetryCount},
+             #{item.nextRetryTime},
+             #{item.lastError},
+             #{item.createTime},
+             #{item.updateTime})
+        </foreach>
+    </insert>
+
+    <select id="selectExecutableSyncTasks" resultMap="CopyTradeSyncTaskResult">
+        <include refid="selectCopyTradeSyncTaskVo"/>
+        where (
+            status in (0, 3)
+            and retry_count &lt; max_retry_count
+            and (next_retry_time is null or next_retry_time &lt;= now())
+        ) or (
+            status = 1
+            and update_time &lt;= date_sub(now(), interval 5 minute)
+        )
+        order by id asc
+        limit #{limit}
+    </select>
+
+    <update id="claimExecutableTask">
+        update copy_trade_sync_task
+        set status = 1,
+            last_error = null,
+            update_time = now()
+        where id = #{id}
+          and (
+              (
+                  status in (0, 3)
+                  and retry_count &lt; max_retry_count
+                  and (next_retry_time is null or next_retry_time &lt;= now())
+              ) or (
+                  status = 1
+                  and update_time &lt;= date_sub(now(), interval 5 minute)
+              )
+          )
+    </update>
+
+    <update id="markTaskSuccess">
+        update copy_trade_sync_task
+        set status = 2,
+            last_error = null,
+            update_time = now()
+        where id = #{id}
+    </update>
+
+    <update id="markTaskFailure">
+        update copy_trade_sync_task
+        set status = 3,
+            retry_count = retry_count + 1,
+            next_retry_time = date_add(now(), interval 60 second),
+            last_error = #{lastError},
+            update_time = now()
+        where id = #{id}
+    </update>
+
+    <update id="markTaskCanceled">
+        update copy_trade_sync_task
+        set status = 4,
+            last_error = #{lastError},
+            update_time = now()
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCopyTradeSyncTaskByIds" parameterType="Long">
+        delete from copy_trade_sync_task where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

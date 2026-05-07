@@ -1,19 +1,16 @@
 package com.ruoyi.system.service.impl;
 
-import cn.hutool.core.exceptions.ExceptionUtil;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.system.domain.CopyTradeOrder;
 import com.ruoyi.system.domain.CopyTradeRelation;
 import com.ruoyi.system.domain.CopyTradeTrader;
-import com.ruoyi.system.domain.ScheduledTaskExceptionLog;
 import com.ruoyi.system.domain.UserCryptocurrencyPosition;
 import com.ruoyi.system.mapper.CopyTradeOrderMapper;
-import com.ruoyi.system.mapper.ScheduledTaskExceptionLogMapper;
 import com.ruoyi.system.service.ICopyTradeOrderService;
 import com.ruoyi.system.service.ICopyTradeRelationService;
+import com.ruoyi.system.service.ICopyTradeSyncTaskService;
 import com.ruoyi.system.service.ICopyTradeTraderService;
 import com.ruoyi.system.service.IUserCryptocurrencyPositionService;
 import org.springframework.context.annotation.Lazy;
@@ -44,9 +41,10 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
     @Resource
     private ICopyTradeRelationService copyTradeRelationService;
 
-    /** 异常日志记录访问层。 */
+    /** 跟单同步任务服务。 */
+    @Lazy
     @Resource
-    private ScheduledTaskExceptionLogMapper scheduledTaskExceptionLogMapper;
+    private ICopyTradeSyncTaskService copyTradeSyncTaskService;
 
     /** 持仓服务，用于真正执行跟单开仓和平仓。 */
     @Lazy
@@ -82,22 +80,18 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
         if (trader == null) {
             return;
         }
-        // 查询所有处于启用状态的跟单关系。
+        // 查询所有处于启用状态的跟单关系，并批量落库为待执行任务。
         List<CopyTradeRelation> relations = copyTradeRelationService.selectActiveRelationsByTraderUserId(trader.getUserId());
+        List<CopyTradeRelation> executableRelations = new java.util.ArrayList<>();
         for (CopyTradeRelation relation : relations) {
-            try {
-                // 达到最大同时持仓数时，不再继续为该用户复制新仓位。
-                Integer activeOrderCount = countActiveOrderByRelationId(relation.getId());
-                if (relation.getMaxOpenOrders() != null && relation.getMaxOpenOrders() > 0 && activeOrderCount >= relation.getMaxOpenOrders()) {
-                    continue;
-                }
-                // 通过代理对象调用，确保新事务真正生效。
-                selfCopyTradeOrderService.syncFollowerOpenPosition(relation, leaderPosition);
-            } catch (Exception e) {
-                // 某个跟单人失败不能影响其他跟单人，记录后继续。
-                recordCopyTradeException("跟单开仓同步", "relationId:" + relation.getId() + ",leaderPositionId:" + leaderPosition.getId(), e);
+            // 达到最大同时持仓数时，不再继续为该用户生成新同步任务。
+            Integer activeOrderCount = countActiveOrderByRelationId(relation.getId());
+            if (relation.getMaxOpenOrders() != null && relation.getMaxOpenOrders() > 0 && activeOrderCount >= relation.getMaxOpenOrders()) {
+                continue;
             }
+            executableRelations.add(relation);
         }
+        copyTradeSyncTaskService.enqueueOpenSyncTasks(executableRelations, leaderPosition);
     }
 
     /** 处理交易员平仓后的批量跟单平仓。 */
@@ -107,17 +101,9 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
         if (leaderPosition == null || leaderPosition.getId() == null) {
             return;
         }
-        // 只处理还处于持仓中的跟单映射。
+        // 只处理还处于持仓中的跟单映射，并批量落库为待执行任务。
         List<CopyTradeOrder> orders = selectActiveOrdersByLeaderPositionId(2, leaderPosition.getId());
-        for (CopyTradeOrder order : orders) {
-            try {
-                // 通过代理对象调用，保证平仓同步在独立事务中执行。
-                selfCopyTradeOrderService.syncFollowerClosePosition(order, leaderPosition);
-            } catch (Exception e) {
-                // 某条跟单单失败时记录异常，避免影响其他单。
-                recordCopyTradeException("跟单平仓同步", "copyOrderId:" + order.getId() + ",leaderPositionId:" + leaderPosition.getId(), e);
-            }
-        }
+        copyTradeSyncTaskService.enqueueCloseSyncTasks(orders, leaderPosition);
     }
 
     /** 为单个跟单关系同步开仓。 */
@@ -160,6 +146,10 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
         update.setLastFollowTime(new Date());
         update.setUpdateTime(new Date());
         copyTradeRelationService.updateCopyTradeRelation(update);
+        UserCryptocurrencyPosition latestLeaderPosition = userCryptocurrencyPositionService.selectUserCryptocurrencyPositionById(leaderPosition.getId());
+        if (latestLeaderPosition != null && latestLeaderPosition.getOrderStatus() != null && latestLeaderPosition.getOrderStatus().equals(1)) {
+            copyTradeSyncTaskService.enqueueCloseSyncTask(copyTradeOrder, latestLeaderPosition);
+        }
     }
 
     /** 为单个跟单订单同步平仓。 */
@@ -182,6 +172,8 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
             update.setRemark("交易员平仓后自动同步");
             update.setUpdateTime(new Date());
             updateCopyTradeOrder(update);
+        } else {
+            throw new ServiceException("跟单平仓失败");
         }
     }
 
@@ -216,17 +208,6 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
     @Transactional(rollbackFor = Exception.class)
     public int deleteCopyTradeOrderByIds(Long[] ids) {
         return copyTradeOrderMapper.deleteCopyTradeOrderByIds(ids);
-    }
-
-    /** 记录跟单同步过程中的异常日志，便于后续排查。 */
-    private void recordCopyTradeException(String jobName, String relateInfo, Exception e) {
-        ScheduledTaskExceptionLog scheduledTaskExceptionLog = new ScheduledTaskExceptionLog();
-        scheduledTaskExceptionLog.setJobName(jobName);
-        scheduledTaskExceptionLog.setExceptionInfo(e.getMessage());
-        scheduledTaskExceptionLog.setExceptionInfoDetail(ExceptionUtil.stacktraceToString(e));
-        scheduledTaskExceptionLog.setRelateInfo(relateInfo);
-        scheduledTaskExceptionLog.setCreateTime(DateUtils.getNowDate());
-        scheduledTaskExceptionLogMapper.insertScheduledTaskExceptionLog(scheduledTaskExceptionLog);
     }
 
     /** 计算跟单子仓位的保证金快照。 */

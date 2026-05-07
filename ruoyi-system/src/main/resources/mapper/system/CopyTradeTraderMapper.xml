@@ -19,6 +19,10 @@
         <result property="maxFollowerCount" column="max_follower_count"/>
         <result property="defaultFollowMode" column="default_follow_mode"/>
         <result property="defaultFollowRatio" column="default_follow_ratio"/>
+        <result property="monthlyProfitMinRate" column="monthly_profit_min_rate"/>
+        <result property="monthlyProfitMaxRate" column="monthly_profit_max_rate"/>
+        <result property="annualProfitMinRate" column="annual_profit_min_rate"/>
+        <result property="annualProfitMaxRate" column="annual_profit_max_rate"/>
         <result property="sort" column="sort"/>
         <result property="currentFollowerCount" column="current_follower_count"/>
         <result property="totalCopyCount" column="total_copy_count"/>
@@ -42,15 +46,13 @@
                a.max_follower_count,
                a.default_follow_mode,
                a.default_follow_ratio,
+               a.monthly_profit_min_rate,
+               a.monthly_profit_max_rate,
+               a.annual_profit_min_rate,
+               a.annual_profit_max_rate,
                a.sort,
                a.create_time,
-               a.update_time,
-               (select count(1) from copy_trade_relation r where r.trader_user_id = a.user_id and r.status = 0) current_follower_count,
-               (select count(1) from copy_trade_order o where o.trader_user_id = a.user_id) total_copy_count,
-               (select ifnull(sum(p.all_profit_and_lose),0)
-                from copy_trade_order o
-                         left join user_cryptocurrency_position p on p.id = o.follower_position_id
-                where o.trader_user_id = a.user_id and p.order_status = 1) total_profit_amount
+               a.update_time
         from copy_trade_trader a
                  left join user_info b on a.user_id = b.id
     </sql>
@@ -89,6 +91,10 @@
             <if test="maxFollowerCount != null">max_follower_count,</if>
             <if test="defaultFollowMode != null">default_follow_mode,</if>
             <if test="defaultFollowRatio != null">default_follow_ratio,</if>
+            <if test="monthlyProfitMinRate != null">monthly_profit_min_rate,</if>
+            <if test="monthlyProfitMaxRate != null">monthly_profit_max_rate,</if>
+            <if test="annualProfitMinRate != null">annual_profit_min_rate,</if>
+            <if test="annualProfitMaxRate != null">annual_profit_max_rate,</if>
             <if test="sort != null">sort,</if>
             <if test="createTime != null">create_time,</if>
             <if test="updateTime != null">update_time,</if>
@@ -103,6 +109,10 @@
             <if test="maxFollowerCount != null">#{maxFollowerCount},</if>
             <if test="defaultFollowMode != null">#{defaultFollowMode},</if>
             <if test="defaultFollowRatio != null">#{defaultFollowRatio},</if>
+            <if test="monthlyProfitMinRate != null">#{monthlyProfitMinRate},</if>
+            <if test="monthlyProfitMaxRate != null">#{monthlyProfitMaxRate},</if>
+            <if test="annualProfitMinRate != null">#{annualProfitMinRate},</if>
+            <if test="annualProfitMaxRate != null">#{annualProfitMaxRate},</if>
             <if test="sort != null">#{sort},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="updateTime != null">#{updateTime},</if>
@@ -121,6 +131,10 @@
             <if test="maxFollowerCount != null">max_follower_count = #{maxFollowerCount},</if>
             <if test="defaultFollowMode != null">default_follow_mode = #{defaultFollowMode},</if>
             <if test="defaultFollowRatio != null">default_follow_ratio = #{defaultFollowRatio},</if>
+            <if test="monthlyProfitMinRate != null">monthly_profit_min_rate = #{monthlyProfitMinRate},</if>
+            <if test="monthlyProfitMaxRate != null">monthly_profit_max_rate = #{monthlyProfitMaxRate},</if>
+            <if test="annualProfitMinRate != null">annual_profit_min_rate = #{annualProfitMinRate},</if>
+            <if test="annualProfitMaxRate != null">annual_profit_max_rate = #{annualProfitMaxRate},</if>
             <if test="sort != null">sort = #{sort},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>

@@ -70,6 +70,9 @@ public class CopyTradeRelation extends BaseEntity {
     /** 当前这条关系下还在持仓中的跟单单数。 */
     private Integer currentOpenOrders;
 
+    /** 交易员详细信息，仅用于前端展示。 */
+    private CopyTradeTrader traderInfo;
+
     /** 获取主键ID。 */
     public Long getId() {
         return id;
@@ -220,6 +223,16 @@ public class CopyTradeRelation extends BaseEntity {
         this.currentOpenOrders = currentOpenOrders;
     }
 
+    /** 获取交易员详细信息。 */
+    public CopyTradeTrader getTraderInfo() {
+        return traderInfo;
+    }
+
+    /** 设置交易员详细信息。 */
+    public void setTraderInfo(CopyTradeTrader traderInfo) {
+        this.traderInfo = traderInfo;
+    }
+
     /** 输出对象调试信息。 */
     @Override
     public String toString() {
@@ -235,6 +248,7 @@ public class CopyTradeRelation extends BaseEntity {
                 .append("status", getStatus())
                 .append("lastFollowTime", getLastFollowTime())
                 .append("currentOpenOrders", getCurrentOpenOrders())
+                .append("traderInfo", getTraderInfo())
                 .toString();
     }
 }

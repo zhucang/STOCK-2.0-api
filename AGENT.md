@@ -159,6 +159,7 @@
 - 业务规则放在 Service 层
 - SQL 细节放在 Mapper XML
 - 多表联动、账务联动、状态流转必须由 Service 统一编排
+- 新增业务表时，必须同步补齐对应的 `domain`、`Mapper`、`Mapper.xml`、`Service`、`ServiceImpl`、后台 `Controller`；如确实不需要某一层，必须在改动说明中写明原因
 
 ### 4.2 Controller 规范
 
@@ -671,4 +672,3 @@ Service 层负责：
 - 数据库迁移方式变化
 - 定时任务体系变化
 - 统一返回模型或异常模型变化
-

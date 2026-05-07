@@ -4,11 +4,8 @@ import com.ruoyi.common.annotation.RepeatSubmit;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.system.domain.CopyTradeOrder;
 import com.ruoyi.system.domain.CopyTradeRelation;
 import com.ruoyi.system.domain.CopyTradeTrader;
-import com.ruoyi.system.service.ICopyTradeOrderService;
 import com.ruoyi.system.service.ICopyTradeRelationService;
 import com.ruoyi.system.service.ICopyTradeTraderService;
 import com.ruoyi.system.utils.UserApiKeyUtils;
@@ -24,7 +21,7 @@ import java.util.List;
 
 /**
  * 用户端跟单接口。
- * 提供交易员列表、我的跟单关系、我的跟单订单，以及跟随和停止跟随操作。
+ * 提供交易员列表、交易员详情，以及跟随和停止跟随操作。
  */
 @RestController
 @RequestMapping("/api/copyTrade")
@@ -36,10 +33,6 @@ public class ApiCopyTradeController extends BaseController {
     /** 跟单关系服务。 */
     @Resource
     private ICopyTradeRelationService copyTradeRelationService;
-
-    /** 跟单订单映射服务。 */
-    @Resource
-    private ICopyTradeOrderService copyTradeOrderService;
 
     /**
      * 查询可跟随的交易员列表。
@@ -70,55 +63,22 @@ public class ApiCopyTradeController extends BaseController {
     }
 
     /**
-     * 查询当前用户自己的跟单关系列表。
+     * 查询当前用户已跟随的交易员列表。
      *
-     * @param copyTradeRelation 跟单关系筛选条件
      * @return 分页结果
      */
-    @GetMapping("/relation/myList")
-    public TableDataInfo myRelationList(CopyTradeRelation copyTradeRelation) {
-        // 强制限定为当前登录用户的数据，避免越权查看。
+    @GetMapping("/trader/followedList")
+    public TableDataInfo followedTraderList() {
+        CopyTradeRelation copyTradeRelation = new CopyTradeRelation();
         copyTradeRelation.setFollowerUserId(UserApiKeyUtils.getUserId());
+        copyTradeRelation.setStatus(0);
         startPage();
         startOrderBy("id desc");
         List<CopyTradeRelation> list = copyTradeRelationService.selectCopyTradeRelationList(copyTradeRelation);
-        return getDataTable(list);
-    }
-
-    /**
-     * 查询当前用户自己的跟单订单映射列表。
-     *
-     * @param copyTradeOrder 跟单订单映射筛选条件
-     * @return 分页结果
-     */
-    @GetMapping("/order/myList")
-    public TableDataInfo myOrderList(CopyTradeOrder copyTradeOrder) {
-        // 强制限定为当前登录用户自己的跟单订单，避免看到别人的映射关系。
-        copyTradeOrder.setFollowerUserId(UserApiKeyUtils.getUserId());
-        startPage();
-        startOrderBy("id desc");
-        List<CopyTradeOrder> list = copyTradeOrderService.selectCopyTradeOrderList(copyTradeOrder);
-        return getDataTable(list);
-    }
-
-    /**
-     * 查询当前用户自己的单条跟单订单映射详情。
-     *
-     * @param id 跟单订单映射主键
-     * @return 跟单订单映射详情
-     */
-    @GetMapping("/order/{id}")
-    public AjaxResult myOrderInfo(@PathVariable Long id) {
-        // 先加载订单映射，再校验是否属于当前登录用户。
-        CopyTradeOrder copyTradeOrder = copyTradeOrderService.selectCopyTradeOrderById(id);
-        if (copyTradeOrder == null) {
-            throw new ServiceException("跟单订单映射不存在");
+        for (CopyTradeRelation relation : list) {
+            copyTradeRelationService.fillOtherInfo(relation);
         }
-        // 不是自己的数据时直接拒绝访问。
-        if (!UserApiKeyUtils.getUserId().equals(copyTradeOrder.getFollowerUserId())) {
-            throw new ServiceException("无权查看该跟单订单");
-        }
-        return success(copyTradeOrder);
+        return getDataTable(list);
     }
 
     /**

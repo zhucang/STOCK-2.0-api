@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS `copy_trade_sync_task` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `sync_type` tinyint NOT NULL COMMENT '同步类型 0开仓 1平仓',
+  `task_key` varchar(100) NOT NULL COMMENT '任务唯一键',
+  `relation_id` bigint DEFAULT NULL COMMENT '跟单关系ID，开仓任务使用',
+  `copy_trade_order_id` bigint DEFAULT NULL COMMENT '跟单订单映射ID，平仓任务使用',
+  `trader_user_id` bigint NOT NULL COMMENT '交易员用户ID',
+  `follower_user_id` bigint NOT NULL COMMENT '跟单用户ID',
+  `leader_position_id` bigint NOT NULL COMMENT '主单持仓ID',
+  `product_type` tinyint NOT NULL DEFAULT 2 COMMENT '产品类型 1股票 2加密货币 3期货 4外汇',
+  `status` tinyint NOT NULL DEFAULT 0 COMMENT '状态 0待执行 1执行中 2成功 3失败 4取消',
+  `retry_count` int NOT NULL DEFAULT 0 COMMENT '已重试次数',
+  `max_retry_count` int NOT NULL DEFAULT 5 COMMENT '最大重试次数',
+  `next_retry_time` datetime DEFAULT NULL COMMENT '下次允许执行时间',
+  `last_error` varchar(1000) DEFAULT NULL COMMENT '最近错误信息',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_copy_trade_sync_task_key` (`task_key`),
+  KEY `idx_copy_trade_sync_status_time` (`status`,`next_retry_time`,`id`),
+  KEY `idx_copy_trade_sync_leader` (`product_type`,`leader_position_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='跟单同步任务';
