@@ -119,7 +119,7 @@ public interface IUserCryptocurrencyPositionService
      *
      * @param followerUserId 跟单用户ID
      * @param leaderPosition 交易员持仓
-     * @param relation 跟单关系
+     * @param relation 跟单关系(跟单人员)
      * @return 新创建的跟单持仓
      */
     UserCryptocurrencyPosition openCopyTradePosition(Long followerUserId, UserCryptocurrencyPosition leaderPosition, CopyTradeRelation relation);

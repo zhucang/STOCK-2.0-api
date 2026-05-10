@@ -26,8 +26,8 @@ public class CopyTradeSyncTask extends BaseEntity {
     @Excel(name = "任务唯一键")
     private String taskKey;
 
-    /** 跟单关系ID，开仓任务使用。 */
-    @Excel(name = "跟单关系ID")
+    /** 跟单关系(跟单人员)ID，开仓任务使用。 */
+    @Excel(name = "跟单关系(跟单人员)ID")
     private Long relationId;
 
     /** 跟单订单映射ID，平仓任务使用。 */

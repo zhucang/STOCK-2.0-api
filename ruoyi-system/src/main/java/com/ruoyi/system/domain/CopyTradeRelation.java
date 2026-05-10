@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 跟单关系对象 copy_trade_relation
+ * 跟单关系(跟单人员)对象 copy_trade_relation
  * 表示某个用户正在跟随某个交易员，以及跟随的参数配置。
  */
 public class CopyTradeRelation extends BaseEntity {
@@ -62,6 +62,13 @@ public class CopyTradeRelation extends BaseEntity {
     /** 状态 0跟单中 1已停止。 */
     @Excel(name = "状态 0跟单中 1已停止")
     private Integer status;
+
+    /** 删除标志 0未删除 1已删除。 */
+    private Integer delFlag;
+
+    /** 删除时间。 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date deleteTime;
 
     /** 最近一次成功跟单的时间。 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -203,6 +210,26 @@ public class CopyTradeRelation extends BaseEntity {
         this.status = status;
     }
 
+    /** 获取删除标志。 */
+    public Integer getDelFlag() {
+        return delFlag;
+    }
+
+    /** 设置删除标志。 */
+    public void setDelFlag(Integer delFlag) {
+        this.delFlag = delFlag;
+    }
+
+    /** 获取删除时间。 */
+    public Date getDeleteTime() {
+        return deleteTime;
+    }
+
+    /** 设置删除时间。 */
+    public void setDeleteTime(Date deleteTime) {
+        this.deleteTime = deleteTime;
+    }
+
     /** 获取最近跟单时间。 */
     public Date getLastFollowTime() {
         return lastFollowTime;
@@ -246,6 +273,8 @@ public class CopyTradeRelation extends BaseEntity {
                 .append("followRatio", getFollowRatio())
                 .append("maxOpenOrders", getMaxOpenOrders())
                 .append("status", getStatus())
+                .append("delFlag", getDelFlag())
+                .append("deleteTime", getDeleteTime())
                 .append("lastFollowTime", getLastFollowTime())
                 .append("currentOpenOrders", getCurrentOpenOrders())
                 .append("traderInfo", getTraderInfo())

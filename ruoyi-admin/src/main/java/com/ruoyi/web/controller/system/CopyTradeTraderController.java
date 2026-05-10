@@ -8,6 +8,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.system.domain.CopyTradeTrader;
+import com.ruoyi.system.service.ICopyTradeRelationService;
 import com.ruoyi.system.service.ICopyTradeTraderService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,6 +33,10 @@ public class CopyTradeTraderController extends BaseController {
     /** 交易员服务。 */
     @Resource
     private ICopyTradeTraderService copyTradeTraderService;
+
+    /** 跟单关系服务。 */
+    @Resource
+    private ICopyTradeRelationService copyTradeRelationService;
 
     /**
      * 查询交易员列表。
@@ -94,7 +99,36 @@ public class CopyTradeTraderController extends BaseController {
         if (copyTradeTrader.getId() == null) {
             throw new ServiceException("请选择需要修改的交易员");
         }
+        checkTraderCanBeModified(copyTradeTrader.getId());
         return toAjax(copyTradeTraderService.updateCopyTradeTrader(copyTradeTrader));
+    }
+
+    /**
+     * 启用交易员。
+     *
+     * @param id 交易员主键
+     * @return 处理结果
+     */
+    @PreAuthorize("@ss.hasPermi('system:copyTradeTrader:edit')")
+    @Log(title = "启用跟单交易员", businessType = BusinessType.UPDATE)
+    @RepeatSubmit
+    @PutMapping("/enable/{id}")
+    public AjaxResult enable(@PathVariable Long id) {
+        return toAjax(copyTradeTraderService.updateCopyTradeTraderStatus(id, 0));
+    }
+
+    /**
+     * 停用交易员。
+     *
+     * @param id 交易员主键
+     * @return 处理结果
+     */
+    @PreAuthorize("@ss.hasPermi('system:copyTradeTrader:edit')")
+    @Log(title = "停用跟单交易员", businessType = BusinessType.UPDATE)
+    @RepeatSubmit
+    @PutMapping("/disable/{id}")
+    public AjaxResult disable(@PathVariable Long id) {
+        return toAjax(copyTradeTraderService.updateCopyTradeTraderStatus(id, 1));
     }
 
     /**
@@ -108,6 +142,23 @@ public class CopyTradeTraderController extends BaseController {
     @RepeatSubmit
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
-        return toAjax(copyTradeTraderService.deleteCopyTradeTraderByIds(ids));
+        throw new ServiceException("交易员禁止删除，请使用停用功能");
     }
+
+    /**
+     * 已有人跟单时禁止通过后台编辑交易员配置。
+     *
+     * @param id 交易员主键
+     */
+    private void checkTraderCanBeModified(Long id) {
+        CopyTradeTrader oldTrader = copyTradeTraderService.selectCopyTradeTraderById(id);
+        if (oldTrader == null) {
+            throw new ServiceException("交易员不存在");
+        }
+        int followerCount = copyTradeRelationService.countActiveFollowerByTraderUserId(oldTrader.getUserId());
+        if (followerCount > 0) {
+            throw new ServiceException("已有用户跟单，禁止修改交易员配置");
+        }
+    }
+
 }

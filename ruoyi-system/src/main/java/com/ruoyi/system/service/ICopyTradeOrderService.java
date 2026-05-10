@@ -29,6 +29,7 @@ public interface ICopyTradeOrderService {
 
     /**
      * 交易员开仓后触发批量跟单开仓。
+     * 开仓只扫描当前启用中的跟单关系(跟单人员)。
      *
      * @param leaderPosition 交易员主仓位
      */
@@ -36,15 +37,16 @@ public interface ICopyTradeOrderService {
 
     /**
      * 交易员平仓后触发批量跟单平仓。
+     * 平仓只扫描 copy_trade_order 中仍持仓的历史映射，不依赖跟单关系状态。
      *
      * @param leaderPosition 交易员主仓位
      */
     void handleLeaderClosePosition(UserCryptocurrencyPosition leaderPosition);
 
     /**
-     * 为单个跟单关系同步开仓。
+     * 为单个跟单关系(跟单人员)同步开仓。
      *
-     * @param relation 跟单关系
+     * @param relation 跟单关系(跟单人员)
      * @param leaderPosition 交易员主仓位
      */
     void syncFollowerOpenPosition(CopyTradeRelation relation, UserCryptocurrencyPosition leaderPosition);
@@ -59,6 +61,7 @@ public interface ICopyTradeOrderService {
 
     /**
      * 查询某个主单下所有仍处于持仓中的跟单映射。
+     * 用于主单平仓同步，不应关联或过滤 copy_trade_relation 状态。
      *
      * @param productType 产品类型
      * @param leaderPositionId 主单持仓ID
@@ -67,9 +70,19 @@ public interface ICopyTradeOrderService {
     List<CopyTradeOrder> selectActiveOrdersByLeaderPositionId(Integer productType, Long leaderPositionId);
 
     /**
-     * 统计某条跟单关系下当前持仓中的跟单单数量。
+     * 查询某条跟单关系对某个主单是否已经生成过跟单映射。
      *
-     * @param relationId 跟单关系ID
+     * @param productType 产品类型
+     * @param relationId 跟单关系(跟单人员)ID
+     * @param leaderPositionId 主单持仓ID
+     * @return 跟单映射
+     */
+    CopyTradeOrder selectOrderByRelationAndLeaderPosition(Integer productType, Long relationId, Long leaderPositionId);
+
+    /**
+     * 统计某条跟单关系(跟单人员)下当前持仓中的跟单单数量。
+     *
+     * @param relationId 跟单关系(跟单人员)ID
      * @return 当前持仓中的跟单单数量
      */
     int countActiveOrderByRelationId(Long relationId);

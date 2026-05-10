@@ -17,8 +17,8 @@ public class CopyTradeOrder extends BaseEntity {
     /** 主键ID。 */
     private Long id;
 
-    /** 跟单关系ID。 */
-    @Excel(name = "跟单关系ID")
+    /** 跟单关系(跟单人员)ID。 */
+    @Excel(name = "跟单关系(跟单人员)ID")
     private Long relationId;
 
     /** 交易员用户ID。 */
@@ -99,12 +99,12 @@ public class CopyTradeOrder extends BaseEntity {
         this.id = id;
     }
 
-    /** 获取跟单关系ID。 */
+    /** 获取跟单关系(跟单人员)ID。 */
     public Long getRelationId() {
         return relationId;
     }
 
-    /** 设置跟单关系ID。 */
+    /** 设置跟单关系(跟单人员)ID。 */
     public void setRelationId(Long relationId) {
         this.relationId = relationId;
     }

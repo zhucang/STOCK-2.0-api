@@ -50,6 +50,15 @@ public interface ICopyTradeTraderService {
     int updateCopyTradeTrader(CopyTradeTrader copyTradeTrader);
 
     /**
+     * 更新交易员启停状态。
+     *
+     * @param id 交易员主键
+     * @param status 状态 0启用 1停用
+     * @return 影响行数
+     */
+    int updateCopyTradeTraderStatus(Long id, Integer status);
+
+    /**
      * 批量删除交易员配置。
      *
      * @param ids 主键数组

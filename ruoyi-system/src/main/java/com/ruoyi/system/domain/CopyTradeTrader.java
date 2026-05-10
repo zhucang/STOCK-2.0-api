@@ -76,15 +76,6 @@ public class CopyTradeTrader extends UserInfoDetailVo {
     /** 交易员头像，用于前端展示。 */
     private String avatar;
 
-    /** 当前正在跟随该交易员的人数。 */
-    private Integer currentFollowerCount;
-
-    /** 累计创建过的跟单单数。 */
-    private Integer totalCopyCount;
-
-    /** 跟单订单累计总盈亏。 */
-    private BigDecimal totalProfitAmount;
-
     /** 获取主键ID。 */
     public Long getId() {
         return id;
@@ -247,36 +238,6 @@ public class CopyTradeTrader extends UserInfoDetailVo {
         this.avatar = avatar;
     }
 
-    /** 获取当前跟随人数。 */
-    public Integer getCurrentFollowerCount() {
-        return currentFollowerCount;
-    }
-
-    /** 设置当前跟随人数。 */
-    public void setCurrentFollowerCount(Integer currentFollowerCount) {
-        this.currentFollowerCount = currentFollowerCount;
-    }
-
-    /** 获取累计跟单单数。 */
-    public Integer getTotalCopyCount() {
-        return totalCopyCount;
-    }
-
-    /** 设置累计跟单单数。 */
-    public void setTotalCopyCount(Integer totalCopyCount) {
-        this.totalCopyCount = totalCopyCount;
-    }
-
-    /** 获取累计跟单总盈亏。 */
-    public BigDecimal getTotalProfitAmount() {
-        return totalProfitAmount;
-    }
-
-    /** 设置累计跟单总盈亏。 */
-    public void setTotalProfitAmount(BigDecimal totalProfitAmount) {
-        this.totalProfitAmount = totalProfitAmount;
-    }
-
     /** 输出对象调试信息。 */
     @Override
     public String toString() {
@@ -296,9 +257,6 @@ public class CopyTradeTrader extends UserInfoDetailVo {
                 .append("annualProfitMinRate", getAnnualProfitMinRate())
                 .append("annualProfitMaxRate", getAnnualProfitMaxRate())
                 .append("sort", getSort())
-                .append("currentFollowerCount", getCurrentFollowerCount())
-                .append("totalCopyCount", getTotalCopyCount())
-                .append("totalProfitAmount", getTotalProfitAmount())
                 .toString();
     }
 }

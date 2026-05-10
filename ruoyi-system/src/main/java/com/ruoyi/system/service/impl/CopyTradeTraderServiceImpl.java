@@ -1,5 +1,6 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.system.domain.CopyTradeTrader;
 import com.ruoyi.system.mapper.CopyTradeTraderMapper;
 import com.ruoyi.system.service.ICopyTradeTraderService;
@@ -53,6 +54,20 @@ public class CopyTradeTraderServiceImpl implements ICopyTradeTraderService {
     @Transactional(rollbackFor = Exception.class)
     public int updateCopyTradeTrader(CopyTradeTrader copyTradeTrader) {
         // 修改时刷新更新时间，便于审计。
+        copyTradeTrader.setUpdateTime(new Date());
+        return copyTradeTraderMapper.updateCopyTradeTrader(copyTradeTrader);
+    }
+
+    /** 更新交易员启停状态。 */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int updateCopyTradeTraderStatus(Long id, Integer status) {
+        if (id == null) {
+            throw new ServiceException("请选择需要操作的交易员");
+        }
+        CopyTradeTrader copyTradeTrader = new CopyTradeTrader();
+        copyTradeTrader.setId(id);
+        copyTradeTrader.setStatus(status);
         copyTradeTrader.setUpdateTime(new Date());
         return copyTradeTraderMapper.updateCopyTradeTrader(copyTradeTrader);
     }

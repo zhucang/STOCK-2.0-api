@@ -17,7 +17,7 @@ public interface ICopyTradeSyncTaskService {
     /** 查询单条同步任务。 */
     CopyTradeSyncTask selectCopyTradeSyncTaskById(Long id);
 
-    /** 根据跟单关系批量生成开仓同步任务。 */
+    /** 根据跟单关系(跟单人员)批量生成开仓同步任务。 */
     void enqueueOpenSyncTasks(List<CopyTradeRelation> relations, UserCryptocurrencyPosition leaderPosition);
 
     /** 根据跟单订单批量生成平仓同步任务。 */

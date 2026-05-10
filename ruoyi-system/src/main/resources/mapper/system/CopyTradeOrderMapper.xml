@@ -75,11 +75,20 @@
         </where>
     </select>
 
+    <!-- 平仓同步只依赖 copy_trade_order 已有映射，不关联 copy_trade_relation 状态。 -->
     <select id="selectActiveOrdersByLeaderPositionId" resultMap="CopyTradeOrderResult">
         <include refid="selectCopyTradeOrderVo"/>
         where product_type = #{param1}
           and leader_position_id = #{param2}
           and status = 0
+    </select>
+
+    <select id="selectOrderByRelationAndLeaderPosition" resultMap="CopyTradeOrderResult">
+        <include refid="selectCopyTradeOrderVo"/>
+        where product_type = #{param1}
+          and relation_id = #{param2}
+          and leader_position_id = #{param3}
+        limit 1
     </select>
 
     <select id="countActiveOrderByRelationId" parameterType="Long" resultType="int">

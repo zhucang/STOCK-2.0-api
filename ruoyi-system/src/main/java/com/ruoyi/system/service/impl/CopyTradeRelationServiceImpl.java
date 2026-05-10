@@ -8,7 +8,6 @@ import com.ruoyi.system.domain.CopyTradeTrader;
 import com.ruoyi.system.mapper.CopyTradeRelationMapper;
 import com.ruoyi.system.service.ICopyTradeRelationService;
 import com.ruoyi.system.service.ICopyTradeTraderService;
-import com.ruoyi.system.utils.UserApiKeyUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,12 +17,12 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 跟单关系服务实现类。
- * 负责跟单关系表的读写，以及跟随和取消跟随的业务编排。
+ * 跟单关系(跟单人员)服务实现类。
+ * 负责跟单关系(跟单人员)表的读写，以及跟随和取消跟随的业务编排。
  */
 @Service
 public class CopyTradeRelationServiceImpl implements ICopyTradeRelationService {
-    /** 跟单关系数据访问层。 */
+    /** 跟单关系(跟单人员)数据访问层。 */
     @Resource
     private CopyTradeRelationMapper copyTradeRelationMapper;
 
@@ -31,13 +30,13 @@ public class CopyTradeRelationServiceImpl implements ICopyTradeRelationService {
     @Resource
     private ICopyTradeTraderService copyTradeTraderService;
 
-    /** 查询跟单关系列表。 */
+    /** 查询跟单关系(跟单人员)列表。 */
     @Override
     public List<CopyTradeRelation> selectCopyTradeRelationList(CopyTradeRelation copyTradeRelation) {
         return copyTradeRelationMapper.selectCopyTradeRelationList(copyTradeRelation);
     }
 
-    /** 填充跟单关系展示所需的扩展信息。 */
+    /** 填充跟单关系(跟单人员)展示所需的扩展信息。 */
     @Override
     public void fillOtherInfo(CopyTradeRelation copyTradeRelation) {
         if (copyTradeRelation == null || copyTradeRelation.getTraderId() == null) {
@@ -46,7 +45,7 @@ public class CopyTradeRelationServiceImpl implements ICopyTradeRelationService {
         copyTradeRelation.setTraderInfo(copyTradeTraderService.selectCopyTradeTraderById(copyTradeRelation.getTraderId()));
     }
 
-    /** 查询单条跟单关系。 */
+    /** 查询单条跟单关系(跟单人员)。 */
     @Override
     public CopyTradeRelation selectCopyTradeRelationById(Long id) {
         return copyTradeRelationMapper.selectCopyTradeRelationById(id);
@@ -58,12 +57,14 @@ public class CopyTradeRelationServiceImpl implements ICopyTradeRelationService {
         return copyTradeRelationMapper.selectRelationByTraderAndFollower(traderUserId, followerUserId);
     }
 
-    /** 创建或恢复跟单关系。 */
+    /** 创建或恢复跟单关系(跟单人员)。 */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public AjaxResult followTrader(CopyTradeRelation copyTradeRelation) {
-        // 当前登录用户就是跟单人。
-        Long followerUserId = UserApiKeyUtils.getUserId();
+        if (copyTradeRelation == null || copyTradeRelation.getFollowerUserId() == null) {
+            throw new ServiceException("请选择跟单用户");
+        }
+        Long followerUserId = copyTradeRelation.getFollowerUserId();
         // 必须明确指定要跟随哪个交易员。
         if (copyTradeRelation.getTraderId() == null) {
             throw new LangException("hint_copyTradeSelectTrader", "请选择要跟随的交易员");
@@ -79,7 +80,9 @@ public class CopyTradeRelationServiceImpl implements ICopyTradeRelationService {
         }
         // 先查询是否存在历史关系，支持“停止后恢复”。
         CopyTradeRelation exists = selectRelationByTraderAndFollower(trader.getUserId(), followerUserId);
-        if (exists != null && exists.getStatus() != null && exists.getStatus().equals(0)) {
+        if (exists != null
+                && exists.getStatus() != null && exists.getStatus().equals(0)
+                && exists.getDelFlag() != null && exists.getDelFlag().equals(0)) {
             throw new LangException("hint_copyTradeAlreadyFollowing", "您已经在跟随该交易员");
         }
         // 如果交易员设置了最大人数，需要先校验名额。
@@ -127,6 +130,7 @@ public class CopyTradeRelationServiceImpl implements ICopyTradeRelationService {
         copyTradeRelation.setTraderUserId(trader.getUserId());
         copyTradeRelation.setFollowerUserId(followerUserId);
         copyTradeRelation.setStatus(0);
+        copyTradeRelation.setDelFlag(0);
         copyTradeRelation.setLastFollowTime(new Date());
         copyTradeRelation.setUpdateTime(new Date());
         int count;
@@ -140,7 +144,7 @@ public class CopyTradeRelationServiceImpl implements ICopyTradeRelationService {
             count = insertCopyTradeRelation(copyTradeRelation);
         }
         if (count <= 0) {
-            throw new ServiceException("创建跟单关系失败");
+            throw new ServiceException("创建跟单关系(跟单人员)失败");
         }
         return AjaxResult.success().put("relationId", copyTradeRelation.getId() == null ? exists.getId() : copyTradeRelation.getId());
     }
@@ -148,20 +152,19 @@ public class CopyTradeRelationServiceImpl implements ICopyTradeRelationService {
     /** 停止跟单。 */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public AjaxResult unfollowTrader(Long relationId) {
+    public AjaxResult unfollowTrader(Long relationId, Long followerUserId) {
         // 停止跟单必须先拿到关系主键。
         if (relationId == null) {
-            throw new LangException("hint_copyTradeSelectRelation", "请选择要停止的跟单关系");
+            throw new LangException("hint_copyTradeSelectRelation", "请选择要停止的跟单关系(跟单人员)");
         }
-        Long followerUserId = UserApiKeyUtils.getUserId();
         // 校验关系是否存在。
         CopyTradeRelation relation = selectCopyTradeRelationById(relationId);
         if (relation == null) {
-            throw new LangException("hint_copyTradeRelationNotExists", "跟单关系不存在");
+            throw new LangException("hint_copyTradeRelationNotExists", "跟单关系(跟单人员)不存在");
         }
-        // 只能操作自己的跟单关系。
-        if (!relation.getFollowerUserId().equals(followerUserId)) {
-            throw new ServiceException("无权操作该跟单关系");
+        // 只能操作自己的跟单关系(跟单人员)。
+        if (followerUserId != null && !relation.getFollowerUserId().equals(followerUserId)) {
+            throw new ServiceException("无权操作该跟单关系(跟单人员)");
         }
         // 这里只是停止后续跟单，不主动平掉历史已开的仓位。
         CopyTradeRelation update = new CopyTradeRelation();
@@ -175,7 +178,77 @@ public class CopyTradeRelationServiceImpl implements ICopyTradeRelationService {
         return AjaxResult.success();
     }
 
-    /** 查询某个交易员名下所有启用中的跟单关系。 */
+    /**
+     * 修改跟单关系(跟单人员)执行配置。
+     * 白名单更新字段：followMode、followAmount、followRatio、maxOpenOrders。
+     * status 只能通过跟随/停止跟随接口变更，归属字段 traderId/traderUserId/followerUserId 创建后不允许编辑。
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int updateCopyTradeRelationConfig(CopyTradeRelation copyTradeRelation, Long followerUserId) {
+        if (copyTradeRelation == null || copyTradeRelation.getId() == null) {
+            throw new ServiceException("请选择需要修改的跟单关系(跟单人员)");
+        }
+        CopyTradeRelation oldRelation = selectCopyTradeRelationById(copyTradeRelation.getId());
+        if (oldRelation == null) {
+            throw new LangException("hint_copyTradeRelationNotExists", "跟单关系(跟单人员)不存在");
+        }
+        if (oldRelation.getStatus() == null || !oldRelation.getStatus().equals(0)) {
+            throw new ServiceException("跟单关系已停止，不能编辑执行配置");
+        }
+        if (followerUserId != null && !oldRelation.getFollowerUserId().equals(followerUserId)) {
+            throw new ServiceException("无权操作该跟单关系(跟单人员)");
+        }
+        CopyTradeTrader trader = copyTradeTraderService.selectCopyTradeTraderById(oldRelation.getTraderId());
+        if (trader == null || trader.getStatus() == null || !trader.getStatus().equals(0)) {
+            throw new LangException("hint_copyTradeTraderNotAvailable", "交易员不存在或已停用");
+        }
+
+        Integer followMode = copyTradeRelation.getFollowMode();
+        if (followMode == null) {
+            followMode = oldRelation.getFollowMode();
+        }
+        if (followMode == null || (!followMode.equals(0) && !followMode.equals(1))) {
+            throw new LangException("hint_copyTradeModeError", "跟单模式错误");
+        }
+
+        // 只构造允许修改的字段，避免普通编辑改动 status 或归属字段。
+        CopyTradeRelation update = new CopyTradeRelation();
+        update.setId(oldRelation.getId());
+        update.setFollowMode(followMode);
+        update.setMaxOpenOrders(copyTradeRelation.getMaxOpenOrders());
+
+        if (followMode.equals(0)) {
+            BigDecimal followAmount = copyTradeRelation.getFollowAmount() == null ? oldRelation.getFollowAmount() : copyTradeRelation.getFollowAmount();
+            if (followAmount == null || followAmount.compareTo(BigDecimal.ZERO) <= 0) {
+                throw new LangException("hint_copyTradeInputFollowAmount", "请输入固定跟单金额");
+            }
+            if (trader.getMinFollowAmount() != null && followAmount.compareTo(trader.getMinFollowAmount()) < 0) {
+                throw new LangException("hint_copyTradeAmountLtMin", "跟单金额不能低于交易员要求的最小金额");
+            }
+            if (trader.getMaxFollowAmount() != null && trader.getMaxFollowAmount().compareTo(BigDecimal.ZERO) > 0
+                    && followAmount.compareTo(trader.getMaxFollowAmount()) > 0) {
+                throw new LangException("hint_copyTradeAmountGtMax", "跟单金额不能高于交易员要求的最大金额");
+            }
+            update.setFollowAmount(followAmount);
+        } else {
+            BigDecimal followRatio = copyTradeRelation.getFollowRatio() == null ? oldRelation.getFollowRatio() : copyTradeRelation.getFollowRatio();
+            if (followRatio == null || followRatio.compareTo(BigDecimal.ZERO) <= 0) {
+                followRatio = trader.getDefaultFollowRatio() == null ? BigDecimal.ONE : trader.getDefaultFollowRatio();
+            }
+            update.setFollowRatio(followRatio);
+        }
+
+        if (update.getMaxOpenOrders() == null || update.getMaxOpenOrders() <= 0) {
+            update.setMaxOpenOrders(oldRelation.getMaxOpenOrders());
+        }
+        if (update.getMaxOpenOrders() == null || update.getMaxOpenOrders() <= 0) {
+            update.setMaxOpenOrders(10);
+        }
+        return updateCopyTradeRelation(update);
+    }
+
+    /** 查询某个交易员名下所有启用中的跟单关系(跟单人员)。 */
     @Override
     public List<CopyTradeRelation> selectActiveRelationsByTraderUserId(Long traderUserId) {
         return copyTradeRelationMapper.selectActiveRelationsByTraderUserId(traderUserId);
@@ -187,24 +260,43 @@ public class CopyTradeRelationServiceImpl implements ICopyTradeRelationService {
         return copyTradeRelationMapper.countActiveFollowerByTraderUserId(traderUserId);
     }
 
-    /** 新增跟单关系。 */
+    /** 新增跟单关系(跟单人员)。 */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int insertCopyTradeRelation(CopyTradeRelation copyTradeRelation) {
+        if (copyTradeRelation.getCreateTime() == null) {
+            copyTradeRelation.setCreateTime(new Date());
+        }
+        if (copyTradeRelation.getUpdateTime() == null) {
+            copyTradeRelation.setUpdateTime(new Date());
+        }
         return copyTradeRelationMapper.insertCopyTradeRelation(copyTradeRelation);
     }
 
-    /** 修改跟单关系。 */
+    /** 修改跟单关系(跟单人员)。 */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int updateCopyTradeRelation(CopyTradeRelation copyTradeRelation) {
+        copyTradeRelation.setUpdateTime(new Date());
         return copyTradeRelationMapper.updateCopyTradeRelation(copyTradeRelation);
     }
 
-    /** 批量删除跟单关系。 */
+    /** 批量删除跟单关系(跟单人员)。 */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int deleteCopyTradeRelationByIds(Long[] ids) {
+        if (ids == null || ids.length == 0) {
+            throw new ServiceException("请选择需要删除的跟单关系(跟单人员)");
+        }
+        for (Long id : ids) {
+            CopyTradeRelation relation = selectCopyTradeRelationById(id);
+            if (relation == null) {
+                throw new LangException("hint_copyTradeRelationNotExists", "跟单关系(跟单人员)不存在");
+            }
+            if (relation.getStatus() == null || !relation.getStatus().equals(1)) {
+                throw new ServiceException("跟单关系只有停止跟随后才允许删除");
+            }
+        }
         return copyTradeRelationMapper.deleteCopyTradeRelationByIds(ids);
     }
 }

@@ -30,7 +30,7 @@ public class ApiCopyTradeController extends BaseController {
     @Resource
     private ICopyTradeTraderService copyTradeTraderService;
 
-    /** 跟单关系服务。 */
+    /** 跟单关系(跟单人员)服务。 */
     @Resource
     private ICopyTradeRelationService copyTradeRelationService;
 
@@ -90,18 +90,31 @@ public class ApiCopyTradeController extends BaseController {
     @RepeatSubmit
     @PostMapping("/relation/follow")
     public AjaxResult follow(@RequestBody CopyTradeRelation copyTradeRelation) {
+        copyTradeRelation.setFollowerUserId(UserApiKeyUtils.getUserId());
         return copyTradeRelationService.followTrader(copyTradeRelation);
+    }
+
+    /**
+     * 编辑跟单配置。
+     *
+     * @param copyTradeRelation 跟单配置参数
+     * @return 处理结果
+     */
+    @RepeatSubmit
+    @PostMapping("/relation/edit")
+    public AjaxResult editRelation(@RequestBody CopyTradeRelation copyTradeRelation) {
+        return toAjax(copyTradeRelationService.updateCopyTradeRelationConfig(copyTradeRelation, UserApiKeyUtils.getUserId()));
     }
 
     /**
      * 停止跟随某个交易员。
      *
-     * @param relationId 跟单关系主键
+     * @param relationId 跟单关系(跟单人员)主键
      * @return 处理结果
      */
     @RepeatSubmit
     @PostMapping("/relation/unfollow")
     public AjaxResult unfollow(Long relationId) {
-        return copyTradeRelationService.unfollowTrader(relationId);
+        return copyTradeRelationService.unfollowTrader(relationId, UserApiKeyUtils.getUserId());
     }
 }

@@ -27,6 +27,7 @@ public interface CopyTradeOrderMapper {
 
     /**
      * 查询某个主单下所有仍处于持仓中的跟单映射。
+     * 平仓同步必须以 copy_trade_order 映射为准，不依赖跟单关系是否仍启用。
      *
      * @param productType 产品类型
      * @param leaderPositionId 主单持仓ID
@@ -35,9 +36,19 @@ public interface CopyTradeOrderMapper {
     List<CopyTradeOrder> selectActiveOrdersByLeaderPositionId(Integer productType, Long leaderPositionId);
 
     /**
-     * 统计某条跟单关系下当前仍处于持仓中的跟单单数量。
+     * 查询某条跟单关系对某个主单是否已经生成过跟单映射。
      *
-     * @param relationId 跟单关系ID
+     * @param productType 产品类型
+     * @param relationId 跟单关系(跟单人员)ID
+     * @param leaderPositionId 主单持仓ID
+     * @return 跟单映射
+     */
+    CopyTradeOrder selectOrderByRelationAndLeaderPosition(Integer productType, Long relationId, Long leaderPositionId);
+
+    /**
+     * 统计某条跟单关系(跟单人员)下当前仍处于持仓中的跟单单数量。
+     *
+     * @param relationId 跟单关系(跟单人员)ID
      * @return 当前持仓中的跟单单数量
      */
     int countActiveOrderByRelationId(Long relationId);

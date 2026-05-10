@@ -24,9 +24,6 @@
         <result property="annualProfitMinRate" column="annual_profit_min_rate"/>
         <result property="annualProfitMaxRate" column="annual_profit_max_rate"/>
         <result property="sort" column="sort"/>
-        <result property="currentFollowerCount" column="current_follower_count"/>
-        <result property="totalCopyCount" column="total_copy_count"/>
-        <result property="totalProfitAmount" column="total_profit_amount"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>

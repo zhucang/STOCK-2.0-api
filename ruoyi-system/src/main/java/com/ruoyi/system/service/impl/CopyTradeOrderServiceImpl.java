@@ -37,7 +37,7 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
     @Resource
     private ICopyTradeTraderService copyTradeTraderService;
 
-    /** 跟单关系服务。 */
+    /** 跟单关系(跟单人员)服务。 */
     @Resource
     private ICopyTradeRelationService copyTradeRelationService;
 
@@ -80,7 +80,7 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
         if (trader == null) {
             return;
         }
-        // 查询所有处于启用状态的跟单关系，并批量落库为待执行任务。
+        // 开仓只面向当前启用中的跟单关系(跟单人员)，停止或删除后的关系不再生成新跟单开仓任务。
         List<CopyTradeRelation> relations = copyTradeRelationService.selectActiveRelationsByTraderUserId(trader.getUserId());
         List<CopyTradeRelation> executableRelations = new java.util.ArrayList<>();
         for (CopyTradeRelation relation : relations) {
@@ -101,15 +101,21 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
         if (leaderPosition == null || leaderPosition.getId() == null) {
             return;
         }
-        // 只处理还处于持仓中的跟单映射，并批量落库为待执行任务。
+        // 平仓必须基于 copy_trade_order 历史映射，不依赖跟单关系(跟单人员)当前是否仍启用或是否被逻辑删除。
+        // 这样停止、编辑或删除关系后，之前已经生成的跟随单仍能跟随主单平仓。
         List<CopyTradeOrder> orders = selectActiveOrdersByLeaderPositionId(2, leaderPosition.getId());
         copyTradeSyncTaskService.enqueueCloseSyncTasks(orders, leaderPosition);
     }
 
-    /** 为单个跟单关系同步开仓。 */
+    /** 为单个跟单关系(跟单人员)同步开仓。 */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public void syncFollowerOpenPosition(CopyTradeRelation relation, UserCryptocurrencyPosition leaderPosition) {
+        // 最终幂等保护：同一跟单关系对同一主单只允许生成一条跟单映射，避免任务重试或并发消费重复开仓。
+        CopyTradeOrder exists = selectOrderByRelationAndLeaderPosition(2, relation.getId(), leaderPosition.getId());
+        if (exists != null) {
+            return;
+        }
         // 先为跟单用户创建实际持仓。
         UserCryptocurrencyPosition followerPosition = userCryptocurrencyPositionService.openCopyTradePosition(relation.getFollowerUserId(), leaderPosition, relation);
         // 再保存主仓位和跟单仓位之间的映射。
@@ -181,6 +187,12 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
     @Override
     public List<CopyTradeOrder> selectActiveOrdersByLeaderPositionId(Integer productType, Long leaderPositionId) {
         return copyTradeOrderMapper.selectActiveOrdersByLeaderPositionId(productType, leaderPositionId);
+    }
+
+    /** 查询某条关系对某个主单是否已有跟单映射。 */
+    @Override
+    public CopyTradeOrder selectOrderByRelationAndLeaderPosition(Integer productType, Long relationId, Long leaderPositionId) {
+        return copyTradeOrderMapper.selectOrderByRelationAndLeaderPosition(productType, relationId, leaderPositionId);
     }
 
     /** 统计某条关系下当前持仓中的跟单单数量。 */

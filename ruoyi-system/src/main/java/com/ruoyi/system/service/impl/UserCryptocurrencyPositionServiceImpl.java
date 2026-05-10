@@ -407,7 +407,7 @@ public class UserCryptocurrencyPositionServiceImpl implements IUserCryptocurrenc
      *
      * @param followerUserId 跟单用户ID
      * @param leaderPosition 交易员主仓位
-     * @param relation 跟单关系配置
+     * @param relation 跟单关系(跟单人员)配置
      * @return 跟单仓位
      */
     @Override

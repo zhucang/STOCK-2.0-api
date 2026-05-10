@@ -71,7 +71,7 @@ public class CopyTradeSyncTaskServiceImpl implements ICopyTradeSyncTaskService {
         return copyTradeSyncTaskMapper.selectCopyTradeSyncTaskById(id);
     }
 
-    /** 根据跟单关系批量生成开仓同步任务。 */
+    /** 根据跟单关系(跟单人员)批量生成开仓同步任务。 */
     @Override
     public void enqueueOpenSyncTasks(List<CopyTradeRelation> relations, UserCryptocurrencyPosition leaderPosition) {
         List<CopyTradeSyncTask> tasks = new ArrayList<>();
@@ -184,7 +184,7 @@ public class CopyTradeSyncTaskServiceImpl implements ICopyTradeSyncTaskService {
     private boolean processOpenSyncTask(CopyTradeSyncTask task) {
         CopyTradeRelation relation = copyTradeRelationService.selectCopyTradeRelationById(task.getRelationId());
         if (relation == null || relation.getStatus() == null || !relation.getStatus().equals(0)) {
-            cancelTask(task.getId(), "跟单关系不存在或已停止");
+            cancelTask(task.getId(), "跟单关系(跟单人员)不存在或已停止");
             return false;
         }
         Integer activeOrderCount = copyTradeOrderService.countActiveOrderByRelationId(relation.getId());
