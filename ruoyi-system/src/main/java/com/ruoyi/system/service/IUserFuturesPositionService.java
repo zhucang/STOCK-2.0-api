@@ -2,6 +2,8 @@ package com.ruoyi.system.service;
 
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.ticker.TickerInfo;
+import com.ruoyi.system.domain.CopyTradePositionSnapshot;
+import com.ruoyi.system.domain.CopyTradeRelation;
 import com.ruoyi.system.domain.ProductSetting;
 import com.ruoyi.system.domain.UserFuturesPosition;
 
@@ -111,6 +113,16 @@ public interface IUserFuturesPositionService
      * @return
      */
     public int buy(UserFuturesPosition position);
+
+    /**
+     * 为跟单用户开仓。
+     *
+     * @param followerUserId 跟单用户ID
+     * @param leaderPosition 交易员持仓快照
+     * @param relation 跟单关系(跟单人员)
+     * @return 新创建的跟单持仓
+     */
+    UserFuturesPosition openCopyTradePosition(Long followerUserId, CopyTradePositionSnapshot leaderPosition, CopyTradeRelation relation);
 
     /**
      * 用户期货合约交易卖出

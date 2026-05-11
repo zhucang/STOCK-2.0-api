@@ -2,16 +2,17 @@ package com.ruoyi.system.service.impl;
 
 import cn.hutool.core.exceptions.ExceptionUtil;
 import com.ruoyi.system.domain.CopyTradeOrder;
+import com.ruoyi.system.domain.CopyTradePositionSnapshot;
 import com.ruoyi.system.domain.CopyTradeRelation;
 import com.ruoyi.system.domain.CopyTradeSyncTask;
+import com.ruoyi.system.domain.CopyTradeTrader;
 import com.ruoyi.system.domain.ScheduledTaskExceptionLog;
-import com.ruoyi.system.domain.UserCryptocurrencyPosition;
 import com.ruoyi.system.mapper.CopyTradeSyncTaskMapper;
 import com.ruoyi.system.mapper.ScheduledTaskExceptionLogMapper;
 import com.ruoyi.system.service.ICopyTradeOrderService;
 import com.ruoyi.system.service.ICopyTradeRelationService;
 import com.ruoyi.system.service.ICopyTradeSyncTaskService;
-import com.ruoyi.system.service.IUserCryptocurrencyPositionService;
+import com.ruoyi.system.service.ICopyTradeTraderService;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -48,13 +49,12 @@ public class CopyTradeSyncTaskServiceImpl implements ICopyTradeSyncTaskService {
     @Resource
     private ICopyTradeRelationService copyTradeRelationService;
 
-    @Lazy
     @Resource
-    private ICopyTradeOrderService copyTradeOrderService;
+    private ICopyTradeTraderService copyTradeTraderService;
 
     @Lazy
     @Resource
-    private IUserCryptocurrencyPositionService userCryptocurrencyPositionService;
+    private ICopyTradeOrderService copyTradeOrderService;
 
     @Resource
     private ScheduledTaskExceptionLogMapper scheduledTaskExceptionLogMapper;
@@ -71,9 +71,49 @@ public class CopyTradeSyncTaskServiceImpl implements ICopyTradeSyncTaskService {
         return copyTradeSyncTaskMapper.selectCopyTradeSyncTaskById(id);
     }
 
+    /**
+     * 交易员开仓后生成跟单开仓同步任务。
+     * 产品交易服务只负责通知产品类型和主单ID，任务服务负责筛选交易员、跟单关系并落库任务。
+     */
+    @Override
+    public void enqueueLeaderOpenSyncTasks(Integer productType, Long leaderPositionId) {
+        CopyTradePositionSnapshot leaderPosition = copyTradeOrderService.selectCopyTradePositionSnapshot(productType, leaderPositionId);
+        if (leaderPosition == null || leaderPosition.getId() == null || leaderPosition.getProductType() == null) {
+            return;
+        }
+        CopyTradeTrader trader = copyTradeTraderService.selectActiveCopyTradeTraderByUserId(leaderPosition.getUserId());
+        if (trader == null) {
+            return;
+        }
+        List<CopyTradeRelation> relations = copyTradeRelationService.selectActiveRelationsByTraderUserId(trader.getUserId());
+        List<CopyTradeRelation> executableRelations = new ArrayList<>();
+        for (CopyTradeRelation relation : relations) {
+            Integer activeOrderCount = copyTradeOrderService.countActiveOrderByRelationId(relation.getId());
+            if (relation.getMaxOpenOrders() != null && relation.getMaxOpenOrders() > 0 && activeOrderCount >= relation.getMaxOpenOrders()) {
+                continue;
+            }
+            executableRelations.add(relation);
+        }
+        enqueueOpenSyncTasks(executableRelations, leaderPosition);
+    }
+
+    /**
+     * 交易员平仓后生成跟单平仓同步任务。
+     * 平仓必须按 copy_trade_order 历史映射查已有跟随单，不依赖跟单关系当前状态。
+     */
+    @Override
+    public void enqueueLeaderCloseSyncTasks(Integer productType, Long leaderPositionId) {
+        CopyTradePositionSnapshot leaderPosition = copyTradeOrderService.selectCopyTradePositionSnapshot(productType, leaderPositionId);
+        if (leaderPosition == null || leaderPosition.getId() == null || leaderPosition.getProductType() == null) {
+            return;
+        }
+        List<CopyTradeOrder> orders = copyTradeOrderService.selectActiveOrdersByLeaderPositionId(leaderPosition.getProductType(), leaderPosition.getId());
+        enqueueCloseSyncTasks(orders, leaderPosition);
+    }
+
     /** 根据跟单关系(跟单人员)批量生成开仓同步任务。 */
     @Override
-    public void enqueueOpenSyncTasks(List<CopyTradeRelation> relations, UserCryptocurrencyPosition leaderPosition) {
+    public void enqueueOpenSyncTasks(List<CopyTradeRelation> relations, CopyTradePositionSnapshot leaderPosition) {
         List<CopyTradeSyncTask> tasks = new ArrayList<>();
         for (CopyTradeRelation relation : relations) {
             tasks.add(buildOpenSyncTask(relation, leaderPosition));
@@ -83,7 +123,7 @@ public class CopyTradeSyncTaskServiceImpl implements ICopyTradeSyncTaskService {
 
     /** 根据跟单订单批量生成平仓同步任务。 */
     @Override
-    public void enqueueCloseSyncTasks(List<CopyTradeOrder> orders, UserCryptocurrencyPosition leaderPosition) {
+    public void enqueueCloseSyncTasks(List<CopyTradeOrder> orders, CopyTradePositionSnapshot leaderPosition) {
         List<CopyTradeSyncTask> tasks = new ArrayList<>();
         for (CopyTradeOrder order : orders) {
             tasks.add(buildCloseSyncTask(order, leaderPosition));
@@ -93,7 +133,7 @@ public class CopyTradeSyncTaskServiceImpl implements ICopyTradeSyncTaskService {
 
     /** 生成单条平仓同步任务。 */
     @Override
-    public void enqueueCloseSyncTask(CopyTradeOrder order, UserCryptocurrencyPosition leaderPosition) {
+    public void enqueueCloseSyncTask(CopyTradeOrder order, CopyTradePositionSnapshot leaderPosition) {
         copyTradeSyncTaskMapper.insertIgnoreCopyTradeSyncTask(buildCloseSyncTask(order, leaderPosition));
     }
 
@@ -125,15 +165,16 @@ public class CopyTradeSyncTaskServiceImpl implements ICopyTradeSyncTaskService {
     }
 
     /** 构建跟单开仓任务。 */
-    private CopyTradeSyncTask buildOpenSyncTask(CopyTradeRelation relation, UserCryptocurrencyPosition leaderPosition) {
+    private CopyTradeSyncTask buildOpenSyncTask(CopyTradeRelation relation, CopyTradePositionSnapshot copyTradePositionSnapshot) {
         CopyTradeSyncTask task = new CopyTradeSyncTask();
         task.setSyncType(SYNC_TYPE_OPEN);
-        task.setTaskKey(SYNC_TYPE_OPEN + ":" + relation.getId() + ":" + leaderPosition.getId());
+        // 不同产品持仓表独立自增，主单ID可能相同；taskKey 必须包含产品类型，避免 insert ignore 误判重复任务。
+        task.setTaskKey(buildTaskKey(SYNC_TYPE_OPEN, copyTradePositionSnapshot.getProductType(), relation.getId(), copyTradePositionSnapshot.getId()));
         task.setRelationId(relation.getId());
         task.setTraderUserId(relation.getTraderUserId());
         task.setFollowerUserId(relation.getFollowerUserId());
-        task.setLeaderPositionId(leaderPosition.getId());
-        task.setProductType(2);
+        task.setLeaderPositionId(copyTradePositionSnapshot.getId());
+        task.setProductType(copyTradePositionSnapshot.getProductType());
         task.setStatus(TASK_STATUS_PENDING);
         task.setRetryCount(0);
         task.setMaxRetryCount(COPY_TRADE_TASK_MAX_RETRY_COUNT);
@@ -143,21 +184,27 @@ public class CopyTradeSyncTaskServiceImpl implements ICopyTradeSyncTaskService {
     }
 
     /** 构建跟单平仓任务。 */
-    private CopyTradeSyncTask buildCloseSyncTask(CopyTradeOrder order, UserCryptocurrencyPosition leaderPosition) {
+    private CopyTradeSyncTask buildCloseSyncTask(CopyTradeOrder order, CopyTradePositionSnapshot copyTradePositionSnapshot) {
         CopyTradeSyncTask task = new CopyTradeSyncTask();
         task.setSyncType(SYNC_TYPE_CLOSE);
-        task.setTaskKey(SYNC_TYPE_CLOSE + ":" + order.getId() + ":" + leaderPosition.getId());
+        // 平仓任务也带上产品类型，保证任务幂等键和排查口径与开仓任务一致。
+        task.setTaskKey(buildTaskKey(SYNC_TYPE_CLOSE, order.getProductType() == null ? copyTradePositionSnapshot.getProductType() : order.getProductType(), order.getId(), copyTradePositionSnapshot.getId()));
         task.setCopyTradeOrderId(order.getId());
         task.setTraderUserId(order.getTraderUserId());
         task.setFollowerUserId(order.getFollowerUserId());
-        task.setLeaderPositionId(leaderPosition.getId());
-        task.setProductType(order.getProductType() == null ? 2 : order.getProductType());
+        task.setLeaderPositionId(copyTradePositionSnapshot.getId());
+        task.setProductType(order.getProductType() == null ? copyTradePositionSnapshot.getProductType() : order.getProductType());
         task.setStatus(TASK_STATUS_PENDING);
         task.setRetryCount(0);
         task.setMaxRetryCount(COPY_TRADE_TASK_MAX_RETRY_COUNT);
         task.setCreateTime(new Date());
         task.setUpdateTime(new Date());
         return task;
+    }
+
+    /** 构建同步任务幂等键。 */
+    private String buildTaskKey(Integer syncType, Integer productType, Long businessId, Long leaderPositionId) {
+        return syncType + ":" + productType + ":" + businessId + ":" + leaderPositionId;
     }
 
     /** 批量插入同步任务。 */
@@ -192,7 +239,7 @@ public class CopyTradeSyncTaskServiceImpl implements ICopyTradeSyncTaskService {
             cancelTask(task.getId(), "已达到最大同时持仓数");
             return false;
         }
-        UserCryptocurrencyPosition leaderPosition = userCryptocurrencyPositionService.selectUserCryptocurrencyPositionById(task.getLeaderPositionId());
+        CopyTradePositionSnapshot leaderPosition = copyTradeOrderService.selectCopyTradePositionSnapshot(task.getProductType(), task.getLeaderPositionId());
         if (leaderPosition == null) {
             cancelTask(task.getId(), "交易员主单不存在");
             return false;
@@ -212,7 +259,7 @@ public class CopyTradeSyncTaskServiceImpl implements ICopyTradeSyncTaskService {
             cancelTask(task.getId(), "跟单订单不存在或已结束");
             return false;
         }
-        UserCryptocurrencyPosition leaderPosition = userCryptocurrencyPositionService.selectUserCryptocurrencyPositionById(task.getLeaderPositionId());
+        CopyTradePositionSnapshot leaderPosition = copyTradeOrderService.selectCopyTradePositionSnapshot(task.getProductType(), task.getLeaderPositionId());
         if (leaderPosition == null) {
             cancelTask(task.getId(), "交易员主单不存在");
             return false;

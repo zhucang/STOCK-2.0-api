@@ -1,8 +1,8 @@
 package com.ruoyi.system.service;
 
 import com.ruoyi.system.domain.CopyTradeOrder;
+import com.ruoyi.system.domain.CopyTradePositionSnapshot;
 import com.ruoyi.system.domain.CopyTradeRelation;
-import com.ruoyi.system.domain.UserCryptocurrencyPosition;
 
 import java.util.List;
 
@@ -28,28 +28,12 @@ public interface ICopyTradeOrderService {
     CopyTradeOrder selectCopyTradeOrderById(Long id);
 
     /**
-     * 交易员开仓后触发批量跟单开仓。
-     * 开仓只扫描当前启用中的跟单关系(跟单人员)。
-     *
-     * @param leaderPosition 交易员主仓位
-     */
-    void handleLeaderOpenPosition(UserCryptocurrencyPosition leaderPosition);
-
-    /**
-     * 交易员平仓后触发批量跟单平仓。
-     * 平仓只扫描 copy_trade_order 中仍持仓的历史映射，不依赖跟单关系状态。
-     *
-     * @param leaderPosition 交易员主仓位
-     */
-    void handleLeaderClosePosition(UserCryptocurrencyPosition leaderPosition);
-
-    /**
      * 为单个跟单关系(跟单人员)同步开仓。
      *
      * @param relation 跟单关系(跟单人员)
      * @param leaderPosition 交易员主仓位
      */
-    void syncFollowerOpenPosition(CopyTradeRelation relation, UserCryptocurrencyPosition leaderPosition);
+    void syncFollowerOpenPosition(CopyTradeRelation relation, CopyTradePositionSnapshot leaderPosition);
 
     /**
      * 为单个跟单订单同步平仓。
@@ -57,7 +41,16 @@ public interface ICopyTradeOrderService {
      * @param order 跟单订单映射
      * @param leaderPosition 交易员主仓位
      */
-    void syncFollowerClosePosition(CopyTradeOrder order, UserCryptocurrencyPosition leaderPosition);
+    void syncFollowerClosePosition(CopyTradeOrder order, CopyTradePositionSnapshot leaderPosition);
+
+    /**
+     * 根据产品类型和持仓ID查询交易员主仓位快照。
+     *
+     * @param productType 产品类型
+     * @param positionId 持仓ID
+     * @return 持仓快照
+     */
+    CopyTradePositionSnapshot selectCopyTradePositionSnapshot(Integer productType, Long positionId);
 
     /**
      * 查询某个主单下所有仍处于持仓中的跟单映射。

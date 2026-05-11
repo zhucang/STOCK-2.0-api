@@ -4,15 +4,20 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.system.domain.CopyTradeOrder;
+import com.ruoyi.system.domain.CopyTradePositionSnapshot;
 import com.ruoyi.system.domain.CopyTradeRelation;
-import com.ruoyi.system.domain.CopyTradeTrader;
 import com.ruoyi.system.domain.UserCryptocurrencyPosition;
+import com.ruoyi.system.domain.UserForexPosition;
+import com.ruoyi.system.domain.UserFuturesPosition;
+import com.ruoyi.system.domain.UserStockPosition;
 import com.ruoyi.system.mapper.CopyTradeOrderMapper;
 import com.ruoyi.system.service.ICopyTradeOrderService;
 import com.ruoyi.system.service.ICopyTradeRelationService;
 import com.ruoyi.system.service.ICopyTradeSyncTaskService;
-import com.ruoyi.system.service.ICopyTradeTraderService;
 import com.ruoyi.system.service.IUserCryptocurrencyPositionService;
+import com.ruoyi.system.service.IUserForexPositionService;
+import com.ruoyi.system.service.IUserFuturesPositionService;
+import com.ruoyi.system.service.IUserStockPositionService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -25,17 +30,13 @@ import java.util.List;
 
 /**
  * 跟单订单映射服务实现类。
- * 负责跟单订单映射表的读写，以及交易员开平仓后的自动同步。
+ * 负责跟单订单映射表的读写，以及同步任务执行阶段的跟随单开平仓。
  */
 @Service
 public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
     /** 跟单订单映射数据访问层。 */
     @Resource
     private CopyTradeOrderMapper copyTradeOrderMapper;
-
-    /** 交易员服务。 */
-    @Resource
-    private ICopyTradeTraderService copyTradeTraderService;
 
     /** 跟单关系(跟单人员)服务。 */
     @Resource
@@ -46,15 +47,25 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
     @Resource
     private ICopyTradeSyncTaskService copyTradeSyncTaskService;
 
-    /** 持仓服务，用于真正执行跟单开仓和平仓。 */
+    /** 股票持仓服务。 */
+    @Lazy
+    @Resource
+    private IUserStockPositionService userStockPositionService;
+
+    /** 加密货币持仓服务。 */
     @Lazy
     @Resource
     private IUserCryptocurrencyPositionService userCryptocurrencyPositionService;
 
-    /** 自身代理对象，用于保证 REQUIRES_NEW 事务注解生效。 */
+    /** 期货持仓服务。 */
     @Lazy
     @Resource
-    private ICopyTradeOrderService selfCopyTradeOrderService;
+    private IUserFuturesPositionService userFuturesPositionService;
+
+    /** 外汇持仓服务。 */
+    @Lazy
+    @Resource
+    private IUserForexPositionService userForexPositionService;
 
     /** 查询跟单订单映射列表。 */
     @Override
@@ -68,63 +79,22 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
         return copyTradeOrderMapper.selectCopyTradeOrderById(id);
     }
 
-    /** 处理交易员开仓后的批量跟单。 */
-    @Override
-    public void handleLeaderOpenPosition(UserCryptocurrencyPosition leaderPosition) {
-        // 没有主单ID就无法建立主从映射，直接忽略。
-        if (leaderPosition == null || leaderPosition.getId() == null) {
-            return;
-        }
-        // 只有被登记为交易员的用户开仓，才需要触发跟单。
-        CopyTradeTrader trader = copyTradeTraderService.selectActiveCopyTradeTraderByUserId(leaderPosition.getUserId());
-        if (trader == null) {
-            return;
-        }
-        // 开仓只面向当前启用中的跟单关系(跟单人员)，停止或删除后的关系不再生成新跟单开仓任务。
-        List<CopyTradeRelation> relations = copyTradeRelationService.selectActiveRelationsByTraderUserId(trader.getUserId());
-        List<CopyTradeRelation> executableRelations = new java.util.ArrayList<>();
-        for (CopyTradeRelation relation : relations) {
-            // 达到最大同时持仓数时，不再继续为该用户生成新同步任务。
-            Integer activeOrderCount = countActiveOrderByRelationId(relation.getId());
-            if (relation.getMaxOpenOrders() != null && relation.getMaxOpenOrders() > 0 && activeOrderCount >= relation.getMaxOpenOrders()) {
-                continue;
-            }
-            executableRelations.add(relation);
-        }
-        copyTradeSyncTaskService.enqueueOpenSyncTasks(executableRelations, leaderPosition);
-    }
-
-    /** 处理交易员平仓后的批量跟单平仓。 */
-    @Override
-    public void handleLeaderClosePosition(UserCryptocurrencyPosition leaderPosition) {
-        // 没有主单ID时无法找到映射关系。
-        if (leaderPosition == null || leaderPosition.getId() == null) {
-            return;
-        }
-        // 平仓必须基于 copy_trade_order 历史映射，不依赖跟单关系(跟单人员)当前是否仍启用或是否被逻辑删除。
-        // 这样停止、编辑或删除关系后，之前已经生成的跟随单仍能跟随主单平仓。
-        List<CopyTradeOrder> orders = selectActiveOrdersByLeaderPositionId(2, leaderPosition.getId());
-        copyTradeSyncTaskService.enqueueCloseSyncTasks(orders, leaderPosition);
-    }
-
     /** 为单个跟单关系(跟单人员)同步开仓。 */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-    public void syncFollowerOpenPosition(CopyTradeRelation relation, UserCryptocurrencyPosition leaderPosition) {
+    public void syncFollowerOpenPosition(CopyTradeRelation relation, CopyTradePositionSnapshot leaderPosition) {
         // 最终幂等保护：同一跟单关系对同一主单只允许生成一条跟单映射，避免任务重试或并发消费重复开仓。
-        CopyTradeOrder exists = selectOrderByRelationAndLeaderPosition(2, relation.getId(), leaderPosition.getId());
+        CopyTradeOrder exists = selectOrderByRelationAndLeaderPosition(leaderPosition.getProductType(), relation.getId(), leaderPosition.getId());
         if (exists != null) {
             return;
         }
         // 先为跟单用户创建实际持仓。
-        UserCryptocurrencyPosition followerPosition = userCryptocurrencyPositionService.openCopyTradePosition(relation.getFollowerUserId(), leaderPosition, relation);
+        CopyTradePositionSnapshot followerPosition = openFollowerPosition(relation, leaderPosition);
         // 再保存主仓位和跟单仓位之间的映射。
         CopyTradeOrder copyTradeOrder = new CopyTradeOrder();
         copyTradeOrder.setRelationId(relation.getId());
         copyTradeOrder.setTraderUserId(relation.getTraderUserId());
-        // 当前版本先接入加密货币合约，因此这里固定写产品类型 2。
-        // 后续接股票/期货/外汇时，只需要在各自入口写入对应类型即可复用这张映射表。
-        copyTradeOrder.setProductType(2);
+        copyTradeOrder.setProductType(leaderPosition.getProductType());
         copyTradeOrder.setLeaderPositionId(leaderPosition.getId());
         copyTradeOrder.setProductCode(leaderPosition.getProductCode());
         copyTradeOrder.setOrderDirection(leaderPosition.getOrderDirection());
@@ -152,7 +122,8 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
         update.setLastFollowTime(new Date());
         update.setUpdateTime(new Date());
         copyTradeRelationService.updateCopyTradeRelation(update);
-        UserCryptocurrencyPosition latestLeaderPosition = userCryptocurrencyPositionService.selectUserCryptocurrencyPositionById(leaderPosition.getId());
+        // 如果主单在跟单子单创建期间已经平仓，补一条平仓任务，避免慢任务导致跟随单遗留。
+        CopyTradePositionSnapshot latestLeaderPosition = selectCopyTradePositionSnapshot(leaderPosition.getProductType(), leaderPosition.getId());
         if (latestLeaderPosition != null && latestLeaderPosition.getOrderStatus() != null && latestLeaderPosition.getOrderStatus().equals(1)) {
             copyTradeSyncTaskService.enqueueCloseSyncTask(copyTradeOrder, latestLeaderPosition);
         }
@@ -161,13 +132,13 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
     /** 为单个跟单订单同步平仓。 */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-    public void syncFollowerClosePosition(CopyTradeOrder order, UserCryptocurrencyPosition leaderPosition) {
+    public void syncFollowerClosePosition(CopyTradeOrder order, CopyTradePositionSnapshot leaderPosition) {
         // 跟单平仓直接复用交易系统现有的强制平仓入口，并沿用主单卖出价。
-        AjaxResult result = userCryptocurrencyPositionService.sell(order.getFollowerPositionId(), 0, leaderPosition.getSellOrderPrice());
+        AjaxResult result = closeFollowerPosition(order, leaderPosition);
         // 正常情况下接口会返回成功，这里额外兜底检查数据库状态。
         boolean closed = result.get(AjaxResult.CODE_TAG).equals(200);
         if (!closed) {
-            UserCryptocurrencyPosition followerPosition = userCryptocurrencyPositionService.selectUserCryptocurrencyPositionById(order.getFollowerPositionId());
+            CopyTradePositionSnapshot followerPosition = selectCopyTradePositionSnapshot(order.getProductType(), order.getFollowerPositionId());
             closed = followerPosition != null && followerPosition.getOrderStatus() != null && followerPosition.getOrderStatus().equals(1);
         }
         if (closed) {
@@ -193,6 +164,25 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
     @Override
     public CopyTradeOrder selectOrderByRelationAndLeaderPosition(Integer productType, Long relationId, Long leaderPositionId) {
         return copyTradeOrderMapper.selectOrderByRelationAndLeaderPosition(productType, relationId, leaderPositionId);
+    }
+
+    /** 根据产品类型和持仓ID查询持仓快照。 */
+    @Override
+    public CopyTradePositionSnapshot selectCopyTradePositionSnapshot(Integer productType, Long positionId) {
+        if (productType == null || positionId == null) {
+            return null;
+        }
+        // 各产品持仓表不同，但跟单任务只需要一份统一快照。
+        if (productType.equals(CopyTradePositionSnapshot.PRODUCT_TYPE_STOCK)) {
+            return toCopyTradePositionSnapshot(productType, userStockPositionService.selectUserStockPositionById(positionId));
+        } else if (productType.equals(CopyTradePositionSnapshot.PRODUCT_TYPE_CRYPTOCURRENCY)) {
+            return toCopyTradePositionSnapshot(productType, userCryptocurrencyPositionService.selectUserCryptocurrencyPositionById(positionId));
+        } else if (productType.equals(CopyTradePositionSnapshot.PRODUCT_TYPE_FUTURES)) {
+            return toCopyTradePositionSnapshot(productType, userFuturesPositionService.selectUserFuturesPositionById(positionId));
+        } else if (productType.equals(CopyTradePositionSnapshot.PRODUCT_TYPE_FOREX)) {
+            return toCopyTradePositionSnapshot(productType, userForexPositionService.selectUserForexPositionById(positionId));
+        }
+        return null;
     }
 
     /** 统计某条关系下当前持仓中的跟单单数量。 */
@@ -223,7 +213,7 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
     }
 
     /** 计算跟单子仓位的保证金快照。 */
-    private BigDecimal calculateMarginAmount(UserCryptocurrencyPosition followerPosition) {
+    private BigDecimal calculateMarginAmount(CopyTradePositionSnapshot followerPosition) {
         // 金额和杠杆都齐全时，保证金按实际总仓位金额 / 杠杆记录。
         if (followerPosition != null
                 && followerPosition.getOrderTotalPrice() != null
@@ -233,5 +223,121 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
                     .divide(new BigDecimal(followerPosition.getOrderLever()), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUNDINGMODE);
         }
         return null;
+    }
+
+    /** 按产品类型创建跟单子仓位。 */
+    private CopyTradePositionSnapshot openFollowerPosition(CopyTradeRelation relation, CopyTradePositionSnapshot leaderPosition) {
+        Integer productType = leaderPosition.getProductType();
+        // 跟单子单开仓必须复用对应产品原交易服务，保证钱包、手续费、交易时间、产品限制等规则一致。
+        if (productType.equals(CopyTradePositionSnapshot.PRODUCT_TYPE_STOCK)) {
+            return toCopyTradePositionSnapshot(productType, userStockPositionService.openCopyTradePosition(relation.getFollowerUserId(), leaderPosition, relation));
+        } else if (productType.equals(CopyTradePositionSnapshot.PRODUCT_TYPE_CRYPTOCURRENCY)) {
+            return toCopyTradePositionSnapshot(productType, userCryptocurrencyPositionService.openCopyTradePosition(relation.getFollowerUserId(), leaderPosition, relation));
+        } else if (productType.equals(CopyTradePositionSnapshot.PRODUCT_TYPE_FUTURES)) {
+            return toCopyTradePositionSnapshot(productType, userFuturesPositionService.openCopyTradePosition(relation.getFollowerUserId(), leaderPosition, relation));
+        } else if (productType.equals(CopyTradePositionSnapshot.PRODUCT_TYPE_FOREX)) {
+            return toCopyTradePositionSnapshot(productType, userForexPositionService.openCopyTradePosition(relation.getFollowerUserId(), leaderPosition, relation));
+        }
+        throw new ServiceException("暂不支持该产品类型跟单");
+    }
+
+    /** 按产品类型平掉跟单子仓位。 */
+    private AjaxResult closeFollowerPosition(CopyTradeOrder order, CopyTradePositionSnapshot leaderPosition) {
+        Integer productType = order.getProductType();
+        // 平仓也复用对应产品原强平入口，并沿用主单平仓价。
+        if (productType.equals(CopyTradePositionSnapshot.PRODUCT_TYPE_STOCK)) {
+            return userStockPositionService.sell(order.getFollowerPositionId(), 0, leaderPosition.getSellOrderPrice());
+        } else if (productType.equals(CopyTradePositionSnapshot.PRODUCT_TYPE_CRYPTOCURRENCY)) {
+            return userCryptocurrencyPositionService.sell(order.getFollowerPositionId(), 0, leaderPosition.getSellOrderPrice());
+        } else if (productType.equals(CopyTradePositionSnapshot.PRODUCT_TYPE_FUTURES)) {
+            return userFuturesPositionService.sell(order.getFollowerPositionId(), 0, leaderPosition.getSellOrderPrice());
+        } else if (productType.equals(CopyTradePositionSnapshot.PRODUCT_TYPE_FOREX)) {
+            return userForexPositionService.sell(order.getFollowerPositionId(), 0, leaderPosition.getSellOrderPrice());
+        }
+        throw new ServiceException("暂不支持该产品类型跟单平仓");
+    }
+
+    private CopyTradePositionSnapshot toCopyTradePositionSnapshot(Integer productType, UserStockPosition position) {
+        if (position == null) {
+            return null;
+        }
+        CopyTradePositionSnapshot copyTradePosition = new CopyTradePositionSnapshot();
+        copyTradePosition.setProductType(productType);
+        copyTradePosition.setId(position.getId());
+        copyTradePosition.setUserId(position.getUserId());
+        copyTradePosition.setProductCode(position.getProductCode());
+        copyTradePosition.setOrderDirection(position.getOrderDirection());
+        copyTradePosition.setBuyOrderPrice(position.getBuyOrderPrice());
+        copyTradePosition.setSellOrderPrice(position.getSellOrderPrice());
+        copyTradePosition.setOrderTotalPrice(position.getOrderTotalPrice());
+        copyTradePosition.setOrderLever(position.getOrderLever());
+        copyTradePosition.setOrderCode(position.getOrderCode());
+        copyTradePosition.setOrderStatus(position.getOrderStatus());
+        copyTradePosition.setStopProfitPrice(position.getStopProfitPrice());
+        copyTradePosition.setStopLossPrice(position.getStopLossPrice());
+        return copyTradePosition;
+    }
+
+    private CopyTradePositionSnapshot toCopyTradePositionSnapshot(Integer productType, UserCryptocurrencyPosition position) {
+        if (position == null) {
+            return null;
+        }
+        CopyTradePositionSnapshot copyTradePosition = new CopyTradePositionSnapshot();
+        copyTradePosition.setProductType(productType);
+        copyTradePosition.setId(position.getId());
+        copyTradePosition.setUserId(position.getUserId());
+        copyTradePosition.setProductCode(position.getProductCode());
+        copyTradePosition.setOrderDirection(position.getOrderDirection());
+        copyTradePosition.setBuyOrderPrice(position.getBuyOrderPrice());
+        copyTradePosition.setSellOrderPrice(position.getSellOrderPrice());
+        copyTradePosition.setOrderTotalPrice(position.getOrderTotalPrice());
+        copyTradePosition.setOrderLever(position.getOrderLever());
+        copyTradePosition.setOrderCode(position.getOrderCode());
+        copyTradePosition.setOrderStatus(position.getOrderStatus());
+        copyTradePosition.setStopProfitPrice(position.getStopProfitPrice());
+        copyTradePosition.setStopLossPrice(position.getStopLossPrice());
+        return copyTradePosition;
+    }
+
+    private CopyTradePositionSnapshot toCopyTradePositionSnapshot(Integer productType, UserFuturesPosition position) {
+        if (position == null) {
+            return null;
+        }
+        CopyTradePositionSnapshot copyTradePosition = new CopyTradePositionSnapshot();
+        copyTradePosition.setProductType(productType);
+        copyTradePosition.setId(position.getId());
+        copyTradePosition.setUserId(position.getUserId());
+        copyTradePosition.setProductCode(position.getProductCode());
+        copyTradePosition.setOrderDirection(position.getOrderDirection());
+        copyTradePosition.setBuyOrderPrice(position.getBuyOrderPrice());
+        copyTradePosition.setSellOrderPrice(position.getSellOrderPrice());
+        copyTradePosition.setOrderTotalPrice(position.getOrderTotalPrice());
+        copyTradePosition.setOrderLever(position.getOrderLever());
+        copyTradePosition.setOrderCode(position.getOrderCode());
+        copyTradePosition.setOrderStatus(position.getOrderStatus());
+        copyTradePosition.setStopProfitPrice(position.getStopProfitPrice());
+        copyTradePosition.setStopLossPrice(position.getStopLossPrice());
+        return copyTradePosition;
+    }
+
+    private CopyTradePositionSnapshot toCopyTradePositionSnapshot(Integer productType, UserForexPosition position) {
+        if (position == null) {
+            return null;
+        }
+        CopyTradePositionSnapshot copyTradePosition = new CopyTradePositionSnapshot();
+        copyTradePosition.setProductType(productType);
+        copyTradePosition.setId(position.getId());
+        copyTradePosition.setUserId(position.getUserId());
+        copyTradePosition.setProductCode(position.getProductCode());
+        copyTradePosition.setOrderDirection(position.getOrderDirection());
+        copyTradePosition.setBuyOrderPrice(position.getBuyOrderPrice());
+        copyTradePosition.setSellOrderPrice(position.getSellOrderPrice());
+        copyTradePosition.setOrderTotalPrice(position.getOrderTotalPrice());
+        copyTradePosition.setOrderLever(position.getOrderLever());
+        copyTradePosition.setOrderCode(position.getOrderCode());
+        copyTradePosition.setOrderStatus(position.getOrderStatus());
+        copyTradePosition.setStopProfitPrice(position.getStopProfitPrice());
+        copyTradePosition.setStopLossPrice(position.getStopLossPrice());
+        return copyTradePosition;
     }
 }

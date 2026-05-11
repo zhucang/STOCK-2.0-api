@@ -18,6 +18,7 @@ import com.ruoyi.common.utils.cache.CacheUtil;
 import com.ruoyi.common.utils.http.HttpUtils;
 import com.ruoyi.system.domain.*;
 import com.ruoyi.system.mapper.*;
+import com.ruoyi.system.service.ICopyTradeSyncTaskService;
 import com.ruoyi.system.service.IPlatformCurrencyService;
 import com.ruoyi.system.service.ISwitchSetService;
 import com.ruoyi.system.service.IUserAmountService;
@@ -27,6 +28,7 @@ import com.ruoyi.system.utils.ForceSellUtils;
 import com.ruoyi.system.utils.ProductQuoteUtils;
 import com.ruoyi.system.utils.UserApiKeyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,6 +83,10 @@ public class UserStockPositionServiceImpl implements IUserStockPositionService
 
     @Autowired
     private IPlatformCurrencyService platformCurrencyService;
+
+    @Lazy
+    @Resource
+    private ICopyTradeSyncTaskService copyTradeSyncTaskService;
 
     /**
      * 查询用户股票持仓
@@ -479,8 +485,18 @@ public class UserStockPositionServiceImpl implements IUserStockPositionService
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int buy(UserStockPosition position){
-        //用户id
-        Long userId = UserApiKeyUtils.getUserId();
+        return buy(position, UserApiKeyUtils.getUserId(), true);
+    }
+
+    /**
+     * 创建股票持仓。
+     *
+     * @param position 下单参数
+     * @param userId 下单用户ID
+     * @param triggerCopyTrade 是否触发跟单任务，跟单子单传 false 避免级联跟单
+     * @return 处理结果
+     */
+    private int buy(UserStockPosition position, Long userId, boolean triggerCopyTrade) {
         //用户信息
         UserInfo userInfo = userInfoMapper.selectUserInfoById(userId);
         if (userInfo == null || !userInfo.getIsDel().equals(0)){
@@ -759,7 +775,34 @@ public class UserStockPositionServiceImpl implements IUserStockPositionService
         if (count <= 0) {
             throw new LangException(HintConstants.SYSTEM_BUSY,"系统繁忙");
         }
+        // 普通用户开仓成功后才触发跟单；跟单子单传 false，避免级联跟单。
+        if (triggerCopyTrade) {
+            try {
+                copyTradeSyncTaskService.enqueueLeaderOpenSyncTasks(CopyTradePositionSnapshot.PRODUCT_TYPE_STOCK, position.getId());
+            } catch (Exception e) {
+                recordCopyTradeSyncError("跟单开仓触发失败", position.getId(), e);
+            }
+        }
         return 1;
+    }
+
+    /**
+     * 为跟单用户开出一笔和交易员主单方向一致的股票持仓。
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public UserStockPosition openCopyTradePosition(Long followerUserId, CopyTradePositionSnapshot leaderPosition, CopyTradeRelation relation) {
+        BigDecimal marginAmount = calculateCopyTradeMarginAmount(leaderPosition, relation);
+        UserStockPosition position = new UserStockPosition();
+        position.setProductCode(leaderPosition.getProductCode());
+        position.setOrderDirection(leaderPosition.getOrderDirection());
+        position.setOrderLever(leaderPosition.getOrderLever());
+        position.setStopProfitPrice(leaderPosition.getStopProfitPrice());
+        position.setStopLossPrice(leaderPosition.getStopLossPrice());
+        // 原开仓逻辑支持通过 params.marginAmount 按保证金下单，这里传入跟单计算后的保证金。
+        position.getParams().put("marginAmount", marginAmount);
+        buy(position, followerUserId, false);
+        return position;
     }
 
     /**
@@ -938,6 +981,12 @@ public class UserStockPositionServiceImpl implements IUserStockPositionService
         int count = userBillDetailMapper.insertUserBillDetail(userBillDetail);
         if (count <= 0) {
             throw new LangException(HintConstants.SYSTEM_BUSY,"系统繁忙");
+        }
+        // 平仓成功后触发跟单平仓；跟单平仓会因为 copy_trade_order 幂等映射避免重复处理。
+        try {
+            copyTradeSyncTaskService.enqueueLeaderCloseSyncTasks(CopyTradePositionSnapshot.PRODUCT_TYPE_STOCK, position.getId());
+        } catch (Exception e) {
+            recordCopyTradeSyncError("跟单平仓触发失败", position.getId(), e);
         }
         return AjaxResult.success();
     }
@@ -1146,5 +1195,31 @@ public class UserStockPositionServiceImpl implements IUserStockPositionService
         }finally {
             executorService.shutdown();
         }
+    }
+
+    private BigDecimal calculateCopyTradeMarginAmount(CopyTradePositionSnapshot leaderPosition, CopyTradeRelation relation) {
+        BigDecimal leaderMarginAmount = leaderPosition.getOrderTotalPrice()
+                .divide(new BigDecimal(leaderPosition.getOrderLever()), Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUNDINGMODE);
+        BigDecimal marginAmount;
+        if (relation.getFollowMode().equals(0)) {
+            marginAmount = relation.getFollowAmount();
+        } else {
+            BigDecimal followRatio = relation.getFollowRatio() == null ? BigDecimal.ONE : relation.getFollowRatio();
+            marginAmount = leaderMarginAmount.multiply(followRatio).setScale(Constants.BIGDECIMAL_SCALE, Constants.BIGDECIMAL_ROUNDINGMODE);
+        }
+        if (marginAmount == null || marginAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ServiceException("跟单金额必须大于0");
+        }
+        return marginAmount;
+    }
+
+    private void recordCopyTradeSyncError(String jobName, Long positionId, Exception e) {
+        ScheduledTaskExceptionLog scheduledTaskExceptionLog = new ScheduledTaskExceptionLog();
+        scheduledTaskExceptionLog.setJobName(jobName);
+        scheduledTaskExceptionLog.setExceptionInfo(e.getMessage());
+        scheduledTaskExceptionLog.setExceptionInfoDetail(ExceptionUtil.stacktraceToString(e));
+        scheduledTaskExceptionLog.setRelateInfo("positionId:" + positionId);
+        scheduledTaskExceptionLog.setCreateTime(DateUtils.getNowDate());
+        scheduledTaskExceptionLogMapper.insertScheduledTaskExceptionLog(scheduledTaskExceptionLog);
     }
 }

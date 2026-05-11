@@ -2,6 +2,7 @@ package com.ruoyi.system.service;
 
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.ticker.TickerInfo;
+import com.ruoyi.system.domain.CopyTradePositionSnapshot;
 import com.ruoyi.system.domain.CopyTradeRelation;
 import com.ruoyi.system.domain.ProductSetting;
 import com.ruoyi.system.domain.UserCryptocurrencyPosition;
@@ -122,7 +123,7 @@ public interface IUserCryptocurrencyPositionService
      * @param relation 跟单关系(跟单人员)
      * @return 新创建的跟单持仓
      */
-    UserCryptocurrencyPosition openCopyTradePosition(Long followerUserId, UserCryptocurrencyPosition leaderPosition, CopyTradeRelation relation);
+    UserCryptocurrencyPosition openCopyTradePosition(Long followerUserId, CopyTradePositionSnapshot leaderPosition, CopyTradeRelation relation);
 
     /**
      * 用户加密货币合约交易卖出
