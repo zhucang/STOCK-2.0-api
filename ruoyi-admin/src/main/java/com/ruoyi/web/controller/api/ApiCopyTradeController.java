@@ -48,18 +48,10 @@ public class ApiCopyTradeController extends BaseController {
         startPage();
         startOrderBy("sort is null,sort,id desc");
         List<CopyTradeTrader> list = copyTradeTraderService.selectCopyTradeTraderList(copyTradeTrader);
+        for (CopyTradeTrader tradeTrader : list) {
+            copyTradeTraderService.fillFollowStatus(tradeTrader,  UserApiKeyUtils.getUserId());
+        }
         return getDataTable(list);
-    }
-
-    /**
-     * 查询单个交易员详情。
-     *
-     * @param id 交易员主键
-     * @return 交易员详情
-     */
-    @GetMapping("/trader/{id}")
-    public AjaxResult traderInfo(@PathVariable Long id) {
-        return success(copyTradeTraderService.selectCopyTradeTraderById(id));
     }
 
     /**
@@ -67,7 +59,7 @@ public class ApiCopyTradeController extends BaseController {
      *
      * @return 分页结果
      */
-    @GetMapping("/trader/followedList")
+    @GetMapping("/relation/followedList")
     public TableDataInfo followedTraderList() {
         CopyTradeRelation copyTradeRelation = new CopyTradeRelation();
         copyTradeRelation.setFollowerUserId(UserApiKeyUtils.getUserId());
@@ -109,12 +101,12 @@ public class ApiCopyTradeController extends BaseController {
     /**
      * 停止跟随某个交易员。
      *
-     * @param relationId 跟单关系(跟单人员)主键
+     * @param id 跟单关系(跟单人员)主键
      * @return 处理结果
      */
     @RepeatSubmit
     @PostMapping("/relation/unfollow")
-    public AjaxResult unfollow(Long relationId) {
-        return copyTradeRelationService.unfollowTrader(relationId, UserApiKeyUtils.getUserId());
+    public AjaxResult unfollow(@RequestBody Long id) {
+        return copyTradeRelationService.unfollowTrader(id, UserApiKeyUtils.getUserId());
     }
 }

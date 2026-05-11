@@ -18,6 +18,13 @@ public interface ICopyTradeTraderService {
     List<CopyTradeTrader> selectCopyTradeTraderList(CopyTradeTrader copyTradeTrader);
 
     /**
+     * 标记当前用户是否已经跟随列表中的交易员
+     * @param copyTradeTrader
+     * @param userId
+     */
+    void fillFollowStatus(CopyTradeTrader copyTradeTrader, Long userId);
+
+    /**
      * 根据主键查询交易员详情。
      *
      * @param id 交易员主键

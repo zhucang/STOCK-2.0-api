@@ -76,6 +76,9 @@ public class CopyTradeTrader extends UserInfoDetailVo {
     /** 交易员头像，用于前端展示。 */
     private String avatar;
 
+    /** 当前用户是否已跟随 0否 1是，仅用于APP列表展示。 */
+    private Integer isFollow;
+
     /** 获取主键ID。 */
     public Long getId() {
         return id;
@@ -238,6 +241,16 @@ public class CopyTradeTrader extends UserInfoDetailVo {
         this.avatar = avatar;
     }
 
+    /** 获取当前用户是否已跟随。 */
+    public Integer getIsFollow() {
+        return isFollow;
+    }
+
+    /** 设置当前用户是否已跟随。 */
+    public void setIsFollow(Integer isFollow) {
+        this.isFollow = isFollow;
+    }
+
     /** 输出对象调试信息。 */
     @Override
     public String toString() {
@@ -257,6 +270,7 @@ public class CopyTradeTrader extends UserInfoDetailVo {
                 .append("annualProfitMinRate", getAnnualProfitMinRate())
                 .append("annualProfitMaxRate", getAnnualProfitMaxRate())
                 .append("sort", getSort())
+                .append("isFollow", getIsFollow())
                 .toString();
     }
 }
