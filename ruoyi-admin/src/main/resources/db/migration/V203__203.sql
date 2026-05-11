@@ -4,7 +4,7 @@ ALTER TABLE `stock`.`user_recharge`
 update nginx_config
 set config_content = replace(
         config_content,
-        'server_name  ${domain};',
-        'server_name  ${domain}; client_max_body_size 30m;'
+        'server_name  \${domain};',
+        'server_name  \${domain}; client_max_body_size 30m;'
     )
 where config_content not like '%client_max_body_size 30m;%';
