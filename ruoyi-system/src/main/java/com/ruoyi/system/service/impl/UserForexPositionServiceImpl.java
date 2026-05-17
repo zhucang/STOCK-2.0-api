@@ -18,6 +18,7 @@ import com.ruoyi.common.utils.cache.CacheUtil;
 import com.ruoyi.common.utils.http.HttpUtils;
 import com.ruoyi.system.domain.*;
 import com.ruoyi.system.mapper.*;
+import com.ruoyi.system.service.ICopyTradeOrderService;
 import com.ruoyi.system.service.ICopyTradeSyncTaskService;
 import com.ruoyi.system.service.IPlatformCurrencyService;
 import com.ruoyi.system.service.ISwitchSetService;
@@ -90,6 +91,10 @@ public class UserForexPositionServiceImpl implements IUserForexPositionService
     @Lazy
     @Resource
     private ICopyTradeSyncTaskService copyTradeSyncTaskService;
+
+    @Lazy
+    @Resource
+    private ICopyTradeOrderService copyTradeOrderService;
 
     /**
      * 查询用户外汇持仓
@@ -882,6 +887,10 @@ public class UserForexPositionServiceImpl implements IUserForexPositionService
         if (count <= 0) {
             throw new LangException(HintConstants.SYSTEM_BUSY,"系统繁忙");
         }
+        copyTradeOrderService.closeFollowerOrderByFollowerPosition(
+                CopyTradePositionSnapshot.PRODUCT_TYPE_FOREX,
+                position.getId(),
+                doType.equals(1) ? 1 : 2);
         // 平仓成功后触发跟单平仓；跟单平仓会因为 copy_trade_order 幂等映射避免重复处理。
         try {
             copyTradeSyncTaskService.enqueueLeaderCloseSyncTasks(CopyTradePositionSnapshot.PRODUCT_TYPE_FOREX, position.getId());

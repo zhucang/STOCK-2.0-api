@@ -100,13 +100,12 @@ public class ApiCopyTradeController extends BaseController {
 
     /**
      * 停止跟随某个交易员。
-     *
-     * @param id 跟单关系(跟单人员)主键
      * @return 处理结果
      */
     @RepeatSubmit
     @PostMapping("/relation/unfollow")
-    public AjaxResult unfollow(@RequestBody Long id) {
+    public AjaxResult unfollow(@RequestBody CopyTradeRelation copyTradeRelation) {
+        Long id = copyTradeRelation.getId();
         return copyTradeRelationService.unfollowTrader(id, UserApiKeyUtils.getUserId());
     }
 }

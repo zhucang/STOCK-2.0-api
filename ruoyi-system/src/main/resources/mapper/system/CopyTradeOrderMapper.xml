@@ -22,6 +22,11 @@
         <result property="orderLever" column="order_lever"/>
         <result property="leaderOrderCode" column="leader_order_code"/>
         <result property="followerOrderCode" column="follower_order_code"/>
+        <result property="followerSellOrderPrice" column="follower_sell_order_price"/>
+        <result property="followerProfitAndLose" column="follower_profit_and_lose"/>
+        <result property="followerAllProfitAndLose" column="follower_all_profit_and_lose"/>
+        <result property="closeSource" column="close_source"/>
+        <result property="closeTime" column="close_time"/>
         <result property="status" column="status"/>
         <result property="remark" column="remark"/>
         <result property="createTime" column="create_time"/>
@@ -46,6 +51,11 @@
                order_lever,
                leader_order_code,
                follower_order_code,
+               follower_sell_order_price,
+               follower_profit_and_lose,
+               follower_all_profit_and_lose,
+               close_source,
+               close_time,
                status,
                remark,
                create_time,
@@ -91,6 +101,14 @@
         limit 1
     </select>
 
+    <select id="selectActiveOrderByFollowerPosition" resultMap="CopyTradeOrderResult">
+        <include refid="selectCopyTradeOrderVo"/>
+        where product_type = #{param1}
+          and follower_position_id = #{param2}
+          and status = 0
+        limit 1
+    </select>
+
     <select id="countActiveOrderByRelationId" parameterType="Long" resultType="int">
         select count(1) from copy_trade_order where relation_id = #{relationId} and status = 0
     </select>
@@ -114,6 +132,11 @@
             <if test="orderLever != null">order_lever,</if>
             <if test="leaderOrderCode != null and leaderOrderCode != ''">leader_order_code,</if>
             <if test="followerOrderCode != null and followerOrderCode != ''">follower_order_code,</if>
+            <if test="followerSellOrderPrice != null">follower_sell_order_price,</if>
+            <if test="followerProfitAndLose != null">follower_profit_and_lose,</if>
+            <if test="followerAllProfitAndLose != null">follower_all_profit_and_lose,</if>
+            <if test="closeSource != null">close_source,</if>
+            <if test="closeTime != null">close_time,</if>
             <if test="status != null">status,</if>
             <if test="remark != null">remark,</if>
             <if test="createTime != null">create_time,</if>
@@ -136,6 +159,11 @@
             <if test="orderLever != null">#{orderLever},</if>
             <if test="leaderOrderCode != null and leaderOrderCode != ''">#{leaderOrderCode},</if>
             <if test="followerOrderCode != null and followerOrderCode != ''">#{followerOrderCode},</if>
+            <if test="followerSellOrderPrice != null">#{followerSellOrderPrice},</if>
+            <if test="followerProfitAndLose != null">#{followerProfitAndLose},</if>
+            <if test="followerAllProfitAndLose != null">#{followerAllProfitAndLose},</if>
+            <if test="closeSource != null">#{closeSource},</if>
+            <if test="closeTime != null">#{closeTime},</if>
             <if test="status != null">#{status},</if>
             <if test="remark != null">#{remark},</if>
             <if test="createTime != null">#{createTime},</if>
@@ -147,6 +175,11 @@
         update copy_trade_order
         <trim prefix="set" suffixOverrides=",">
             <if test="status != null">status = #{status},</if>
+            <if test="followerSellOrderPrice != null">follower_sell_order_price = #{followerSellOrderPrice},</if>
+            <if test="followerProfitAndLose != null">follower_profit_and_lose = #{followerProfitAndLose},</if>
+            <if test="followerAllProfitAndLose != null">follower_all_profit_and_lose = #{followerAllProfitAndLose},</if>
+            <if test="closeSource != null">close_source = #{closeSource},</if>
+            <if test="closeTime != null">close_time = #{closeTime},</if>
             <if test="remark != null">remark = #{remark},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>

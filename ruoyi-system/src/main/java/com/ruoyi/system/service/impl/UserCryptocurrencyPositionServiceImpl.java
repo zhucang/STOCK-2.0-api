@@ -18,6 +18,7 @@ import com.ruoyi.common.utils.cache.CacheUtil;
 import com.ruoyi.common.utils.http.HttpUtils;
 import com.ruoyi.system.domain.*;
 import com.ruoyi.system.mapper.*;
+import com.ruoyi.system.service.ICopyTradeOrderService;
 import com.ruoyi.system.service.ICopyTradeSyncTaskService;
 import com.ruoyi.system.service.IPlatformCurrencyService;
 import com.ruoyi.system.service.ISwitchSetService;
@@ -90,6 +91,10 @@ public class UserCryptocurrencyPositionServiceImpl implements IUserCryptocurrenc
     @Lazy
     @Autowired
     private ICopyTradeSyncTaskService copyTradeSyncTaskService;
+
+    @Lazy
+    @Resource
+    private ICopyTradeOrderService copyTradeOrderService;
 
     /**
      * 查询用户加密货币持仓
@@ -906,6 +911,10 @@ public class UserCryptocurrencyPositionServiceImpl implements IUserCryptocurrenc
         if (count <= 0) {
             throw new LangException(HintConstants.SYSTEM_BUSY,"系统繁忙");
         }
+        copyTradeOrderService.closeFollowerOrderByFollowerPosition(
+                CopyTradePositionSnapshot.PRODUCT_TYPE_CRYPTOCURRENCY,
+                position.getId(),
+                doType.equals(1) ? 1 : 2);
         try {
             // 主单平仓成功后，再尝试同步所有关联的跟单单平仓。
             copyTradeSyncTaskService.enqueueLeaderCloseSyncTasks(CopyTradePositionSnapshot.PRODUCT_TYPE_CRYPTOCURRENCY, position.getId());

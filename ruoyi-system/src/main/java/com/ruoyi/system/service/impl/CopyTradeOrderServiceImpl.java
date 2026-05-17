@@ -142,10 +142,18 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
             closed = followerPosition != null && followerPosition.getOrderStatus() != null && followerPosition.getOrderStatus().equals(1);
         }
         if (closed) {
+            CopyTradePositionSnapshot followerPosition = selectCopyTradePositionSnapshot(order.getProductType(), order.getFollowerPositionId());
             // 平仓成功后关闭映射，避免重复平仓。
             CopyTradeOrder update = new CopyTradeOrder();
             update.setId(order.getId());
             update.setStatus(1);
+            if (followerPosition != null) {
+                update.setFollowerSellOrderPrice(followerPosition.getSellOrderPrice());
+                update.setFollowerProfitAndLose(followerPosition.getProfitAndLose());
+                update.setFollowerAllProfitAndLose(followerPosition.getAllProfitAndLose());
+                update.setCloseTime(followerPosition.getSellOrderTime());
+            }
+            update.setCloseSource(0);
             update.setRemark("交易员平仓后自动同步");
             update.setUpdateTime(new Date());
             updateCopyTradeOrder(update);
@@ -183,6 +191,31 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
             return toCopyTradePositionSnapshot(productType, userForexPositionService.selectUserForexPositionById(positionId));
         }
         return null;
+    }
+
+    /** 跟随者自行平仓后关闭对应跟单映射。 */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void closeFollowerOrderByFollowerPosition(Integer productType, Long followerPositionId, Integer closeSource) {
+        CopyTradeOrder order = copyTradeOrderMapper.selectActiveOrderByFollowerPosition(productType, followerPositionId);
+        if (order == null) {
+            return;
+        }
+        CopyTradePositionSnapshot followerPosition = selectCopyTradePositionSnapshot(productType, followerPositionId);
+        if (followerPosition == null || followerPosition.getOrderStatus() == null || !followerPosition.getOrderStatus().equals(1)) {
+            return;
+        }
+        CopyTradeOrder update = new CopyTradeOrder();
+        update.setId(order.getId());
+        update.setStatus(1);
+        update.setCloseSource(closeSource);
+        update.setCloseTime(followerPosition.getSellOrderTime());
+        update.setFollowerSellOrderPrice(followerPosition.getSellOrderPrice());
+        update.setFollowerProfitAndLose(followerPosition.getProfitAndLose());
+        update.setFollowerAllProfitAndLose(followerPosition.getAllProfitAndLose());
+        update.setRemark(closeSource != null && closeSource.equals(1) ? "跟随者手动平仓" : "系统强平跟单单");
+        update.setUpdateTime(new Date());
+        updateCopyTradeOrder(update);
     }
 
     /** 统计某条关系下当前持仓中的跟单单数量。 */
@@ -269,6 +302,9 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
         copyTradePosition.setOrderDirection(position.getOrderDirection());
         copyTradePosition.setBuyOrderPrice(position.getBuyOrderPrice());
         copyTradePosition.setSellOrderPrice(position.getSellOrderPrice());
+        copyTradePosition.setSellOrderTime(position.getSellOrderTime());
+        copyTradePosition.setProfitAndLose(position.getProfitAndLose());
+        copyTradePosition.setAllProfitAndLose(position.getAllProfitAndLose());
         copyTradePosition.setOrderTotalPrice(position.getOrderTotalPrice());
         copyTradePosition.setOrderLever(position.getOrderLever());
         copyTradePosition.setOrderCode(position.getOrderCode());
@@ -290,6 +326,9 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
         copyTradePosition.setOrderDirection(position.getOrderDirection());
         copyTradePosition.setBuyOrderPrice(position.getBuyOrderPrice());
         copyTradePosition.setSellOrderPrice(position.getSellOrderPrice());
+        copyTradePosition.setSellOrderTime(position.getSellOrderTime());
+        copyTradePosition.setProfitAndLose(position.getProfitAndLose());
+        copyTradePosition.setAllProfitAndLose(position.getAllProfitAndLose());
         copyTradePosition.setOrderTotalPrice(position.getOrderTotalPrice());
         copyTradePosition.setOrderLever(position.getOrderLever());
         copyTradePosition.setOrderCode(position.getOrderCode());
@@ -311,6 +350,9 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
         copyTradePosition.setOrderDirection(position.getOrderDirection());
         copyTradePosition.setBuyOrderPrice(position.getBuyOrderPrice());
         copyTradePosition.setSellOrderPrice(position.getSellOrderPrice());
+        copyTradePosition.setSellOrderTime(position.getSellOrderTime());
+        copyTradePosition.setProfitAndLose(position.getProfitAndLose());
+        copyTradePosition.setAllProfitAndLose(position.getAllProfitAndLose());
         copyTradePosition.setOrderTotalPrice(position.getOrderTotalPrice());
         copyTradePosition.setOrderLever(position.getOrderLever());
         copyTradePosition.setOrderCode(position.getOrderCode());
@@ -332,6 +374,9 @@ public class CopyTradeOrderServiceImpl implements ICopyTradeOrderService {
         copyTradePosition.setOrderDirection(position.getOrderDirection());
         copyTradePosition.setBuyOrderPrice(position.getBuyOrderPrice());
         copyTradePosition.setSellOrderPrice(position.getSellOrderPrice());
+        copyTradePosition.setSellOrderTime(position.getSellOrderTime());
+        copyTradePosition.setProfitAndLose(position.getProfitAndLose());
+        copyTradePosition.setAllProfitAndLose(position.getAllProfitAndLose());
         copyTradePosition.setOrderTotalPrice(position.getOrderTotalPrice());
         copyTradePosition.setOrderLever(position.getOrderLever());
         copyTradePosition.setOrderCode(position.getOrderCode());

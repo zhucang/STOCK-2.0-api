@@ -1,6 +1,7 @@
 package com.ruoyi.system.domain;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 跟单使用的持仓快照。
@@ -39,6 +40,15 @@ public class CopyTradePositionSnapshot {
 
     /** 平仓价格快照。 */
     private BigDecimal sellOrderPrice;
+
+    /** 平仓时间快照。 */
+    private Date sellOrderTime;
+
+    /** 持仓盈亏。 */
+    private BigDecimal profitAndLose;
+
+    /** 持仓总盈亏。 */
+    private BigDecimal allProfitAndLose;
 
     /** 开仓总市值，用于按比例跟单计算保证金。 */
     private BigDecimal orderTotalPrice;
@@ -112,6 +122,30 @@ public class CopyTradePositionSnapshot {
 
     public void setSellOrderPrice(BigDecimal sellOrderPrice) {
         this.sellOrderPrice = sellOrderPrice;
+    }
+
+    public Date getSellOrderTime() {
+        return sellOrderTime;
+    }
+
+    public void setSellOrderTime(Date sellOrderTime) {
+        this.sellOrderTime = sellOrderTime;
+    }
+
+    public BigDecimal getProfitAndLose() {
+        return profitAndLose;
+    }
+
+    public void setProfitAndLose(BigDecimal profitAndLose) {
+        this.profitAndLose = profitAndLose;
+    }
+
+    public BigDecimal getAllProfitAndLose() {
+        return allProfitAndLose;
+    }
+
+    public void setAllProfitAndLose(BigDecimal allProfitAndLose) {
+        this.allProfitAndLose = allProfitAndLose;
     }
 
     public BigDecimal getOrderTotalPrice() {

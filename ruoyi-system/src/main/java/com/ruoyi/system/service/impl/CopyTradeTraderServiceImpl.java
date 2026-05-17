@@ -1,11 +1,13 @@
 package com.ruoyi.system.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.core.domain.entity.UserInfo;
 import com.ruoyi.system.domain.CopyTradeRelation;
 import com.ruoyi.system.domain.CopyTradeTrader;
 import com.ruoyi.system.mapper.CopyTradeTraderMapper;
 import com.ruoyi.system.service.ICopyTradeRelationService;
 import com.ruoyi.system.service.ICopyTradeTraderService;
+import com.ruoyi.system.service.IUserInfoService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,8 @@ public class CopyTradeTraderServiceImpl implements ICopyTradeTraderService {
     private CopyTradeTraderMapper copyTradeTraderMapper;
     @Resource
     private ICopyTradeRelationService copyTradeRelationService;
+    @Resource
+    private IUserInfoService userInfoService;
 
     /** 查询交易员列表。 */
     @Override
@@ -64,6 +68,12 @@ public class CopyTradeTraderServiceImpl implements ICopyTradeTraderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int insertCopyTradeTrader(CopyTradeTrader copyTradeTrader) {
+        checkTraderUser(copyTradeTrader.getUserId());
+        CopyTradeTrader query = new CopyTradeTrader();
+        query.setUserId(copyTradeTrader.getUserId());
+        if (!copyTradeTraderMapper.selectCopyTradeTraderList(query).isEmpty()) {
+            throw new ServiceException("该用户已配置为跟单交易员");
+        }
         // 新增时统一补齐创建和更新时间。
         copyTradeTrader.setCreateTime(new Date());
         copyTradeTrader.setUpdateTime(new Date());
@@ -74,6 +84,17 @@ public class CopyTradeTraderServiceImpl implements ICopyTradeTraderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int updateCopyTradeTrader(CopyTradeTrader copyTradeTrader) {
+        if (copyTradeTrader.getUserId() != null) {
+            checkTraderUser(copyTradeTrader.getUserId());
+            CopyTradeTrader query = new CopyTradeTrader();
+            query.setUserId(copyTradeTrader.getUserId());
+            List<CopyTradeTrader> traders = copyTradeTraderMapper.selectCopyTradeTraderList(query);
+            for (CopyTradeTrader trader : traders) {
+                if (trader.getId() != null && !trader.getId().equals(copyTradeTrader.getId())) {
+                    throw new ServiceException("该用户已配置为跟单交易员");
+                }
+            }
+        }
         // 修改时刷新更新时间，便于审计。
         copyTradeTrader.setUpdateTime(new Date());
         return copyTradeTraderMapper.updateCopyTradeTrader(copyTradeTrader);
@@ -98,5 +119,22 @@ public class CopyTradeTraderServiceImpl implements ICopyTradeTraderService {
     @Transactional(rollbackFor = Exception.class)
     public int deleteCopyTradeTraderByIds(Long[] ids) {
         return copyTradeTraderMapper.deleteCopyTradeTraderByIds(ids);
+    }
+
+    /** 校验交易员必须是存在且可用的平台用户。 */
+    private void checkTraderUser(Long userId) {
+        if (userId == null) {
+            throw new ServiceException("请选择交易员用户");
+        }
+        UserInfo userInfo = userInfoService.selectUserInfoById(userId);
+        if (userInfo == null) {
+            throw new ServiceException("交易员用户不存在");
+        }
+        if (userInfo.getStatus() != null && userInfo.getStatus().equals(1)) {
+            throw new ServiceException("交易员用户已禁用");
+        }
+        if (userInfo.getIsLock() != null && userInfo.getIsLock().equals(1)) {
+            throw new ServiceException("交易员用户已锁定");
+        }
     }
 }

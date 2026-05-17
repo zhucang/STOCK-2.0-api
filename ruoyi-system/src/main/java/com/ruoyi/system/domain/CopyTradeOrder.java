@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 跟单订单映射对象 copy_trade_order
@@ -80,6 +81,26 @@ public class CopyTradeOrder extends BaseEntity {
     /** 跟单单订单号快照。 */
     @Excel(name = "跟单订单号")
     private String followerOrderCode;
+
+    /** 跟单单平仓价格快照。 */
+    @Excel(name = "跟单平仓价格")
+    private BigDecimal followerSellOrderPrice;
+
+    /** 跟单单收益快照。 */
+    @Excel(name = "跟单收益")
+    private BigDecimal followerProfitAndLose;
+
+    /** 跟单单总收益快照。 */
+    @Excel(name = "跟单总收益")
+    private BigDecimal followerAllProfitAndLose;
+
+    /** 平仓来源 0交易员同步 1跟随者手动 2系统强平。 */
+    @Excel(name = "平仓来源 0交易员同步 1跟随者手动 2系统强平")
+    private Integer closeSource;
+
+    /** 跟单单平仓时间快照。 */
+    @Excel(name = "跟单平仓时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    private Date closeTime;
 
     /** 状态 0持仓中 1已结束。 */
     @Excel(name = "状态 0持仓中 1已结束")
@@ -259,6 +280,56 @@ public class CopyTradeOrder extends BaseEntity {
         this.followerOrderCode = followerOrderCode;
     }
 
+    /** 获取跟单单平仓价格快照。 */
+    public BigDecimal getFollowerSellOrderPrice() {
+        return followerSellOrderPrice;
+    }
+
+    /** 设置跟单单平仓价格快照。 */
+    public void setFollowerSellOrderPrice(BigDecimal followerSellOrderPrice) {
+        this.followerSellOrderPrice = followerSellOrderPrice;
+    }
+
+    /** 获取跟单单收益快照。 */
+    public BigDecimal getFollowerProfitAndLose() {
+        return followerProfitAndLose;
+    }
+
+    /** 设置跟单单收益快照。 */
+    public void setFollowerProfitAndLose(BigDecimal followerProfitAndLose) {
+        this.followerProfitAndLose = followerProfitAndLose;
+    }
+
+    /** 获取跟单单总收益快照。 */
+    public BigDecimal getFollowerAllProfitAndLose() {
+        return followerAllProfitAndLose;
+    }
+
+    /** 设置跟单单总收益快照。 */
+    public void setFollowerAllProfitAndLose(BigDecimal followerAllProfitAndLose) {
+        this.followerAllProfitAndLose = followerAllProfitAndLose;
+    }
+
+    /** 获取平仓来源。 */
+    public Integer getCloseSource() {
+        return closeSource;
+    }
+
+    /** 设置平仓来源。 */
+    public void setCloseSource(Integer closeSource) {
+        this.closeSource = closeSource;
+    }
+
+    /** 获取跟单单平仓时间快照。 */
+    public Date getCloseTime() {
+        return closeTime;
+    }
+
+    /** 设置跟单单平仓时间快照。 */
+    public void setCloseTime(Date closeTime) {
+        this.closeTime = closeTime;
+    }
+
     /** 获取状态。 */
     public Integer getStatus() {
         return status;
@@ -300,6 +371,11 @@ public class CopyTradeOrder extends BaseEntity {
                 .append("orderLever", getOrderLever())
                 .append("leaderOrderCode", getLeaderOrderCode())
                 .append("followerOrderCode", getFollowerOrderCode())
+                .append("followerSellOrderPrice", getFollowerSellOrderPrice())
+                .append("followerProfitAndLose", getFollowerProfitAndLose())
+                .append("followerAllProfitAndLose", getFollowerAllProfitAndLose())
+                .append("closeSource", getCloseSource())
+                .append("closeTime", getCloseTime())
                 .append("status", getStatus())
                 .append("remark", getRemark())
                 .toString();

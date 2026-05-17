@@ -46,6 +46,15 @@ public interface CopyTradeOrderMapper {
     CopyTradeOrder selectOrderByRelationAndLeaderPosition(Integer productType, Long relationId, Long leaderPositionId);
 
     /**
+     * 查询某个跟单子仓位对应的持仓中映射。
+     *
+     * @param productType 产品类型
+     * @param followerPositionId 跟单子仓位ID
+     * @return 跟单映射
+     */
+    CopyTradeOrder selectActiveOrderByFollowerPosition(Integer productType, Long followerPositionId);
+
+    /**
      * 统计某条跟单关系(跟单人员)下当前仍处于持仓中的跟单单数量。
      *
      * @param relationId 跟单关系(跟单人员)ID

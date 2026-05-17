@@ -44,6 +44,15 @@ public interface ICopyTradeOrderService {
     void syncFollowerClosePosition(CopyTradeOrder order, CopyTradePositionSnapshot leaderPosition);
 
     /**
+     * 跟随者自行平仓后关闭对应跟单映射。
+     *
+     * @param productType 产品类型
+     * @param followerPositionId 跟单子仓位ID
+     * @param closeSource 平仓来源
+     */
+    void closeFollowerOrderByFollowerPosition(Integer productType, Long followerPositionId, Integer closeSource);
+
+    /**
      * 根据产品类型和持仓ID查询交易员主仓位快照。
      *
      * @param productType 产品类型
