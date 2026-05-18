@@ -119,6 +119,9 @@ public class CopyTradeTrader extends UserInfoDetailVo {
 
     /** 获取交易员标题多语言。 */
     public LangMgr getTraderTitleLang() {
+        if (traderTitleLang == null){
+            traderTitleLang = new LangMgr();
+        }
         return traderTitleLang;
     }
 
@@ -139,6 +142,9 @@ public class CopyTradeTrader extends UserInfoDetailVo {
 
     /** 获取交易员简介多语言。 */
     public LangMgr getTraderDescLang() {
+        if (traderDescLang == null){
+            traderDescLang = new LangMgr();
+        }
         return traderDescLang;
     }
 
