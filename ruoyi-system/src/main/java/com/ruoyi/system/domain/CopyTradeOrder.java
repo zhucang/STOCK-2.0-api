@@ -2,6 +2,7 @@ package com.ruoyi.system.domain;
 
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
+import com.ruoyi.common.utils.cache.CacheUtil;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -26,6 +27,10 @@ public class CopyTradeOrder extends BaseEntity {
     @Excel(name = "交易员用户ID")
     private Long traderUserId;
 
+    /** 交易员用户ID。 */
+    @Excel(name = "交易员用户ID")
+    private Long traderUserNo;
+
     /** 产品类型 1股票 2加密货币 3期货 4外汇。 */
     @Excel(name = "产品类型 1股票 2加密货币 3期货 4外汇")
     private Integer productType;
@@ -49,6 +54,9 @@ public class CopyTradeOrder extends BaseEntity {
     /** 跟单用户ID。 */
     @Excel(name = "跟单用户ID")
     private Long followerUserId;
+    /** 跟单用户ID。 */
+    @Excel(name = "跟单用户ID")
+    private Long followerUserNo;
 
     /** 跟单持仓ID。 */
     @Excel(name = "跟单持仓ID")
@@ -349,6 +357,24 @@ public class CopyTradeOrder extends BaseEntity {
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
+
+    public Long getTraderUserNo() {
+        try{
+            return CacheUtil.getOtherValueByKey("appShow_idAddValue", Long.class) + getTraderUserId();
+        }catch (Exception e){
+            return getTraderUserId();
+        }
+    }
+
+    public Long getFollowerUserNo() {
+        try{
+            return CacheUtil.getOtherValueByKey("appShow_idAddValue", Long.class) + getFollowerUserId();
+        }catch (Exception e){
+            return getFollowerUserId();
+        }
+    }
+
 
     /** 输出对象调试信息。 */
     @Override

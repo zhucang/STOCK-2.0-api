@@ -3,6 +3,7 @@ package com.ruoyi.system.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
+import com.ruoyi.common.utils.cache.CacheUtil;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -26,6 +27,9 @@ public class CopyTradeRelation extends BaseEntity {
     /** 交易员用户ID。 */
     @Excel(name = "交易员用户ID")
     private Long traderUserId;
+    /** 交易员用户ID。 */
+    @Excel(name = "交易员用户ID")
+    private Long traderUserNo;
 
     /** 交易员账号，仅用于展示。 */
     private String traderUserAccount;
@@ -36,6 +40,9 @@ public class CopyTradeRelation extends BaseEntity {
     /** 跟单用户ID。 */
     @Excel(name = "跟单用户ID")
     private Long followerUserId;
+    /** 跟单用户ID。 */
+    @Excel(name = "跟单用户ID")
+    private Long followerUserNo;
 
     /** 跟单用户账号，仅用于展示。 */
     private String followerUserAccount;
@@ -258,6 +265,23 @@ public class CopyTradeRelation extends BaseEntity {
     /** 设置交易员详细信息。 */
     public void setTraderInfo(CopyTradeTrader traderInfo) {
         this.traderInfo = traderInfo;
+    }
+
+
+    public Long getTraderUserNo() {
+        try{
+            return CacheUtil.getOtherValueByKey("appShow_idAddValue", Long.class) + getTraderUserId();
+        }catch (Exception e){
+            return getTraderUserId();
+        }
+    }
+
+    public Long getFollowerUserNo() {
+        try{
+            return CacheUtil.getOtherValueByKey("appShow_idAddValue", Long.class) + getFollowerUserId();
+        }catch (Exception e){
+            return getFollowerUserId();
+        }
     }
 
     /** 输出对象调试信息。 */
