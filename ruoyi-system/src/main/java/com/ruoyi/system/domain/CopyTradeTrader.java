@@ -25,9 +25,15 @@ public class CopyTradeTrader extends UserInfoDetailVo {
     @Excel(name = "交易员标题")
     private String traderTitle;
 
+    /** 交易员标题多语言。 */
+    private LangMgr traderTitleLang;
+
     /** 交易员简介，用于展示交易风格或说明。 */
     @Excel(name = "交易员简介")
     private String traderDesc;
+
+    /** 交易员简介多语言。 */
+    private LangMgr traderDescLang;
 
     /** 状态 0启用 1停用。 */
     @Excel(name = "状态 0启用 1停用")
@@ -111,6 +117,16 @@ public class CopyTradeTrader extends UserInfoDetailVo {
         this.traderTitle = traderTitle;
     }
 
+    /** 获取交易员标题多语言。 */
+    public LangMgr getTraderTitleLang() {
+        return traderTitleLang;
+    }
+
+    /** 设置交易员标题多语言。 */
+    public void setTraderTitleLang(LangMgr traderTitleLang) {
+        this.traderTitleLang = traderTitleLang;
+    }
+
     /** 获取交易员简介。 */
     public String getTraderDesc() {
         return traderDesc;
@@ -119,6 +135,16 @@ public class CopyTradeTrader extends UserInfoDetailVo {
     /** 设置交易员简介。 */
     public void setTraderDesc(String traderDesc) {
         this.traderDesc = traderDesc;
+    }
+
+    /** 获取交易员简介多语言。 */
+    public LangMgr getTraderDescLang() {
+        return traderDescLang;
+    }
+
+    /** 设置交易员简介多语言。 */
+    public void setTraderDescLang(LangMgr traderDescLang) {
+        this.traderDescLang = traderDescLang;
     }
 
     /** 获取交易员状态。 */
@@ -258,7 +284,9 @@ public class CopyTradeTrader extends UserInfoDetailVo {
                 .append("id", getId())
                 .append("userId", getUserId())
                 .append("traderTitle", getTraderTitle())
+                .append("traderTitleLang", getTraderTitleLang())
                 .append("traderDesc", getTraderDesc())
+                .append("traderDescLang", getTraderDescLang())
                 .append("status", getStatus())
                 .append("minFollowAmount", getMinFollowAmount())
                 .append("maxFollowAmount", getMaxFollowAmount())

@@ -1,6 +1,7 @@
 package com.ruoyi.system.service;
 
 import com.ruoyi.system.domain.CopyTradeTrader;
+import com.ruoyi.system.domain.LangMgr;
 
 import java.util.List;
 
@@ -55,6 +56,24 @@ public interface ICopyTradeTraderService {
      * @return 影响行数
      */
     int updateCopyTradeTrader(CopyTradeTrader copyTradeTrader);
+
+    /**
+     * 更新交易员标题多语言。
+     *
+     * @param traderId 交易员主键
+     * @param traderTitleLang 交易员标题语言包
+     * @return 影响行数
+     */
+    int updateTraderTitleLang(Long traderId, LangMgr traderTitleLang);
+
+    /**
+     * 更新交易员简介多语言。
+     *
+     * @param traderId 交易员主键
+     * @param traderDescLang 交易员简介语言包
+     * @return 影响行数
+     */
+    int updateTraderDescLang(Long traderId, LangMgr traderDescLang);
 
     /**
      * 更新交易员启停状态。

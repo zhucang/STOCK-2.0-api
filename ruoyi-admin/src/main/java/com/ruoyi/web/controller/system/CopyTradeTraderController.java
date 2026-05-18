@@ -10,6 +10,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.system.domain.CopyTradeTrader;
 import com.ruoyi.system.service.ICopyTradeRelationService;
 import com.ruoyi.system.service.ICopyTradeTraderService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -101,6 +102,46 @@ public class CopyTradeTraderController extends BaseController {
         }
         checkTraderCanBeModified(copyTradeTrader.getId());
         return toAjax(copyTradeTraderService.updateCopyTradeTrader(copyTradeTrader));
+    }
+
+    /**
+     * 修改交易员标题多语言。
+     *
+     * @param copyTradeTrader 交易员多语言参数
+     * @return 处理结果
+     */
+    @PreAuthorize("@ss.hasPermi('system:copyTradeTrader:edit')")
+    @Log(title = "修改跟单交易员标题多语言", businessType = BusinessType.UPDATE)
+    @RepeatSubmit
+    @PostMapping("updateTraderTitleLang")
+    public AjaxResult updateTraderTitleLang(@RequestBody CopyTradeTrader copyTradeTrader) {
+        if (copyTradeTrader.getId() == null) {
+            throw new ServiceException("请选择需要修改的交易员");
+        }
+        if (copyTradeTrader.getTraderTitleLang() == null || StringUtils.isEmpty(copyTradeTrader.getTraderTitleLang().getZh())) {
+            throw new ServiceException("请输入交易员标题");
+        }
+        return toAjax(copyTradeTraderService.updateTraderTitleLang(copyTradeTrader.getId(), copyTradeTrader.getTraderTitleLang()));
+    }
+
+    /**
+     * 修改交易员简介多语言。
+     *
+     * @param copyTradeTrader 交易员多语言参数
+     * @return 处理结果
+     */
+    @PreAuthorize("@ss.hasPermi('system:copyTradeTrader:edit')")
+    @Log(title = "修改跟单交易员简介多语言", businessType = BusinessType.UPDATE)
+    @RepeatSubmit
+    @PostMapping("updateTraderDescLang")
+    public AjaxResult updateTraderDescLang(@RequestBody CopyTradeTrader copyTradeTrader) {
+        if (copyTradeTrader.getId() == null) {
+            throw new ServiceException("请选择需要修改的交易员");
+        }
+        if (copyTradeTrader.getTraderDescLang() == null || StringUtils.isEmpty(copyTradeTrader.getTraderDescLang().getZh())) {
+            throw new ServiceException("请输入交易员简介");
+        }
+        return toAjax(copyTradeTraderService.updateTraderDescLang(copyTradeTrader.getId(), copyTradeTrader.getTraderDescLang()));
     }
 
     /**

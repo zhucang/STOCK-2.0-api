@@ -26,6 +26,50 @@
         <result property="sort" column="sort"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
+        <association property="traderTitleLang" javaType="langMgr">
+            <result property="zh" column="trader_title"/>
+            <result property="en" column="trader_title_en"/>
+            <result property="tc" column="trader_title_tc"/>
+            <result property="de" column="trader_title_de"/>
+            <result property="es" column="trader_title_es"/>
+            <result property="fr" column="trader_title_fr"/>
+            <result property="idn" column="trader_title_idn"/>
+            <result property="jp" column="trader_title_jp"/>
+            <result property="ko" column="trader_title_ko"/>
+            <result property="my" column="trader_title_my"/>
+            <result property="th" column="trader_title_th"/>
+            <result property="vi" column="trader_title_vi"/>
+            <result property="pt" column="trader_title_pt"/>
+            <result property="rus" column="trader_title_rus"/>
+            <result property="blr" column="trader_title_blr"/>
+            <result property="ida" column="trader_title_ida"/>
+            <result property="sa" column="trader_title_sa"/>
+            <result property="ar" column="trader_title_ar"/>
+            <result property="it" column="trader_title_it"/>
+            <result property="tr" column="trader_title_tr"/>
+        </association>
+        <association property="traderDescLang" javaType="langMgr">
+            <result property="zh" column="trader_desc"/>
+            <result property="en" column="trader_desc_en"/>
+            <result property="tc" column="trader_desc_tc"/>
+            <result property="de" column="trader_desc_de"/>
+            <result property="es" column="trader_desc_es"/>
+            <result property="fr" column="trader_desc_fr"/>
+            <result property="idn" column="trader_desc_idn"/>
+            <result property="jp" column="trader_desc_jp"/>
+            <result property="ko" column="trader_desc_ko"/>
+            <result property="my" column="trader_desc_my"/>
+            <result property="th" column="trader_desc_th"/>
+            <result property="vi" column="trader_desc_vi"/>
+            <result property="pt" column="trader_desc_pt"/>
+            <result property="rus" column="trader_desc_rus"/>
+            <result property="blr" column="trader_desc_blr"/>
+            <result property="ida" column="trader_desc_ida"/>
+            <result property="sa" column="trader_desc_sa"/>
+            <result property="ar" column="trader_desc_ar"/>
+            <result property="it" column="trader_desc_it"/>
+            <result property="tr" column="trader_desc_tr"/>
+        </association>
     </resultMap>
 
     <sql id="selectCopyTradeTraderVo">
@@ -36,7 +80,45 @@
                b.email,
                b.avatar,
                a.trader_title,
+               a.trader_title_en,
+               a.trader_title_tc,
+               a.trader_title_de,
+               a.trader_title_es,
+               a.trader_title_fr,
+               a.trader_title_idn,
+               a.trader_title_jp,
+               a.trader_title_ko,
+               a.trader_title_my,
+               a.trader_title_th,
+               a.trader_title_vi,
+               a.trader_title_pt,
+               a.trader_title_rus,
+               a.trader_title_blr,
+               a.trader_title_ida,
+               a.trader_title_sa,
+               a.trader_title_ar,
+               a.trader_title_it,
+               a.trader_title_tr,
                a.trader_desc,
+               a.trader_desc_en,
+               a.trader_desc_tc,
+               a.trader_desc_de,
+               a.trader_desc_es,
+               a.trader_desc_fr,
+               a.trader_desc_idn,
+               a.trader_desc_jp,
+               a.trader_desc_ko,
+               a.trader_desc_my,
+               a.trader_desc_th,
+               a.trader_desc_vi,
+               a.trader_desc_pt,
+               a.trader_desc_rus,
+               a.trader_desc_blr,
+               a.trader_desc_ida,
+               a.trader_desc_sa,
+               a.trader_desc_ar,
+               a.trader_desc_it,
+               a.trader_desc_tr,
                a.status,
                a.min_follow_amount,
                a.max_follow_amount,
@@ -81,7 +163,47 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="userId != null">user_id,</if>
             <if test="traderTitle != null and traderTitle != ''">trader_title,</if>
+            <if test="traderTitleLang.zh != null and traderTitle == null">trader_title,</if>
+            <if test="traderTitleLang.en != null">trader_title_en,</if>
+            <if test="traderTitleLang.tc != null">trader_title_tc,</if>
+            <if test="traderTitleLang.de != null">trader_title_de,</if>
+            <if test="traderTitleLang.es != null">trader_title_es,</if>
+            <if test="traderTitleLang.fr != null">trader_title_fr,</if>
+            <if test="traderTitleLang.idn != null">trader_title_idn,</if>
+            <if test="traderTitleLang.jp != null">trader_title_jp,</if>
+            <if test="traderTitleLang.ko != null">trader_title_ko,</if>
+            <if test="traderTitleLang.my != null">trader_title_my,</if>
+            <if test="traderTitleLang.th != null">trader_title_th,</if>
+            <if test="traderTitleLang.vi != null">trader_title_vi,</if>
+            <if test="traderTitleLang.pt != null">trader_title_pt,</if>
+            <if test="traderTitleLang.rus != null">trader_title_rus,</if>
+            <if test="traderTitleLang.blr != null">trader_title_blr,</if>
+            <if test="traderTitleLang.ida != null">trader_title_ida,</if>
+            <if test="traderTitleLang.sa != null">trader_title_sa,</if>
+            <if test="traderTitleLang.ar != null">trader_title_ar,</if>
+            <if test="traderTitleLang.it != null">trader_title_it,</if>
+            <if test="traderTitleLang.tr != null">trader_title_tr,</if>
             <if test="traderDesc != null and traderDesc != ''">trader_desc,</if>
+            <if test="traderDescLang.zh != null and traderDesc == null">trader_desc,</if>
+            <if test="traderDescLang.en != null">trader_desc_en,</if>
+            <if test="traderDescLang.tc != null">trader_desc_tc,</if>
+            <if test="traderDescLang.de != null">trader_desc_de,</if>
+            <if test="traderDescLang.es != null">trader_desc_es,</if>
+            <if test="traderDescLang.fr != null">trader_desc_fr,</if>
+            <if test="traderDescLang.idn != null">trader_desc_idn,</if>
+            <if test="traderDescLang.jp != null">trader_desc_jp,</if>
+            <if test="traderDescLang.ko != null">trader_desc_ko,</if>
+            <if test="traderDescLang.my != null">trader_desc_my,</if>
+            <if test="traderDescLang.th != null">trader_desc_th,</if>
+            <if test="traderDescLang.vi != null">trader_desc_vi,</if>
+            <if test="traderDescLang.pt != null">trader_desc_pt,</if>
+            <if test="traderDescLang.rus != null">trader_desc_rus,</if>
+            <if test="traderDescLang.blr != null">trader_desc_blr,</if>
+            <if test="traderDescLang.ida != null">trader_desc_ida,</if>
+            <if test="traderDescLang.sa != null">trader_desc_sa,</if>
+            <if test="traderDescLang.ar != null">trader_desc_ar,</if>
+            <if test="traderDescLang.it != null">trader_desc_it,</if>
+            <if test="traderDescLang.tr != null">trader_desc_tr,</if>
             <if test="status != null">status,</if>
             <if test="minFollowAmount != null">min_follow_amount,</if>
             <if test="maxFollowAmount != null">max_follow_amount,</if>
@@ -99,7 +221,47 @@
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">#{userId},</if>
             <if test="traderTitle != null and traderTitle != ''">#{traderTitle},</if>
+            <if test="traderTitleLang.zh != null and traderTitle == null">#{traderTitleLang.zh},</if>
+            <if test="traderTitleLang.en != null">#{traderTitleLang.en},</if>
+            <if test="traderTitleLang.tc != null">#{traderTitleLang.tc},</if>
+            <if test="traderTitleLang.de != null">#{traderTitleLang.de},</if>
+            <if test="traderTitleLang.es != null">#{traderTitleLang.es},</if>
+            <if test="traderTitleLang.fr != null">#{traderTitleLang.fr},</if>
+            <if test="traderTitleLang.idn != null">#{traderTitleLang.idn},</if>
+            <if test="traderTitleLang.jp != null">#{traderTitleLang.jp},</if>
+            <if test="traderTitleLang.ko != null">#{traderTitleLang.ko},</if>
+            <if test="traderTitleLang.my != null">#{traderTitleLang.my},</if>
+            <if test="traderTitleLang.th != null">#{traderTitleLang.th},</if>
+            <if test="traderTitleLang.vi != null">#{traderTitleLang.vi},</if>
+            <if test="traderTitleLang.pt != null">#{traderTitleLang.pt},</if>
+            <if test="traderTitleLang.rus != null">#{traderTitleLang.rus},</if>
+            <if test="traderTitleLang.blr != null">#{traderTitleLang.blr},</if>
+            <if test="traderTitleLang.ida != null">#{traderTitleLang.ida},</if>
+            <if test="traderTitleLang.sa != null">#{traderTitleLang.sa},</if>
+            <if test="traderTitleLang.ar != null">#{traderTitleLang.ar},</if>
+            <if test="traderTitleLang.it != null">#{traderTitleLang.it},</if>
+            <if test="traderTitleLang.tr != null">#{traderTitleLang.tr},</if>
             <if test="traderDesc != null and traderDesc != ''">#{traderDesc},</if>
+            <if test="traderDescLang.zh != null and traderDesc == null">#{traderDescLang.zh},</if>
+            <if test="traderDescLang.en != null">#{traderDescLang.en},</if>
+            <if test="traderDescLang.tc != null">#{traderDescLang.tc},</if>
+            <if test="traderDescLang.de != null">#{traderDescLang.de},</if>
+            <if test="traderDescLang.es != null">#{traderDescLang.es},</if>
+            <if test="traderDescLang.fr != null">#{traderDescLang.fr},</if>
+            <if test="traderDescLang.idn != null">#{traderDescLang.idn},</if>
+            <if test="traderDescLang.jp != null">#{traderDescLang.jp},</if>
+            <if test="traderDescLang.ko != null">#{traderDescLang.ko},</if>
+            <if test="traderDescLang.my != null">#{traderDescLang.my},</if>
+            <if test="traderDescLang.th != null">#{traderDescLang.th},</if>
+            <if test="traderDescLang.vi != null">#{traderDescLang.vi},</if>
+            <if test="traderDescLang.pt != null">#{traderDescLang.pt},</if>
+            <if test="traderDescLang.rus != null">#{traderDescLang.rus},</if>
+            <if test="traderDescLang.blr != null">#{traderDescLang.blr},</if>
+            <if test="traderDescLang.ida != null">#{traderDescLang.ida},</if>
+            <if test="traderDescLang.sa != null">#{traderDescLang.sa},</if>
+            <if test="traderDescLang.ar != null">#{traderDescLang.ar},</if>
+            <if test="traderDescLang.it != null">#{traderDescLang.it},</if>
+            <if test="traderDescLang.tr != null">#{traderDescLang.tr},</if>
             <if test="status != null">#{status},</if>
             <if test="minFollowAmount != null">#{minFollowAmount},</if>
             <if test="maxFollowAmount != null">#{maxFollowAmount},</if>
@@ -121,7 +283,47 @@
         <trim prefix="set" suffixOverrides=",">
             <if test="userId != null">user_id = #{userId},</if>
             <if test="traderTitle != null">trader_title = #{traderTitle},</if>
+            <if test="traderTitleLang.zh != null and traderTitle == null">trader_title = #{traderTitleLang.zh},</if>
+            <if test="traderTitleLang.en != null">trader_title_en = #{traderTitleLang.en},</if>
+            <if test="traderTitleLang.tc != null">trader_title_tc = #{traderTitleLang.tc},</if>
+            <if test="traderTitleLang.de != null">trader_title_de = #{traderTitleLang.de},</if>
+            <if test="traderTitleLang.es != null">trader_title_es = #{traderTitleLang.es},</if>
+            <if test="traderTitleLang.fr != null">trader_title_fr = #{traderTitleLang.fr},</if>
+            <if test="traderTitleLang.idn != null">trader_title_idn = #{traderTitleLang.idn},</if>
+            <if test="traderTitleLang.jp != null">trader_title_jp = #{traderTitleLang.jp},</if>
+            <if test="traderTitleLang.ko != null">trader_title_ko = #{traderTitleLang.ko},</if>
+            <if test="traderTitleLang.my != null">trader_title_my = #{traderTitleLang.my},</if>
+            <if test="traderTitleLang.th != null">trader_title_th = #{traderTitleLang.th},</if>
+            <if test="traderTitleLang.vi != null">trader_title_vi = #{traderTitleLang.vi},</if>
+            <if test="traderTitleLang.pt != null">trader_title_pt = #{traderTitleLang.pt},</if>
+            <if test="traderTitleLang.rus != null">trader_title_rus = #{traderTitleLang.rus},</if>
+            <if test="traderTitleLang.blr != null">trader_title_blr = #{traderTitleLang.blr},</if>
+            <if test="traderTitleLang.ida != null">trader_title_ida = #{traderTitleLang.ida},</if>
+            <if test="traderTitleLang.sa != null">trader_title_sa = #{traderTitleLang.sa},</if>
+            <if test="traderTitleLang.ar != null">trader_title_ar = #{traderTitleLang.ar},</if>
+            <if test="traderTitleLang.it != null">trader_title_it = #{traderTitleLang.it},</if>
+            <if test="traderTitleLang.tr != null">trader_title_tr = #{traderTitleLang.tr},</if>
             <if test="traderDesc != null">trader_desc = #{traderDesc},</if>
+            <if test="traderDescLang.zh != null and traderDesc == null">trader_desc = #{traderDescLang.zh},</if>
+            <if test="traderDescLang.en != null">trader_desc_en = #{traderDescLang.en},</if>
+            <if test="traderDescLang.tc != null">trader_desc_tc = #{traderDescLang.tc},</if>
+            <if test="traderDescLang.de != null">trader_desc_de = #{traderDescLang.de},</if>
+            <if test="traderDescLang.es != null">trader_desc_es = #{traderDescLang.es},</if>
+            <if test="traderDescLang.fr != null">trader_desc_fr = #{traderDescLang.fr},</if>
+            <if test="traderDescLang.idn != null">trader_desc_idn = #{traderDescLang.idn},</if>
+            <if test="traderDescLang.jp != null">trader_desc_jp = #{traderDescLang.jp},</if>
+            <if test="traderDescLang.ko != null">trader_desc_ko = #{traderDescLang.ko},</if>
+            <if test="traderDescLang.my != null">trader_desc_my = #{traderDescLang.my},</if>
+            <if test="traderDescLang.th != null">trader_desc_th = #{traderDescLang.th},</if>
+            <if test="traderDescLang.vi != null">trader_desc_vi = #{traderDescLang.vi},</if>
+            <if test="traderDescLang.pt != null">trader_desc_pt = #{traderDescLang.pt},</if>
+            <if test="traderDescLang.rus != null">trader_desc_rus = #{traderDescLang.rus},</if>
+            <if test="traderDescLang.blr != null">trader_desc_blr = #{traderDescLang.blr},</if>
+            <if test="traderDescLang.ida != null">trader_desc_ida = #{traderDescLang.ida},</if>
+            <if test="traderDescLang.sa != null">trader_desc_sa = #{traderDescLang.sa},</if>
+            <if test="traderDescLang.ar != null">trader_desc_ar = #{traderDescLang.ar},</if>
+            <if test="traderDescLang.it != null">trader_desc_it = #{traderDescLang.it},</if>
+            <if test="traderDescLang.tr != null">trader_desc_tr = #{traderDescLang.tr},</if>
             <if test="status != null">status = #{status},</if>
             <if test="minFollowAmount != null">min_follow_amount = #{minFollowAmount},</if>
             <if test="maxFollowAmount != null">max_follow_amount = #{maxFollowAmount},</if>

@@ -4,6 +4,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.core.domain.entity.UserInfo;
 import com.ruoyi.system.domain.CopyTradeRelation;
 import com.ruoyi.system.domain.CopyTradeTrader;
+import com.ruoyi.system.domain.LangMgr;
 import com.ruoyi.system.mapper.CopyTradeTraderMapper;
 import com.ruoyi.system.service.ICopyTradeRelationService;
 import com.ruoyi.system.service.ICopyTradeTraderService;
@@ -96,6 +97,28 @@ public class CopyTradeTraderServiceImpl implements ICopyTradeTraderService {
             }
         }
         // 修改时刷新更新时间，便于审计。
+        copyTradeTrader.setUpdateTime(new Date());
+        return copyTradeTraderMapper.updateCopyTradeTrader(copyTradeTrader);
+    }
+
+    /** 更新交易员标题多语言。 */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int updateTraderTitleLang(Long traderId, LangMgr traderTitleLang) {
+        CopyTradeTrader copyTradeTrader = new CopyTradeTrader();
+        copyTradeTrader.setId(traderId);
+        copyTradeTrader.setTraderTitleLang(traderTitleLang);
+        copyTradeTrader.setUpdateTime(new Date());
+        return copyTradeTraderMapper.updateCopyTradeTrader(copyTradeTrader);
+    }
+
+    /** 更新交易员简介多语言。 */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int updateTraderDescLang(Long traderId, LangMgr traderDescLang) {
+        CopyTradeTrader copyTradeTrader = new CopyTradeTrader();
+        copyTradeTrader.setId(traderId);
+        copyTradeTrader.setTraderDescLang(traderDescLang);
         copyTradeTrader.setUpdateTime(new Date());
         return copyTradeTraderMapper.updateCopyTradeTrader(copyTradeTrader);
     }
