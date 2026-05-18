@@ -46,6 +46,9 @@ public class CopyTradeRelationController extends BaseController {
         startPage();
         startOrderBy("id desc");
         List<CopyTradeRelation> list = copyTradeRelationService.selectCopyTradeRelationList(copyTradeRelation);
+        for (CopyTradeRelation relation : list) {
+            copyTradeRelationService.fillOtherInfo(relation);
+        }
         return getDataTable(list);
     }
 
@@ -58,7 +61,9 @@ public class CopyTradeRelationController extends BaseController {
     @PreAuthorize("@ss.hasPermi('system:copyTradeRelation:query')")
     @GetMapping("/{id}")
     public AjaxResult getInfo(@PathVariable Long id) {
-        return success(copyTradeRelationService.selectCopyTradeRelationById(id));
+        CopyTradeRelation relation = copyTradeRelationService.selectCopyTradeRelationById(id);
+        copyTradeRelationService.fillOtherInfo(relation);
+        return success(relation);
     }
 
     /**
