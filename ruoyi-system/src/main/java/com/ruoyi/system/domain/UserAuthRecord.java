@@ -45,6 +45,10 @@ public class UserAuthRecord extends UserInfoDetailVo
     @Excel(name = "证件图片", readConverterExp = "手=持")
     private String img3Key;
 
+    /** 实名电话 */
+    @Excel(name = "实名电话", readConverterExp = "实名电话")
+    private String authPhoneNumber;
+
     /** 实名审核反馈信息 */
     @Excel(name = "实名审核反馈信息")
     private String authMsg;
@@ -133,7 +137,16 @@ public class UserAuthRecord extends UserInfoDetailVo
     {
         return img3Key;
     }
-    public void setAuthMsg(String authMsg) 
+
+    public String getAuthPhoneNumber() {
+        return authPhoneNumber;
+    }
+
+    public void setAuthPhoneNumber(String authPhoneNumber) {
+        this.authPhoneNumber = authPhoneNumber;
+    }
+
+    public void setAuthMsg(String authMsg)
     {
         this.authMsg = authMsg;
     }

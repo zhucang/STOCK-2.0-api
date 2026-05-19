@@ -129,6 +129,10 @@ public class UserInfo extends BaseEntity
     @Excel(name = "手持身份证图片")
     private String img3Key;
 
+    /** 实名电话 */
+    @Excel(name = "实名电话", readConverterExp = "实名电话")
+    private String authPhoneNumber;
+
     /** 是否已实名 0：未实名 1：审核中 2：审核通过 3：审核驳回 */
     @Excel(name = "是否已实名 0：未实名 1：审核中 2：审核通过 3：审核驳回")
     private Integer isActive;
@@ -537,7 +541,16 @@ public class UserInfo extends BaseEntity
     {
         return img3Key;
     }
-    public void setIsActive(Integer isActive) 
+
+    public String getAuthPhoneNumber() {
+        return authPhoneNumber;
+    }
+
+    public void setAuthPhoneNumber(String authPhoneNumber) {
+        this.authPhoneNumber = authPhoneNumber;
+    }
+
+    public void setIsActive(Integer isActive)
     {
         this.isActive = isActive;
     }

@@ -18,6 +18,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="img1Key"    column="img1_key"    />
         <result property="img2Key"    column="img2_key"    />
         <result property="img3Key"    column="img3_key"    />
+        <result property="authPhoneNumber"    column="auth_phone_number"    />
         <result property="authMsg"    column="auth_msg"    />
         <result property="authStatus"    column="auth_status"    />
         <result property="authMethod"    column="auth_method"    />
@@ -28,7 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectUserAuthRecordVo">
-        select a.id, user_id,user_account,nick_name,account_type,agent_id,agent_name, b.remark user_remark, id_number, a.real_name, a.img1_key, a.img2_key, a.img3_key, a.auth_msg, a.auth_status, a.auth_method, a.auth_level, create_time, approve_time, approve_name
+        select a.id, user_id,user_account,nick_name,account_type,agent_id,agent_name, b.remark user_remark, id_number, a.real_name, a.img1_key, a.img2_key, a.img3_key, a.auth_phone_number, a.auth_msg, a.auth_status, a.auth_method, a.auth_level, create_time, approve_time, approve_name
         from user_auth_record a
                  left join user_info b
                            on a.user_id = b.id
@@ -88,6 +89,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="img1Key != null">img1_key,</if>
             <if test="img2Key != null">img2_key,</if>
             <if test="img3Key != null">img3_key,</if>
+            <if test="authPhoneNumber != null">auth_phone_number,</if>
             <if test="authMsg != null">auth_msg,</if>
             <if test="authStatus != null">auth_status,</if>
             <if test="authMethod != null">auth_method,</if>
@@ -103,6 +105,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="img1Key != null">#{img1Key},</if>
             <if test="img2Key != null">#{img2Key},</if>
             <if test="img3Key != null">#{img3Key},</if>
+            <if test="authPhoneNumber != null">#{authPhoneNumber},</if>
             <if test="authMsg != null">#{authMsg},</if>
             <if test="authStatus != null">#{authStatus},</if>
             <if test="authMethod != null">#{authMethod},</if>
@@ -122,6 +125,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="img1Key != null">img1_key = #{img1Key},</if>
             <if test="img2Key != null">img2_key = #{img2Key},</if>
             <if test="img3Key != null">img3_key = #{img3Key},</if>
+            <if test="authPhoneNumber != null">auth_phone_number = #{authPhoneNumber},</if>
             <if test="authMsg != null">auth_msg = #{authMsg},</if>
             <if test="authStatus != null">auth_status = #{authStatus},</if>
             <if test="authMethod != null">auth_method = #{authMethod},</if>
