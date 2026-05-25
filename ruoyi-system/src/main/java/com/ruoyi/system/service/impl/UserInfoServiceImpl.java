@@ -1587,9 +1587,6 @@ public class UserInfoServiceImpl implements IUserInfoService
 
         //重新获取详细信息
         userInfo = userInfoMapper.selectUserInfoById(userInfo.getId());
-        if (Integer.valueOf(1).equals(userInfo.getAccountType()) && !isTouristLoginIpAllowed(ip)) {
-            return AjaxResult.error("hint_53","此ip禁止登录");
-        }
 
         LoginUser loginUser = new LoginUser();
         loginUser.setUserId(userInfo.getId());
@@ -1613,18 +1610,6 @@ public class UserInfoServiceImpl implements IUserInfoService
         ajax.put(Constants.TOKEN, token);
         ajax.put("userInfo", userInfo);
         return ajax;
-    }
-
-    private boolean isTouristLoginIpAllowed(String ip) {
-        String whiteList = CacheUtils.getOtherValueByKey("tourist_login_ip_white_list", String.class);
-        if (StringUtils.isEmpty(whiteList)) {
-            return true;
-        }
-        Set<String> allowIps = Arrays.stream(whiteList.split("[,;，；\\s]+"))
-                .map(String::trim)
-                .filter(StringUtils::isNotEmpty)
-                .collect(Collectors.toSet());
-        return allowIps.contains(ip);
     }
 
     /**
