@@ -504,6 +504,17 @@ public class UserFuturesPositionServiceImpl implements IUserFuturesPositionServi
         if (tickerInfo != null){
             nowPrice = new BigDecimal(tickerInfo.getNowPrice());
         }
+        try {
+            Object copyTradeBuyPrice = position.getParams().get("copyTradeBuyPrice");
+            if (copyTradeBuyPrice != null) {
+                BigDecimal leaderBuyPrice = new BigDecimal(String.valueOf(copyTradeBuyPrice));
+                if (leaderBuyPrice.compareTo(BigDecimal.ZERO) > 0) {
+                    nowPrice = leaderBuyPrice;
+                }
+            }
+        } catch (Exception e) {
+
+        }
         if (nowPrice.compareTo(BigDecimal.ZERO) == 0) {
             throw new LangException("hint_QuoteZeroTryAgain","报价0，请稍后再试");
         }
@@ -705,6 +716,7 @@ public class UserFuturesPositionServiceImpl implements IUserFuturesPositionServi
         position.setStopLossPrice(leaderPosition.getStopLossPrice());
         // 原开仓逻辑支持通过 params.marginAmount 按保证金下单，这里传入跟单计算后的保证金。
         position.getParams().put("marginAmount", marginAmount);
+        position.getParams().put("copyTradeBuyPrice", leaderPosition.getBuyOrderPrice());
         buy(position, followerUserId, false);
         return position;
     }

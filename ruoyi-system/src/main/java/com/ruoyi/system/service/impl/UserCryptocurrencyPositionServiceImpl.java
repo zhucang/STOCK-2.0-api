@@ -443,6 +443,7 @@ public class UserCryptocurrencyPositionServiceImpl implements IUserCryptocurrenc
         position.setStopLossPrice(leaderPosition.getStopLossPrice());
         // 复用原开仓逻辑时，通过 params 传入保证金金额。
         position.getParams().put("marginAmount", marginAmount);
+        position.getParams().put("copyTradeBuyPrice", leaderPosition.getBuyOrderPrice());
         createPosition(position, followerUserId);
         return position;
     }
@@ -555,6 +556,17 @@ public class UserCryptocurrencyPositionServiceImpl implements IUserCryptocurrenc
         TickerInfo tickerInfo = tickerInfoMap.get(productCode);
         if (tickerInfo != null){
             nowPrice = new BigDecimal(tickerInfo.getNowPrice());
+        }
+        try {
+            Object copyTradeBuyPrice = position.getParams().get("copyTradeBuyPrice");
+            if (copyTradeBuyPrice != null) {
+                BigDecimal leaderBuyPrice = new BigDecimal(String.valueOf(copyTradeBuyPrice));
+                if (leaderBuyPrice.compareTo(BigDecimal.ZERO) > 0) {
+                    nowPrice = leaderBuyPrice;
+                }
+            }
+        } catch (Exception e) {
+
         }
         if (nowPrice.compareTo(BigDecimal.ZERO) == 0) {
             throw new LangException("hint_QuoteZeroTryAgain","报价0，请稍后再试");
