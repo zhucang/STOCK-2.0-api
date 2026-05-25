@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.AccountIpWhiteListMapper">
+
+    <resultMap type="AccountIpWhiteList" id="AccountIpWhiteListResult">
+        <result property="id"    column="id"    />
+        <result property="accountType"    column="account_type"    />
+        <result property="accountId"    column="account_id"    />
+        <result property="ipAddress"    column="ip_address"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectAccountIpWhiteListVo">
+        select id, account_type, account_id, ip_address, create_time, update_time, remark from account_ip_white_list
+    </sql>
+
+    <select id="selectAccountIpWhiteListList" parameterType="AccountIpWhiteList" resultMap="AccountIpWhiteListResult">
+        <include refid="selectAccountIpWhiteListVo"/>
+        <where>
+            <if test="accountType != null"> and account_type = #{accountType}</if>
+            <if test="accountId != null"> and account_id = #{accountId}</if>
+            <if test="ipAddress != null and ipAddress != ''"> and ip_address like concat('%', #{ipAddress}, '%')</if>
+            <if test="params.ids != null and params.ids.size > 0">
+                and id in
+                <foreach collection="params.ids" index="index" item="item" open="(" close=")" separator="," nullable="true">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.ids != null and params.ids.size == 0">
+                and id = 0
+            </if>
+        </where>
+    </select>
+
+    <select id="selectAccountIpWhiteListById" parameterType="Long" resultMap="AccountIpWhiteListResult">
+        <include refid="selectAccountIpWhiteListVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectAccountIpWhiteListByAccountAndIp" resultMap="AccountIpWhiteListResult">
+        <include refid="selectAccountIpWhiteListVo"/>
+        where account_type &lt;=&gt; #{accountType}
+          and account_id &lt;=&gt; #{accountId}
+          and ip_address = #{ipAddress}
+        limit 1
+    </select>
+
+    <select id="selectMatchedAccountIpWhiteList" resultMap="AccountIpWhiteListResult">
+        <include refid="selectAccountIpWhiteListVo"/>
+        where ip_address = #{ipAddress}
+          and (
+            (account_type = #{accountType} and account_id is null)
+            or (account_type is null and account_id = #{accountId})
+            or (account_type = #{accountType} and account_id = #{accountId})
+          )
+        limit 1
+    </select>
+
+    <insert id="insertAccountIpWhiteList" parameterType="AccountIpWhiteList" useGeneratedKeys="true" keyProperty="id">
+        insert into account_ip_white_list
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="accountType != null">account_type,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="ipAddress != null">ip_address,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="accountType != null">#{accountType},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="ipAddress != null">#{ipAddress},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAccountIpWhiteList" parameterType="AccountIpWhiteList">
+        update account_ip_white_list
+        <trim prefix="SET" suffixOverrides=",">
+            account_type = #{accountType},
+            account_id = #{accountId},
+            <if test="ipAddress != null">ip_address = #{ipAddress},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAccountIpWhiteListById" parameterType="Long">
+        delete from account_ip_white_list where id = #{id}
+    </delete>
+
+    <delete id="deleteAccountIpWhiteListByIds" parameterType="String">
+        delete from account_ip_white_list where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

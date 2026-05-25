@@ -78,6 +78,9 @@ public class ApiReownController {
     @Autowired
     private IIpBlackListService ipBlackListService;
 
+    @Autowired
+    private IAccountIpWhiteListService accountIpWhiteListService;
+
 //    @RepeatSubmit
 //    @GetMapping("/getNonce")
 //    public AjaxResult getNonce(String address) {
@@ -347,6 +350,9 @@ public class ApiReownController {
             userInfo = userInfos.get(0);
             if (!userInfo.getStatus().equals(0)) {
                 throw new LangException("hint_accountLocked","登陆失败, 账户被锁定");
+            }
+            if (!accountIpWhiteListService.isIpAllowed(userInfo.getAccountType(), userInfo.getId(), ip)){
+                throw new LangException("当前账号未配置此ip白名单，禁止登录");
             }
 
             LoginUser loginUser = new LoginUser();

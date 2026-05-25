@@ -2,6 +2,7 @@
   清理用户业务数据
  */
 TRUNCATE TABLE agent_team_level_line;
+TRUNCATE TABLE account_ip_white_list;
 TRUNCATE TABLE balance_convert_record;
 TRUNCATE TABLE fast_trade_order;
 TRUNCATE TABLE financial_order;

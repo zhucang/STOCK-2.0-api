@@ -142,9 +142,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//en"
         <result property="userPwd" column="user_pwd"></result>
         <result property="isLock" column="is_lock"></result>
         <result property="status" column="status"></result>
+        <result property="accountType" column="account_type"></result>
     </resultMap>
     <select id="userLogin" resultMap="userLoginMap">
-        select id,user_pwd,is_lock,status from user_info
+        select id,user_pwd,is_lock,status,account_type from user_info
         WHERE (user_account = #{userAccount} or phone = #{userAccount} or email = #{userAccount}) and is_del = 0
     </select>
 

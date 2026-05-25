@@ -79,6 +79,11 @@ public class CacheableKey {
     public static final String IP_BLACK_LIST = "cacheable:ip_black_list";
 
     /**
+     * 账号ip白名单
+     */
+    public static final String ACCOUNT_IP_WHITE_LIST = "cacheable:account_ip_white_list";
+
+    /**
      * 语言包配置
      */
     public static final String LANG_MGR = "cacheable:lang_mgr";
