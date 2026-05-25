@@ -32,6 +32,15 @@ APP账号登录增加IP白名单控制。账号当前登录IP没有配置在账�
 - `idx_account_ip_white_list_id_ip(account_id, ip_address)`
 - `idx_account_ip_white_list_account_ip(account_type, account_id, ip_address)`
 
+## 开关配置
+
+新增 `switch_set` 记录：
+
+- `id`：`137`
+- `switch_name`：`app登录是否启用IP白名单`
+- `status`：`1`，默认关闭；改为 `0` 时启用
+- `type`：`0`
+
 ## 后台接口
 
 新增后台管理接口：`/system/accountIpWhiteList`
@@ -55,13 +64,16 @@ APP账号登录增加IP白名单控制。账号当前登录IP没有配置在账�
 普通APP账号登录：
 
 1. 保留原有IP黑名单、地区限制、账号状态、密码校验流程。
-2. 密码校验成功后，使用 `account_type + 当前IP`、`account_id + 当前IP`、`account_type + account_id + 当前IP` 查询白名单。
-3. 未命中白名单时返回登录失败，不创建token。
+2. 密码校验成功后读取 `switch_set.id = 137`。
+3. 开关状态为 `0` 时，使用 `account_type + 当前IP`、`account_id + 当前IP`、`account_type + account_id + 当前IP` 查询白名单。
+4. 未命中白名单时返回登录失败，不创建token。
+5. 开关状态为 `1` 或记录不存在时，不校验白名单。
 
 Reown已绑定账号登录：
 
 1. 保留原有IP黑名单、地区限制、账号状态流程。
-2. 创建token前校验 `account_type + 当前IP`、`account_id + 当前IP`、`account_type + account_id + 当前IP`。
-3. 未命中白名单时返回登录失败，不创建token。
+2. 创建token前读取 `switch_set.id = 137`。
+3. 开关状态为 `0` 时，校验 `account_type + 当前IP`、`account_id + 当前IP`、`account_type + account_id + 当前IP`。
+4. 未命中白名单时返回登录失败，不创建token。
 
 新注册后自动登录流程暂未强制校验白名单，因为账号ID需要创建后才存在，无法预先配置到账号维度白名单。

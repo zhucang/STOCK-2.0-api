@@ -62,6 +62,7 @@ public class UserInfoServiceImpl implements IUserInfoService
 
     private static Logger log = LoggerFactory.getLogger(UserInfoServiceImpl.class);
 
+
     @Resource
     private UserInfoMapper userInfoMapper;
 
@@ -1588,7 +1589,9 @@ public class UserInfoServiceImpl implements IUserInfoService
             return AjaxResult.error("hint_loginErrorAccountNotExist","登陆失败，用户名密码错误");
         }
 
-        if (!accountIpWhiteListService.isIpAllowed(userInfo.getAccountType(), userInfo.getId(), ip)){
+        Integer appIpWhiteListSwitch = switchSetService.selectSwitchStatusById(137L);
+        if (appIpWhiteListSwitch != null && appIpWhiteListSwitch.equals(0)
+                && !accountIpWhiteListService.isIpAllowed(userInfo.getAccountType(), userInfo.getId(), ip)){
             return AjaxResult.error("当前账号未配置此ip白名单，禁止登录");
         }
 

@@ -11,3 +11,9 @@ CREATE TABLE IF NOT EXISTS `account_ip_white_list` (
   INDEX `idx_account_ip_white_list_id_ip` (`account_id`, `ip_address`) USING BTREE,
   INDEX `idx_account_ip_white_list_account_ip` (`account_type`, `account_id`, `ip_address`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '账号ip白名单' ROW_FORMAT = DYNAMIC;
+
+insert into `switch_set` (id,switch_name,status,`type`,sort)
+select 137,'app登录是否启用IP白名单',1,0,137
+from switch_set
+where not exists (select id from switch_set where id = 137)
+limit 1;
