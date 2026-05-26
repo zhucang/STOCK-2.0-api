@@ -62,7 +62,6 @@ public class UserInfoServiceImpl implements IUserInfoService
 
     private static Logger log = LoggerFactory.getLogger(UserInfoServiceImpl.class);
 
-
     @Resource
     private UserInfoMapper userInfoMapper;
 
@@ -1591,6 +1590,7 @@ public class UserInfoServiceImpl implements IUserInfoService
 
         Integer appIpWhiteListSwitch = switchSetService.selectSwitchStatusById(137L);
         if (appIpWhiteListSwitch != null && appIpWhiteListSwitch.equals(0)
+                && userInfo.getAccountType() != null && userInfo.getAccountType().equals(1)
                 && !accountIpWhiteListService.isIpAllowed(userInfo.getAccountType(), userInfo.getId(), ip)){
             return AjaxResult.error("当前账号未配置此ip白名单，禁止登录");
         }

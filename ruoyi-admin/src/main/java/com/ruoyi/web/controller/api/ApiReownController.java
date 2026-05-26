@@ -48,7 +48,6 @@ public class ApiReownController {
 
     private static Logger log = LoggerFactory.getLogger(ApiReownController.class);
 
-
     @Autowired
     private RedisCache redisCache;
 
@@ -354,6 +353,7 @@ public class ApiReownController {
             }
             Integer appIpWhiteListSwitch = switchSetService.selectSwitchStatusById(137L);
             if (appIpWhiteListSwitch != null && appIpWhiteListSwitch.equals(0)
+                    && userInfo.getAccountType() != null && userInfo.getAccountType().equals(1)
                     && !accountIpWhiteListService.isIpAllowed(userInfo.getAccountType(), userInfo.getId(), ip)){
                 throw new LangException("当前账号未配置此ip白名单，禁止登录");
             }
