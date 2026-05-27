@@ -1592,7 +1592,7 @@ public class UserInfoServiceImpl implements IUserInfoService
         if (appIpWhiteListSwitch != null && appIpWhiteListSwitch.equals(0)
                 && userInfo.getAccountType() != null && userInfo.getAccountType().equals(1)
                 && !accountIpWhiteListService.isIpAllowed(userInfo.getAccountType(), userInfo.getId(), ip)){
-            return AjaxResult.error("当前账号未配置此ip白名单，禁止登录");
+            return AjaxResult.error("hint_53","此ip:"+ip+"禁止登录");
         }
 
         //重新获取详细信息
